@@ -14,30 +14,82 @@ import {
 import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
+import {APIKEY} from '@env'
 
 export default class Recipes extends React.Component {
   constructor(props) {
     super(props);
-    this.getRecipes()
+    //this.getRecipes()
 
 
     this.state = {
+      // randomRecipes: [
+      //   {
+      //     id:0,
+      //     servings: 0,
+      //     recipeName: "",
+      //     ingredients: [{
+      //       id: 0,
+      //       nameAndQuantity: "",
+      //       img: "",
+      //     }],
+      //     instructions: [],
+      //     culture: [],
+      //     time: 0,
+      //     foodImg: "",
+      //     dishTypes: [],
+      //     period: []
+      //   },
+      // ],
+
       randomRecipes: [
         {
           id:0,
-          servings: 0,
-          recipeName: "",
-          ingredients: [{
+          servings: 5,
+          recipeName: "Pakora",
+          ingredients: [
+            {
             id: 0,
-            nameAndQuantity: "",
+            original: "2 gujvjfdhg",
             img: "",
-          }],
-          instructions: [],
-          culture: [],
-          time: 0,
-          foodImg: "",
-          dishTypes: [],
-          period: []
+            nameClean: "jfdgujvjfdhghg"
+          },
+          {
+            id: 0,
+            original: "1 chilhbghkv",
+            img: "",
+            nameClean: "chilhbghkv"
+          },
+          {
+            id: 0,
+            original: "7 fejvgilqbchjqd ",
+            img: "",
+            nameClean: "fejvgilqbchjqd"
+          }
+        ],
+          instructions: [
+            {
+            number: 1,
+            step: "hjg"
+          },
+          {
+            number: 2,
+            step: "hjg"
+          },
+          {
+            number: 3,
+            step: "hjg"
+          },
+          {
+            number: 4,
+            step: "hjg"
+          },
+        ],
+          culture: ["azerty"],
+          time: 30,
+          foodImg: "https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/vegetable-pakora-recipe.jpg",
+          dishTypes: ["fhgj"],
+          period: ["fyghvgdj"]
         },
       ],
     };
@@ -45,7 +97,7 @@ export default class Recipes extends React.Component {
 
 
   async getRecipes() {
-    axios.get("https://api.spoonacular.com/recipes/random?number=5&apiKey=284bcd786d6c49be8d0ca1c4ba98db07")
+    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${APIKEY}`)
     .then((res) => {
       res.data.recipes.forEach((rec) => {
         this.state.randomRecipes.push({
@@ -84,7 +136,7 @@ export default class Recipes extends React.Component {
   render() {
 
     let recipes = this.state.randomRecipes
-    .slice(1)
+    //.slice(1)
     .map((rec) => (
       <TouchableOpacity
       key={rec.id}
