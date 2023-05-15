@@ -14,7 +14,7 @@ import {
 import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-import {APIKEY} from '@env'
+import {API_KEY} from '@env'
 
 export default class Recipes extends React.Component {
   constructor(props) {
@@ -97,21 +97,23 @@ export default class Recipes extends React.Component {
 
 
   async getRecipes() {
-    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${APIKEY}`)
+    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${API_KEY}`)
     .then((res) => {
       res.data.recipes.forEach((rec) => {
-        this.state.randomRecipes.push({
-          id: rec.id,
-          servings: rec.servings,
-          recipeName: rec.title,
-          ingredients: rec.extendedIngredients,
-          instructions: rec.analyzedInstructions[0].steps,
-          culture: rec.cuisines,
-          time: rec.readyInMinutes,
-          foodImg: rec.image,
-          dishTypes: rec.dishTypes,
-          period: rec.occasions
-        })
+        if(rec.analyzedInstructions) {
+          this.state.randomRecipes.push({
+            id: rec.id,
+            servings: rec.servings,
+            recipeName: rec.title,
+            ingredients: rec.extendedIngredients,
+            instructions: rec.analyzedInstructions[0].steps,
+            culture: rec.cuisines,
+            time: rec.readyInMinutes,
+            foodImg: rec.image,
+            dishTypes: rec.dishTypes,
+            period: rec.occasions
+          })
+        }
       })
       
       //console.log(this.state.randomRecipes[1])
