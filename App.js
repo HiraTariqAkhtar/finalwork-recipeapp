@@ -70,7 +70,8 @@ export default function App() {
                 size={hp("5%")}
                 color = "#ff0000"
                 />
-              )
+              ),
+              unmountOnBlur: true
             }}/>
 
             <Tab.Screen name="RecipesScreen" component={RecipesScreen}
@@ -81,7 +82,8 @@ export default function App() {
                 size={hp("5%")}
                 color = "#ff0000"
                 />
-              )
+              ),
+              unmountOnBlur: true
             }}/>
 
             <Tab.Screen name="Cart" component={Cart}
@@ -104,7 +106,8 @@ export default function App() {
                 size={hp("5%")}
                 color = "#ff0000"
                 />
-              )
+              ),
+              unmountOnBlur: true
             }}/>
 
             <Tab.Screen name="Profile" component={Profile}
@@ -115,7 +118,8 @@ export default function App() {
                 size={hp("5%")}
                 color = "#ff0000"
                 />
-              )
+              ),
+              unmountOnBlur: true
             }}/>
         </Tab.Navigator>
       </NavigationContainer>
