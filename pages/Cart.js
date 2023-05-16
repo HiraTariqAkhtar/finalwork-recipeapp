@@ -11,7 +11,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import {FontAwesome } from "@expo/vector-icons";
+import {Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Button } from "react-native-elements/dist/buttons/Button";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -59,7 +60,6 @@ export default class Cart extends React.Component {
     )
   }
 
-
   async removeFromCart(item) {
     let itemRemoved = this.state.cartItems.filter(i => i != item)
     this.setState({cartItems: itemRemoved})
@@ -69,12 +69,42 @@ export default class Cart extends React.Component {
     this.checkRemainingItems()
   }
 
+  confirmClear() {
+    Alert.alert(
+      "Clear cart",
+      `Are you sure you want to clear the cart?`,
+      [
+        {text: "No", style: "cancel"},
+        {text: "Yes", onPress: () => this.clearList()}
+      ]
+    )
+  }
+
+  async clearList() {
+    let emptyList = []
+    this.setState({cartItems: emptyList})
+    this.setState({hasData: false})
+    await AsyncStorage.removeItem("cart")
+    ToastAndroid.show("Cart cleared", ToastAndroid.SHORT)
+  }
+
 
   render() {
+    let clearIcon =
+    <Ionicons
+    name="trash-outline"
+    color="#FFFFFF"
+    size={hp("3%")}/>
 
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.cart}>
+          <Text style={styles.title}>Cart</Text>
+          <Button
+          title="Clear list"
+          icon={clearIcon}
+          buttonStyle={styles.clear}
+          onPress={() => this.confirmClear()}/>
+        <ScrollView>
         {this.state.hasData ? 
           this.state.cartItems.map((item) => (
             <View style={styles.iconText}>
@@ -99,9 +129,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    marginTop: hp("8%"),
   },
-  cart:{
-    marginTop: hp("10%"),
+  title: {
+    textAlign: 'center',
+    fontFamily: "Nunito_700Bold",
+    fontSize: hp("3.5%")
   },
   iconText: {
     display: "flex",
@@ -115,5 +148,11 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_400Regular",
     fontSize: hp("2.5%"),
     textAlign: "center"
+  },
+  clear: {
+    backgroundColor:"#ff0000",
+    width: wp("30%"),
+    left: wp("65%"),
+    marginBottom: hp("3%")
   }
 });
