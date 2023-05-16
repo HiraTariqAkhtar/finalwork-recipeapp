@@ -11,10 +11,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import axios from "axios";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import {FontAwesome } from "@expo/vector-icons";
 
-import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -26,22 +24,29 @@ export default class Cart extends React.Component {
       hasData: false,
       cartItems:[]
     }
+  }
 
+  async componentDidMount() {
     this.getCartData()
   }
 
-  async getCartData(){
+  async getCartData() {
     let cart = await AsyncStorage.getItem("cart")
-    if(!cart) {
-      this.state.hasData = false
-    } else{
-      this.state.hasData = true
-      this.state.cartItems = JSON.parse(cart)
+    if(cart !== null) {
+      this.setState({cartItems: JSON.parse(cart)})
+      this.checkRemainingItems()
+    } else {
+      this.setState({hasData: false})
     }
-    //console.log(this.state.cartItems)
-    this.setState({state: this.state})
   }
 
+  async checkRemainingItems() {
+    if(this.state.cartItems.length >0) {
+      this.setState({hasData: true})
+    } else {
+      this.setState({hasData: false})
+    }
+  }
 
   confirmDelete(item) {
     Alert.alert(
@@ -54,31 +59,23 @@ export default class Cart extends React.Component {
     )
   }
 
+
   async removeFromCart(item) {
-    this.state.cartItems = this.state.cartItems.filter(i => i != item)
-    console.log(this.state.cartItems)
-    this.setState({state: this.state})
+    let itemRemoved = this.state.cartItems.filter(i => i != item)
+    this.setState({cartItems: itemRemoved})
     await AsyncStorage.setItem("cart", JSON.stringify(this.state.cartItems))
     ToastAndroid.show(`${item} removed from cart`, ToastAndroid.SHORT)
     
     this.checkRemainingItems()
   }
 
-  async checkRemainingItems() {
-    if(this.state.cartItems.length == 0) {
-      this.state.hasData = false
-    } else {
-      this.state.hasData = true
-    }
-    this.setState({state: this.state})
-  }
 
   render() {
 
     return (
       <View style={styles.container}>
         <ScrollView style={styles.cart}>
-          {this.state.hasData ? 
+        {this.state.hasData ? 
           this.state.cartItems.map((item) => (
             <View style={styles.iconText}>
               <Text style={styles.cartItem}>{item}</Text>
@@ -88,14 +85,15 @@ export default class Cart extends React.Component {
               color="#ff0000"
               onPress={() => this.confirmDelete(item)}/>
             </View>
-          ))
-          :
-          <Text style={styles.cartItem}>Cart is empty.{'\n'} Add ingredients to see your cart</Text>}
+          )) 
+        :
+        <Text style={styles.cartItem}>Cart is empty.{'\n'} Add ingredients to see your cart</Text>}
         </ScrollView>
       </View>
     );
   }
 }
+
 
 const styles = StyleSheet.create({
   container: {
