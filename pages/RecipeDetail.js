@@ -7,12 +7,15 @@ import {
   Image,
   ToastAndroid
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
+
+import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 
 export default class RecipeDetails extends React.Component {
@@ -20,6 +23,7 @@ export default class RecipeDetails extends React.Component {
     super(props);
 
     this.state = {
+      cart:[]
     }
 
     this.props.navigation.setOptions({
@@ -28,11 +32,16 @@ export default class RecipeDetails extends React.Component {
 
   }
 
-  addToCart(ingredient){
+  async addToCart(ingredient){
+    this.state.cart.push(ingredient)
+    this.setState({state:this.state})
+    //console.log(this.state.cart)
+    await AsyncStorage.setItem("cart", JSON.stringify(this.state.cart))
     ToastAndroid.show(`${ingredient} added to cart`, ToastAndroid.SHORT)
   }
 
   render() {
+
     return (
       <View style={styles.container}>
           <ScrollView>
@@ -137,6 +146,7 @@ export default class RecipeDetails extends React.Component {
     );
   }
 }
+
 
 const styles = StyleSheet.create({
   container: {
