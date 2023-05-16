@@ -4,7 +4,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-
 import { Ionicons } from "@expo/vector-icons";
 import {Image} from "react-native"
 import {
@@ -93,7 +92,8 @@ export default function App() {
                 size={hp("5%")}
                 color = "#ff0000"
                 />
-              )
+              ),
+              unmountOnBlur: true
             }}/>
 
             <Tab.Screen name="Favorites" component={Favorites}
