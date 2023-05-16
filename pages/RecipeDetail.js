@@ -38,13 +38,18 @@ export default class RecipeDetails extends React.Component {
       cartItems = JSON.parse(cart);
     }
   
-    // add new ingredients in cart
-    cartItems.push(ingredient);
-  
-    // Save edited cart
-    await AsyncStorage.setItem("cart", JSON.stringify(cartItems));
-    
-    ToastAndroid.show(`${ingredient} added to cart`, ToastAndroid.SHORT)
+    // check if ingredient already added in cart
+    if(cartItems.includes(ingredient)) {
+      alert(`${ingredient} already in cart`)
+    } else {
+      // add new ingredients in cart
+      cartItems.push(ingredient);
+      
+      // Save edited cart
+      await AsyncStorage.setItem("cart", JSON.stringify(cartItems));
+      
+      ToastAndroid.show(`${ingredient} added to cart`, ToastAndroid.SHORT)
+    }
   }
 
   render() {
