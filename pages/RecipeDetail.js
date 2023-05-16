@@ -13,9 +13,7 @@ import {
 } from "react-native-responsive-screen";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 
 
 export default class RecipeDetails extends React.Component {
@@ -23,7 +21,7 @@ export default class RecipeDetails extends React.Component {
     super(props);
 
     this.state = {
-      cart:[]
+      cartItems: []
     }
 
     this.props.navigation.setOptions({
@@ -33,10 +31,19 @@ export default class RecipeDetails extends React.Component {
   }
 
   async addToCart(ingredient){
-    this.state.cart.push(ingredient)
-    this.setState({state:this.state})
-    //console.log(this.state.cart)
-    await AsyncStorage.setItem("cart", JSON.stringify(this.state.cart))
+    // check if already cart available
+    let cart = await AsyncStorage.getItem("cart");
+    let cartItems = [];
+    if (cart) {
+      cartItems = JSON.parse(cart);
+    }
+  
+    // add new ingredients in cart
+    cartItems.push(ingredient);
+  
+    // Save edited cart
+    await AsyncStorage.setItem("cart", JSON.stringify(cartItems));
+    
     ToastAndroid.show(`${ingredient} added to cart`, ToastAndroid.SHORT)
   }
 
