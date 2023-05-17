@@ -123,6 +123,7 @@ export default class Recipes extends React.Component {
 
   goToRecipeDetails(rec) {
     this.props.navigation.navigate("RecipeDetail", {
+      id: rec.id,
       recipeName: rec.recipeName,
       foodImg: rec.foodImg,
       servings: rec.servings,
