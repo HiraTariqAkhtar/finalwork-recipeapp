@@ -49,6 +49,14 @@ const RecipesScreen = () => {
     </Stack.Navigator>
   );
 }
+const FavScreen = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Favorites" component={Favorites} options={{ headerShown: false }}/>
+      <Stack.Screen name="RecipeDetail" component={RecipeDetail}/>
+    </Stack.Navigator>
+  );
+}
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -106,7 +114,7 @@ export default function App() {
               unmountOnBlur: true
             }}/>
 
-            <Tab.Screen name="Favorites" component={Favorites}
+            <Tab.Screen name="FavScreen" component={FavScreen}
             options= {{
               tabBarIcon: ({focused}) => (
                 <Ionicons
