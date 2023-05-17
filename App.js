@@ -33,6 +33,14 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 // Navigate to pages not in bottom nav
+const HomeScreen = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}/>
+      <Stack.Screen name="RecipeDetail" component={RecipeDetail}/>
+    </Stack.Navigator>
+  );
+}
 const RecipesScreen = () => {
   return (
     <Stack.Navigator>
@@ -62,7 +70,7 @@ export default function App() {
             tabBarShowLabel: false,
           }}
         >
-            <Tab.Screen name="Home" component={Home}
+            <Tab.Screen name="HomeScreen" component={HomeScreen}
             options= {{
               tabBarIcon: ({focused}) => (
                 <Ionicons
