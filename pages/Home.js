@@ -111,12 +111,12 @@ export default class Home extends React.Component {
 
     let periods;
     if(rec.period.length > 1) {
-      period =
+      periods =
       rec.period.map((period) => (
         <Text style={styles.text}>{period} |</Text>
       ))
     } else if(rec.period.length == 1){
-      period =
+      periods =
       <Text style={styles.text}>{rec.period[0]}</Text>
     }
 
@@ -126,10 +126,19 @@ export default class Home extends React.Component {
         <Text style={styles.sectionTitle}>Recipe of the day</Text>
         <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
           <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+          {rec.foodImg != "" ?(
           <Image
           source={{uri: rec.foodImg}}
           style={styles.foodImg}
-          />
+          />)
+          : 
+          <FontAwesome
+              name={"image"}
+              size={hp("15%")}
+              color="#D3D3D3"
+              marginRight={wp("3%")}
+            />}
+
             <View>
               <Text style={styles.recipeName}>
                 {rec.recipeName}
@@ -141,7 +150,6 @@ export default class Home extends React.Component {
               name={"flag"}
               size={hp("2.5%")}
               color="#34359A"
-              marginRight={wp("1%")}
             />
               {cultures}
             </View>)}
@@ -152,7 +160,6 @@ export default class Home extends React.Component {
               name={"cutlery"}
               size={hp("2.5%")}
               color="#34359A"
-              marginRight={wp("1%")}
             />
               {dishTypes}
             </View>)}
@@ -163,7 +170,6 @@ export default class Home extends React.Component {
                   name={"calendar"}
                   size={hp("2.5%")}
                   color="#34359A"
-                  marginRight={wp("1%")}
                 />
                   {periods}
                 </View>)}

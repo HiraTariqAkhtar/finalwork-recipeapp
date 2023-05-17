@@ -59,10 +59,19 @@ export default class RecipeDetails extends React.Component {
           <ScrollView>
         <View style={styles.button1}>
         <Text style={styles.title}>{this.props.route.params.recipeName}</Text>
+        {this.props.route.params.foodImg != "" ?(
           <Image
           source={{uri: this.props.route.params.foodImg}}
           style={styles.food}
-          />
+          />)
+          : 
+          <FontAwesome
+              name={"image"}
+              size={wp("45%")}
+              color="#D3D3D3"
+              marginHorizontal={wp("15%")}
+            />}
+          
           <View style={styles.info}>
           <View style={styles.iconText}>
             <Ionicons

@@ -145,10 +145,18 @@ export default class Recipes extends React.Component {
       style={styles.recipe}
       onPress={() => this.goToRecipeDetails(rec)}>
         <View>
-        <Image
+        {rec.foodImg != "" ?(
+          <Image
           source={{uri: rec.foodImg}}
           style={styles.foodImg}
-          />
+          />)
+          : 
+          <FontAwesome
+              name={"image"}
+              size={wp("40%")}
+              color="#D3D3D3"
+              marginHorizontal={wp("15%")}
+            />}
 
         <Text style={styles.recipeName}>
             {rec.recipeName}
