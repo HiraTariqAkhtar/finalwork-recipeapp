@@ -21,13 +21,47 @@ export default class RecipeDetails extends React.Component {
     super(props);
 
     this.state = {
-      cartItems: []
+      recipe: {
+        id: this.props.route.params.id,
+        recipeName: this.props.route.params.recipeName,
+        foodImg: this.props.route.params.foodImg,
+        servings: this.props.route.params.servings,
+        timeNeeded: this.props.route.params.timeNeeded,
+        dishTypes: this.props.route.params.dishTypes,
+        period: this.props.route.params.period,
+        culture: this.props.route.params.culture,
+        ingredients: this.props.route.params.ingredients,
+        instructions: this.props.route.params.instructions
+      },
+      fav: false,
     }
 
     this.props.navigation.setOptions({
         title: ""
       });
 
+      this.checkFav()
+  }
+
+  async checkFav() {
+    //console.log(this.state.recipe)
+    let fav = await AsyncStorage.getItem("favorites")
+    if(fav) {
+      favRecipesList = JSON.parse(fav)
+
+      // check if recipe already in fav
+    const isFav = favRecipesList.some(
+      (recipe) => recipe.id === this.state.recipe.id
+    );
+    if (isFav) {
+      this.setState({fav: true})
+    } else {
+      this.setState({fav: false})
+    }
+
+    } else {
+      this.setState({fav: false})
+    }
   }
 
   async addToCart(ingredient){
@@ -52,16 +86,71 @@ export default class RecipeDetails extends React.Component {
     }
   }
 
-  render() {
+  async addToFav() {
+    // check if already something in storage
+    let fav = await AsyncStorage.getItem("favorites")
+    let favRecipes = []
+    if(fav) {
+      favRecipes = JSON.parse(fav)
+    }
 
+    // add new recipe to fav
+    favRecipes.push(this.state.recipe)
+
+    // save edited fav list
+    await AsyncStorage.setItem("favorites", JSON.stringify(favRecipes));
+
+    // Change outline heart into filled
+    this.setState({fav: true})
+    ToastAndroid.show(`${this.state.recipe.recipeName} added to favorites`, ToastAndroid.SHORT)
+  }
+
+  async removeFromFav() {
+    let fav = await AsyncStorage.getItem("favorites")
+    let favRecipes = JSON.parse(fav)
+
+    // filter out recipe from list
+    let recipeRemoved = favRecipes.filter(recipe => recipe.id != this.state.recipe.id)
+    // save filtered array in storage
+    await AsyncStorage.setItem("favorites", JSON.stringify(recipeRemoved));
+    
+    // Change filled heart into outline
+    this.setState({fav: false})
+    ToastAndroid.show(`${this.state.recipe.recipeName} removed from favorites`, ToastAndroid.SHORT)
+  }
+
+  render() {
+    let fav;
+    if(this.state.fav) {
+      fav=
+      <Ionicons
+      name={"heart"}
+      color="#FF0000"
+      size={hp("5%")}
+      onPress={() => this.removeFromFav()}
+      />
+    } else {
+      fav=
+      <Ionicons
+      name={"heart-outline"}
+      color="#FF0000"
+      size={hp("5%")}
+      onPress={() => this.addToFav()}
+      />
+    }
+
+    let rec = this.state.recipe
     return (
       <View style={styles.container}>
           <ScrollView>
         <View style={styles.button1}>
-        <Text style={styles.title}>{this.props.route.params.recipeName}</Text>
-        {this.props.route.params.foodImg != "" ?(
+        <View style={styles.addToFav}>
+          <Text style={styles.title}>{rec.recipeName}</Text>
+          {fav}
+        </View>
+        {rec.foodImg != "" ?(
           <Image
-          source={{uri: this.props.route.params.foodImg}}
+          source={{uri: rec.foodImg}}
           style={styles.food}
           />)
           : 
@@ -79,7 +168,7 @@ export default class RecipeDetails extends React.Component {
               size={hp("5%")}
               color="#34359A"
             />
-              <Text style={styles.text}>{this.props.route.params.servings}</Text>
+              <Text style={styles.text}>{rec.servings}</Text>
           </View>
 
             <View style={styles.iconText}>
@@ -88,11 +177,11 @@ export default class RecipeDetails extends React.Component {
               size={hp("5%")}
               color="#34359A"
             />
-              <Text style={styles.text}>{this.props.route.params.timeNeeded} minutes</Text>
+              <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
             </View>
           </View>
 
-            {this.props.route.params.dishTypes.length > 0 && (
+            {rec.dishTypes.length > 0 && (
             <View style={styles.iconText}>
             <FontAwesome
               name={"cutlery"}
@@ -100,12 +189,12 @@ export default class RecipeDetails extends React.Component {
               color="#34359A"
               marginRight={wp("1%")}
             />
-              {this.props.route.params.dishTypes.map((type) => (
+              {rec.dishTypes.map((type) => (
                 <Text style={styles.text}>{type}</Text>
               ))}
             </View>)}
 
-           {this.props.route.params.period.length > 0 && (
+           {rec.period.length > 0 && (
            <View style={styles.iconText}>
             <Ionicons
               name={"calendar"}
@@ -113,12 +202,12 @@ export default class RecipeDetails extends React.Component {
               color="#34359A"
               marginRight={wp("1%")}
             />
-              {this.props.route.params.period.map((period) => (
+              {rec.period.map((period) => (
                 <Text style={styles.text}>{period}</Text>
               ))}
             </View>)}
 
-            {this.props.route.params.culture.length > 0 && (
+            {rec.culture.length > 0 && (
             <View style={styles.iconText}>
             <Ionicons
               name={"flag"}
@@ -126,14 +215,14 @@ export default class RecipeDetails extends React.Component {
               color="#34359A"
               marginRight={wp("1%")}
             />
-              {this.props.route.params.culture.map((type) => (
+              {rec.culture.map((type) => (
                 <Text style={styles.text}>{type}</Text>
               ))}
             </View>)}
             
                 <View>
                     <Text style={styles.title}>Ingredients</Text>
-                    {this.props.route.params.ingredients.map((i) => (
+                    {rec.ingredients.map((i) => (
                     <View style={styles.iconText}>
                         <FontAwesome
                           name={"circle"}
@@ -154,7 +243,7 @@ export default class RecipeDetails extends React.Component {
 
                 <View>
                     <Text style={styles.title}>Instructions</Text>
-                    {this.props.route.params.instructions.map((step) => (
+                    {rec.instructions.map((step) => (
                     <View style= {{marginBottom: hp("2%")}}>
                         <Text style={styles.steps}>Step {step.number}:</Text>
                         <Text style={styles.text}>{step.step}</Text>
@@ -213,5 +302,12 @@ const styles = StyleSheet.create({
     fontFamily:"Nunito_400Regular",
     fontSize: hp("2%"),
     marginLeft: wp("2%")
+  },
+  addToFav:{
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent:"space-between",
+    marginBottom: hp("2%")
   }
 });
