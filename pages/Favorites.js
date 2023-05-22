@@ -28,8 +28,12 @@ export default class Favorites extends React.Component {
       favRecipes:[]
     }
   }
-  async componentDidMount() {
-    this.getFavList()
+  componentDidMount() {
+    this.getFavList();
+  
+    this.focusListener = this.props.navigation.addListener('focus', () => {
+      this.getFavList();
+    });
   }
 
   async getFavList() {
