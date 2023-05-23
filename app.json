@@ -4,7 +4,7 @@
     "slug": "RecipeApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/expo/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/expo/splash.png",
