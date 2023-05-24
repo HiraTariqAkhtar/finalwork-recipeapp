@@ -16,10 +16,13 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 import {API_KEY} from '@env'
 
+import { collection, getDocs, addDoc } from "firebase/firestore"; 
+import {DATABASE} from "../firebaseConfig"
+
 export default class Recipes extends React.Component {
   constructor(props) {
     super(props);
-    //this.getRecipes()
+    this.getRecipes()
 
 
     this.state = {
@@ -38,7 +41,7 @@ export default class Recipes extends React.Component {
       //     time: 0,
       //     foodImg: "",
       //     dishTypes: [],
-      //     period: []
+      //     period: [],
       //   },
       // ],
 
@@ -85,40 +88,113 @@ export default class Recipes extends React.Component {
             step: "hjg"
           },
         ],
-          culture: ["azerty"],
+          culture: ["azerty", "qsdf"],
           time: 30,
           foodImg: "https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/vegetable-pakora-recipe.jpg",
-          dishTypes: ["fhgj"],
-          period: ["fyghvgdj"]
+          dishTypes: ["fhgj","dinner", "snack"],
+          period: ["fyghvgdj","rainy day"],
         },
       ],
+      allCultures:[],
+      allDishTypes:[],
+      allOccasions:[]
     };
   }
 
 
   async getRecipes() {
-    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${API_KEY}`)
-    .then((res) => {
-      res.data.recipes.forEach((rec) => {
-        if(rec.analyzedInstructions) {
-          this.state.randomRecipes.push({
-            id: rec.id,
-            servings: rec.servings,
-            recipeName: rec.title,
-            ingredients: rec.extendedIngredients,
-            instructions: rec.analyzedInstructions[0].steps,
-            culture: rec.cuisines,
-            time: rec.readyInMinutes,
-            foodImg: rec.image,
-            dishTypes: rec.dishTypes,
-            period: rec.occasions
-          })
-        }
-      })
+    
+    // axios.get(`https://api.spoonacular.com/recipes/random?number=3&apiKey=${API_KEY}`)
+    // .then((res) => {
+    //   res.data.recipes.forEach((rec) => {
+    //     if(rec.analyzedInstructions) {
+    //       this.state.randomRecipes.push({
+    //         id: rec.id,
+    //         servings: rec.servings,
+    //         recipeName: rec.title,
+    //         ingredients: rec.extendedIngredients,
+    //         instructions: rec.analyzedInstructions[0].steps,
+    //         culture: rec.cuisines,
+    //         time: rec.readyInMinutes,
+    //         foodImg: rec.image,
+    //         dishTypes: rec.dishTypes,
+    //         period: rec.occasions
+    //       })
+    //     }
+    //   })
       
-      //console.log(this.state.randomRecipes[1])
-      this.setState({state: this.state})
-    })
+    //   console.log(this.state.randomRecipes[1])
+    //   this.setState({state: this.state})
+    // })
+    this.getFilterData()
+  }
+
+  async getFilterData() {
+    let cultures = []
+    let dishTypes = []
+    let occasions = []
+
+    // Check if already data available in database
+    let cultureCollection = collection(DATABASE, "cultures")
+    let cultureData = await getDocs(cultureCollection)
+    if (cultureData.size > 0) {
+      cultureData.forEach((doc) => {
+        cultures.push(doc.data().culture)
+      })
+    } 
+
+    let dishTypeCollection = collection(DATABASE, "dishTypes")
+    let dishTypeData = await getDocs(dishTypeCollection)
+    if (dishTypeData.size > 0) {
+      dishTypeData.forEach((doc) => {
+        dishTypes.push(doc.data().dishType)
+      })
+    } 
+
+    let occasionCollection = collection(DATABASE, "occasions")
+    let occasionData = await getDocs(occasionCollection)
+    if (occasionData.size > 0) {
+      occasionData.forEach((doc) => {
+        occasions.push(doc.data().occasion)
+      })
+    } 
+
+
+    // add data in db if not already
+    for(let rec of this.state.randomRecipes) {
+      // cultures
+      for(let culture of rec.culture) {
+        if(!cultures.includes(culture)) {
+          cultures.push(culture)
+          await addDoc((cultureCollection), {culture: culture})
+        }
+      }
+      
+      // dishTypes
+      for(let type of rec.dishTypes) {
+        if(!dishTypes.includes(type)) {
+          dishTypes.push(type)
+          await addDoc((dishTypeCollection), {dishType: type})
+        }
+      }
+      // occasions
+      for(let occasion of rec.period) {
+        if(!occasions.includes(occasion)) {
+          occasions.push(occasion)
+          await addDoc((occasionCollection), {occasion: occasion})
+        }
+      }
+
+    }
+
+
+
+    // save data arrays in state
+    this.setState({allCultures: cultures})
+    this.setState({allDishTypes: dishTypes})
+    this.setState({allOccasions: occasions})
+
+    //console.log(this.state.allCultures)
   }
 
   goToRecipeDetails(rec) {
