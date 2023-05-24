@@ -5,9 +5,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/recipeApp/logo.png",
+    "backgroundColor":"#ffffff",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/recipeApp/logo.png",
+      "image": "./assets/recipeApp/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
