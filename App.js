@@ -4,7 +4,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-
 import { Ionicons } from "@expo/vector-icons";
 import {Image} from "react-native"
 import {
@@ -34,10 +33,26 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 // Navigate to pages not in bottom nav
+const HomeScreen = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}/>
+      <Stack.Screen name="RecipeDetail" component={RecipeDetail}/>
+    </Stack.Navigator>
+  );
+}
 const RecipesScreen = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Recipes" component={Recipes} options={{ headerShown: false }}/>
+      <Stack.Screen name="RecipeDetail" component={RecipeDetail}/>
+    </Stack.Navigator>
+  );
+}
+const FavScreen = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Favorites" component={Favorites} options={{ headerShown: false }}/>
       <Stack.Screen name="RecipeDetail" component={RecipeDetail}/>
     </Stack.Navigator>
   );
@@ -53,7 +68,7 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    return (<Image source={require("./assets/splash.png")} />);
+    return (<Image source={require("./assets/recipeApp/splash.png")} />);
   } else {
     return (
       <NavigationContainer>
@@ -63,7 +78,7 @@ export default function App() {
             tabBarShowLabel: false,
           }}
         >
-            <Tab.Screen name="Home" component={Home}
+            <Tab.Screen name="HomeScreen" component={HomeScreen}
             options= {{
               tabBarIcon: ({focused}) => (
                 <Ionicons
@@ -71,7 +86,8 @@ export default function App() {
                 size={hp("5%")}
                 color = "#ff0000"
                 />
-              )
+              ),
+              unmountOnBlur: true
             }}/>
 
             <Tab.Screen name="RecipesScreen" component={RecipesScreen}
@@ -82,7 +98,8 @@ export default function App() {
                 size={hp("5%")}
                 color = "#ff0000"
                 />
-              )
+              ),
+              unmountOnBlur: true
             }}/>
 
             <Tab.Screen name="Cart" component={Cart}
@@ -93,10 +110,11 @@ export default function App() {
                 size={hp("5%")}
                 color = "#ff0000"
                 />
-              )
+              ),
+              unmountOnBlur: true
             }}/>
 
-            <Tab.Screen name="Favorites" component={Favorites}
+            <Tab.Screen name="FavScreen" component={FavScreen}
             options= {{
               tabBarIcon: ({focused}) => (
                 <Ionicons
@@ -104,7 +122,8 @@ export default function App() {
                 size={hp("5%")}
                 color = "#ff0000"
                 />
-              )
+              ),
+              unmountOnBlur: true
             }}/>
 
             <Tab.Screen name="Profile" component={Profile}
@@ -115,7 +134,8 @@ export default function App() {
                 size={hp("5%")}
                 color = "#ff0000"
                 />
-              )
+              ),
+              unmountOnBlur: true
             }}/>
         </Tab.Navigator>
       </NavigationContainer>
