@@ -14,6 +14,7 @@ import {
 import {
   useFonts,
   Nunito_300Light,
+  Nunito_300Light_Italic,
   Nunito_400Regular,
   Nunito_500Medium,
   Nunito_600SemiBold,
@@ -137,6 +138,7 @@ const Tabs = () => {
 export default function App() {
   let [fontsLoaded] = useFonts({
     Nunito_300Light,
+    Nunito_300Light_Italic,
     Nunito_400Regular,
     Nunito_500Medium,
     Nunito_600SemiBold,
