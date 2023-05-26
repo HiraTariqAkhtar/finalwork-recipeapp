@@ -2,15 +2,18 @@ import React from "react";
 import {
   StyleSheet,
   View,
+  ScrollView,
   TouchableOpacity,
   TextInput,
   Text,
-  Modal
+  Modal,
+  Alert
 } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { Ionicons } from "@expo/vector-icons";
 
 import axios from "axios";
 
@@ -21,7 +24,15 @@ export default class Register extends React.Component {
     super(props);
 
     this.state = {
-        confirmDetails: false
+        confirmDetails: false,
+
+        firstName: "egvr",
+        lastName: "gvrb",
+        email: "egvb",
+        pw: "fetgvr",
+        pwConfirm: "",
+
+        showPw: false
     }
   }
 
@@ -29,13 +40,63 @@ export default class Register extends React.Component {
     this.props.navigation.navigate("LogIn")
   }
 
-  checkInputData(){
+  register() {
+    AsyncStorage.setItem("userLoggedIn", "true")
+    this.props.navigation.navigate("Profile")
+  }
 
+  checkInputData(){
+    // check if all input fields filled in
+    if(this.state.firstName == "" || this.state.lastName == "" || this.state.email == "" || this.state.pw == "" || this.state.pwConfirm == "") {
+      Alert.alert(
+        "Some fields not filled in",
+        "Please fill in all fields"
+      )
+    } else {
+    // email check
+    let emailCheck
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(this.state.email) === false) {
+      Alert.alert(
+        "Invalid email address",
+        "Please fill in a valid email address"
+      )
+      emailCheck =  false;
+    }
+    else {
+      emailCheck =  true;
+    }
+    
+    // pw check
+    let pwCheck
+    if(this.state.pw == this.state.pwConfirm) {
+      pwCheck = true
+    } else {
+      pwCheck= false
+      Alert.alert(
+        "Passwords not same",
+        "Please rewrite your password"
+      )
+      this.setState({pw: ""})
+      this.setState({pwConfirm: ""})
+    }
+
+
+    if(emailCheck && pwCheck) {
       this.setState({confirmDetails: true})
+    }
+    }
   }
 
 
   render() {
+
+    let pw;
+    if(this.state.showPw) {
+      pw = this.state.pw
+    } else {
+      pw = "**********"
+    }
 
     return (
       <View style={styles.container}>
@@ -46,36 +107,75 @@ export default class Register extends React.Component {
               <Text style={styles.nav} onPress={() => this.login()}>Sign In</Text>
           </View>
 
-          <Text style={styles.text}>First Name:</Text>
-          <TextInput
-          style={styles.placeholder}
-          placeholder="First Name"/>
+          <ScrollView>
+            <Text style={styles.text}>First Name:</Text>
+            <TextInput
+            style={styles.placeholder}
+            placeholder="First Name"
+            onChangeText={(txt) => this.setState({firstName: txt})}/>
+  
+            <Text style={styles.text}>Last Name:</Text>
+            <TextInput
+            style={styles.placeholder}
+            placeholder="Last Name"
+            onChangeText={(txt) => this.setState({lastName: txt})}/>
+  
+            <Text style={styles.text}>Email address:</Text>
+            <TextInput
+            style={styles.placeholder}
+            placeholder="someone@example.com"
+            keyboardType="email-address"
+            value={this.state.email}
+            onChangeText={(txt) => this.setState({email: txt})}/>
+  
+            <Text style={styles.text}>Password:</Text>
+            <TextInput
+            style={styles.placeholder}
+            placeholder="**********"
+            secureTextEntry
+            value={this.state.pw}
+            onChangeText={(txt) => this.setState({pw: txt})}/>
+  
+            <Text style={styles.text}>Confirm Password:</Text>
+            <TextInput
+            style={styles.placeholder}
+            placeholder="**********"
+            secureTextEntry
+            value={this.state.pwConfirm}
+            onChangeText={(txt) => this.setState({pwConfirm: txt})}/>
 
-          <Text style={styles.text}>Last Name:</Text>
-          <TextInput
-          style={styles.placeholder}
-          placeholder="Last Name"/>
-
-          <Text style={styles.text}>Email address:</Text>
-          <TextInput
-          style={styles.placeholder}
-          placeholder="someone@example.com"/>
-
-          <Text style={styles.text}>Password:</Text>
-          <TextInput
-          style={styles.placeholder}
-          placeholder="**********"/>
-
-          <Text style={styles.text}>Confirm Password:</Text>
-          <TextInput
-          style={styles.placeholder}
-          placeholder="**********"/>
-
-          <TouchableOpacity style={styles.button} onPress={() => this.checkInputData()}>
+          <TouchableOpacity style={[styles.button, {marginLeft: wp("50%")}]} onPress={() => this.checkInputData()}>
             <Text style={styles.btnText}>Next</Text>
           </TouchableOpacity>
+          </ScrollView>
 
 
+          <Modal
+          visible={this.state.confirmDetails}>
+
+            <Text style={[styles.question, {marginLeft:wp("5%"),  marginTop:hp("5%")}]}>Please confirm before finishing</Text>
+            <View style={{marginLeft:wp("5%"), marginBottom:hp("1.5%"), marginTop:hp("3%")}}>
+              <Text style={{marginBottom:hp("1.5%")}}>Name: {this.state.firstName} {this.state.lastName}</Text>
+              <Text style={{marginBottom:hp("1.5%")}}>Email: {this.state.email}</Text>
+              <View style={styles.iconText}>
+                <Text>Password: {pw}</Text>
+                <Ionicons
+                name="eye"
+                size={hp("2.5%")}
+                marginLeft={wp("3%")}
+                onPress={() => this.setState({showPw: !this.state.showPw})}/>
+              </View>
+            </View>
+
+          <View style={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}>
+            <TouchableOpacity style={styles.button} onPress={() => this.setState({confirmDetails: false})}>
+              <Text style={styles.btnText}>Back</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => this.register()}>
+              <Text style={styles.btnText}>Finish</Text>
+            </TouchableOpacity>
+          </View>
+          </Modal>
       </View>
     );
   }
@@ -118,11 +218,10 @@ const styles = StyleSheet.create({
     marginBottom: hp("3%")
   },
   button: {
-    width: wp("50%"),
+    width: wp("45%"),
     padding: hp("1%"),
     backgroundColor: "#34359A",
     borderRadius: wp("50%"),
-    marginLeft: wp("45%"),
     marginTop: hp("3%"),
   },
   btnText:{
@@ -130,5 +229,12 @@ const styles = StyleSheet.create({
     fontSize: hp("2.5%"),
     color: "#ffffff",
     textAlign: "center"
-  }
+  },
+  iconText: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    marginBottom: hp("1%"),
+  },
 });
