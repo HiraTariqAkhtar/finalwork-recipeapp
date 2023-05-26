@@ -112,11 +112,12 @@ export default class Recipes extends React.Component {
 
 
   async getRecipes() {
-    // axios.get(`https://api.spoonacular.com/recipes/random?number=3&apiKey=${API_KEY}`)
+    // axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${API_KEY}`)
     // .then((res) => {
+    //   let recipes = []
     //   res.data.recipes.forEach((rec) => {
     //     if(rec.analyzedInstructions) {
-    //       this.state.randomRecipes.push({
+    //       recipes.push({
     //         id: rec.id,
     //         servings: rec.servings,
     //         recipeName: rec.title,
@@ -131,7 +132,7 @@ export default class Recipes extends React.Component {
     //     }
     //   })
       
-    //   this.setState({state: this.state})
+    //   this.setState({randomRecipes: recipes})
     // })
     this.getFilterData()
   }
@@ -309,9 +310,7 @@ export default class Recipes extends React.Component {
   }
 
   render() {
-    let recipes = this.state.randomRecipes
-    //.slice(1)
-    .map((rec) => (
+    let recipes = this.state.randomRecipes.map((rec) => (
       <TouchableOpacity
       key={rec.id}
       style={styles.recipe}
