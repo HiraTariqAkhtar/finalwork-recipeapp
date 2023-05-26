@@ -27,6 +27,8 @@ import RecipeDetail from "./pages/RecipeDetail";
 import Cart from "./pages/Cart"
 import Favorites from "./pages/Favorites"
 import Profile from "./pages/Profile"
+import LogIn from "./pages/LogIn"
+import Register from "./pages/Register"
 
 // Navigators
 const Tab = createBottomTabNavigator();
@@ -58,6 +60,80 @@ const FavScreen = () => {
   );
 }
 
+// Bottom nav
+const Tabs = () => {
+  return(
+    <Tab.Navigator
+  screenOptions={{
+    headerShown: false,
+    tabBarShowLabel: false,
+  }}
+>
+    <Tab.Screen name="HomeScreen" component={HomeScreen}
+    options= {{
+      tabBarIcon: ({focused}) => (
+        <Ionicons
+        name={focused? 'home' : 'home-outline'}
+        size={hp("5%")}
+        color = "#ff0000"
+        />
+      ),
+      unmountOnBlur: true
+    }}/>
+
+    <Tab.Screen name="RecipesScreen" component={RecipesScreen}
+    options= {{
+      tabBarIcon: ({focused}) => (
+        <Ionicons
+        name={focused? 'book' : 'book-outline'}
+        size={hp("5%")}
+        color = "#ff0000"
+        />
+      ),
+      unmountOnBlur: true
+    }}/>
+
+    <Tab.Screen name="Cart" component={Cart}
+    options= {{
+      tabBarIcon: ({focused}) => (
+        <Ionicons
+        name={focused? 'cart' : 'cart-outline'}
+        size={hp("5%")}
+        color = "#ff0000"
+        />
+      ),
+      unmountOnBlur: true
+    }}/>
+
+    <Tab.Screen name="FavScreen" component={FavScreen}
+    options= {{
+      tabBarIcon: ({focused}) => (
+        <Ionicons
+        name={focused? 'heart' : 'heart-outline'}
+        size={hp("5%")}
+        color = "#ff0000"
+        />
+      ),
+      unmountOnBlur: true
+    }}/>
+
+    <Tab.Screen name="Profile" component={Profile}
+    options= {{
+      tabBarIcon: ({focused}) => (
+        <Ionicons
+        name={focused? 'person' : 'person-outline'}
+        size={hp("5%")}
+        color = "#ff0000"
+        />
+      ),
+      unmountOnBlur: true
+    }}/>
+</Tab.Navigator>
+  )
+}
+
+
+
 export default function App() {
   let [fontsLoaded] = useFonts({
     Nunito_300Light,
@@ -72,72 +148,12 @@ export default function App() {
   } else {
     return (
       <NavigationContainer>
-        <Tab.Navigator
-          screenOptions={{
-            headerShown: false,
-            tabBarShowLabel: false,
-          }}
-        >
-            <Tab.Screen name="HomeScreen" component={HomeScreen}
-            options= {{
-              tabBarIcon: ({focused}) => (
-                <Ionicons
-                name={focused? 'home' : 'home-outline'}
-                size={hp("5%")}
-                color = "#ff0000"
-                />
-              ),
-              unmountOnBlur: true
-            }}/>
-
-            <Tab.Screen name="RecipesScreen" component={RecipesScreen}
-            options= {{
-              tabBarIcon: ({focused}) => (
-                <Ionicons
-                name={focused? 'book' : 'book-outline'}
-                size={hp("5%")}
-                color = "#ff0000"
-                />
-              ),
-              unmountOnBlur: true
-            }}/>
-
-            <Tab.Screen name="Cart" component={Cart}
-            options= {{
-              tabBarIcon: ({focused}) => (
-                <Ionicons
-                name={focused? 'cart' : 'cart-outline'}
-                size={hp("5%")}
-                color = "#ff0000"
-                />
-              ),
-              unmountOnBlur: true
-            }}/>
-
-            <Tab.Screen name="FavScreen" component={FavScreen}
-            options= {{
-              tabBarIcon: ({focused}) => (
-                <Ionicons
-                name={focused? 'heart' : 'heart-outline'}
-                size={hp("5%")}
-                color = "#ff0000"
-                />
-              ),
-              unmountOnBlur: true
-            }}/>
-
-            <Tab.Screen name="Profile" component={Profile}
-            options= {{
-              tabBarIcon: ({focused}) => (
-                <Ionicons
-                name={focused? 'person' : 'person-outline'}
-                size={hp("5%")}
-                color = "#ff0000"
-                />
-              ),
-              unmountOnBlur: true
-            }}/>
-        </Tab.Navigator>
+       <Stack.Navigator>
+        <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }}/>
+        {/* Screens where no bottom nav needed */}
+        <Stack.Screen name="LogIn" component={LogIn} options={{ headerShown: false }}/>
+        <Stack.Screen name="Register" component={Register} options={{ headerShown: false }}/>
+       </Stack.Navigator>
       </NavigationContainer>
     );
   }
