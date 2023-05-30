@@ -20,6 +20,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, getDocs, addDoc } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
 
+import bcrypt from 'react-native-bcrypt';
+
 export default class Register extends React.Component {
   constructor(props) {
     super(props);
@@ -114,9 +116,23 @@ export default class Register extends React.Component {
   }
 
 
-  register() {
+  async register() {
+    var pwHash = bcrypt.hashSync(this.state.pw, 8);
+    
+    let userCollection = collection(DATABASE, "users")
+
+    await addDoc((userCollection), {
+      firstName: this.state.firstName,
+      lastName: this.state.lastName,
+      email: this.state.email,
+      password:pwHash
+    })
+
     AsyncStorage.setItem("userLoggedIn", "true")
+    AsyncStorage.setItem("firstName", this.state.firstName)
+    AsyncStorage.setItem("lastName", this.state.lastName)
     this.props.navigation.navigate("Profile")
+
   }
 
 
