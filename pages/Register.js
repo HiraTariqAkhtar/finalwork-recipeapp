@@ -13,11 +13,12 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-import axios from "axios";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { collection, getDocs, addDoc } from "firebase/firestore"; 
+import {DATABASE} from "../firebaseConfig"
 
 export default class Register extends React.Component {
   constructor(props) {
@@ -32,6 +33,8 @@ export default class Register extends React.Component {
         pw: "",
         pwConfirm: "",
 
+        emailAvailable: true,
+
         showPw: false
     }
   }
@@ -40,11 +43,24 @@ export default class Register extends React.Component {
     this.props.navigation.navigate("LogIn")
   }
 
-  register() {
-    AsyncStorage.setItem("userLoggedIn", "true")
-    this.props.navigation.navigate("Profile")
-  }
+  async checkEmailAvailability(text){
+    this.setState({email: text})
 
+    let emails = []
+    let userCollection = collection(DATABASE, "users")
+    let userData = await getDocs(userCollection)
+    if (userData.size > 0) {
+      userData.forEach((doc) => {
+        emails.push(doc.data().email)
+      })
+    }
+    if(emails.includes(this.state.email)) {
+    this.setState({emailAvailable: false})
+    } else{
+    this.setState({emailAvailable: true})
+    }
+  }
+  
   checkInputData(){
     // check if all input fields filled in
     if(this.state.firstName == "" || this.state.lastName == "" || this.state.email == "" || this.state.pw == "" || this.state.pwConfirm == "") {
@@ -69,7 +85,15 @@ export default class Register extends React.Component {
       emailCheck =  true;
     }
     
-    if (emailCheck) {
+    if(!this.state.emailAvailable) {
+      Alert.alert(
+        "Email-address is already in use",
+        "Please use another email address"
+      )
+      this.setState({email: ""})
+    }
+
+    if (emailCheck && this.state.emailAvailable) {
     // pw check
     if(this.state.pw == this.state.pwConfirm) {
       pwCheck = true
@@ -83,11 +107,16 @@ export default class Register extends React.Component {
       this.setState({pwConfirm: ""})
     }}
 
-
-    if(emailCheck && pwCheck) {
+    if(emailCheck && pwCheck && this.state.emailAvailable) {
       this.setState({confirmDetails: true})
     }
     }
+  }
+
+
+  register() {
+    AsyncStorage.setItem("userLoggedIn", "true")
+    this.props.navigation.navigate("Profile")
   }
 
 
@@ -98,6 +127,17 @@ export default class Register extends React.Component {
       pw = this.state.pw
     } else {
       pw = "**********"
+    }
+
+    let emailAvailable;
+    if(this.state.email.length > 0) {
+      if(this.state.emailAvailable) {
+        emailAvailable = <Text style={{marginLeft:wp("3%"), marginBottom:hp("3%"), color:"#00FF00"}}>Email-address is available</Text>
+      } else {
+      emailAvailable = <Text style={{marginLeft:wp("3%"), marginBottom:hp("3%"), color:"#FF0000"}}>Email-address is already in use. {"\n"}Please use another email address</Text>
+      }
+    } else {
+      emailAvailable = <Text></Text>
     }
 
     return (
@@ -124,11 +164,12 @@ export default class Register extends React.Component {
   
             <Text style={styles.text}>Email address:</Text>
             <TextInput
-            style={styles.placeholder}
+            style={[styles.placeholder, {marginBottom:hp("0%")}]}
             placeholder="someone@example.com"
             keyboardType="email-address"
             value={this.state.email}
-            onChangeText={(txt) => this.setState({email: txt})}/>
+            onChangeText={(txt) => this.checkEmailAvailability(txt)}/>
+            {emailAvailable}
   
             <Text style={styles.text}>Password:</Text>
             <TextInput
@@ -156,9 +197,25 @@ export default class Register extends React.Component {
           visible={this.state.confirmDetails}>
 
             <Text style={[styles.question, {marginLeft:wp("5%"),  marginTop:hp("5%")}]}>Please confirm before finishing</Text>
-            <View style={{marginLeft:wp("5%"), marginBottom:hp("1.5%"), marginTop:hp("3%")}}>
+            <View style={{marginLeft:wp("5%"), marginBottom:hp("1.5%")}}>
+              <View style={styles.iconText}>
               <Text style={{marginBottom:hp("1.5%")}}>Name: {this.state.firstName} {this.state.lastName}</Text>
+               <FontAwesome
+                name="pencil"
+                size={hp("2.5%")}
+                marginLeft={wp("3%")}
+                onPress={() => this.setState({confirmDetails: false})}/>
+
+              </View>
+              <View style={styles.iconText}>
               <Text style={{marginBottom:hp("1.5%")}}>Email: {this.state.email}</Text>
+               <FontAwesome
+                name="pencil"
+                size={hp("2.5%")}
+                marginLeft={wp("3%")}
+                onPress={() => this.setState({confirmDetails: false})}/>
+
+              </View>
               <View style={styles.iconText}>
                 <Text>Password: {pw}</Text>
                 <Ionicons
@@ -166,6 +223,13 @@ export default class Register extends React.Component {
                 size={hp("2.5%")}
                 marginLeft={wp("3%")}
                 onPress={() => this.setState({showPw: !this.state.showPw})}/>
+
+                <FontAwesome
+                name="pencil"
+                size={hp("2.5%")}
+                marginLeft={wp("3%")}
+                onPress={() => this.setState({confirmDetails: false})}/>
+
               </View>
             </View>
 
