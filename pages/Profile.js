@@ -40,7 +40,6 @@ export default class Profile extends React.Component {
     let loggedIn = await AsyncStorage.getItem("userLoggedIn")
     if(loggedIn !== null) {
       this.setState({isLoggedIn: true})
-
       this.getUserInfo()
     } else {
       this.setState({isLoggedIn: false})
@@ -48,7 +47,14 @@ export default class Profile extends React.Component {
   }
 
   async getUserInfo(){
-    
+    let userFirstName = await AsyncStorage.getItem("firstName")
+    let userLastName = await AsyncStorage.getItem("lastName")
+
+   if(userFirstName !== null && userLastName !== null) {
+    this.setState({firstName: userFirstName})
+    this.setState({lastName: userLastName})
+   }
+
   }
 
   async addProfilePic() {
@@ -69,6 +75,8 @@ export default class Profile extends React.Component {
 
   async logOut() {
     await AsyncStorage.removeItem("userLoggedIn")
+    await AsyncStorage.removeItem("firstName")
+    await AsyncStorage.removeItem("lastName")
     this.setState({firstName: ""})
     this.setState({lastName: ""})
     this.setState({profilePic: null})
