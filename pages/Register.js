@@ -26,10 +26,10 @@ export default class Register extends React.Component {
     this.state = {
         confirmDetails: false,
 
-        firstName: "egvr",
-        lastName: "gvrb",
-        email: "egvb",
-        pw: "fetgvr",
+        firstName: "",
+        lastName: "",
+        email: "",
+        pw: "",
         pwConfirm: "",
 
         showPw: false
@@ -53,8 +53,10 @@ export default class Register extends React.Component {
         "Please fill in all fields"
       )
     } else {
-    // email check
     let emailCheck
+    let pwCheck
+
+    // email check
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (reg.test(this.state.email) === false) {
       Alert.alert(
@@ -67,8 +69,8 @@ export default class Register extends React.Component {
       emailCheck =  true;
     }
     
+    if (emailCheck) {
     // pw check
-    let pwCheck
     if(this.state.pw == this.state.pwConfirm) {
       pwCheck = true
     } else {
@@ -79,7 +81,7 @@ export default class Register extends React.Component {
       )
       this.setState({pw: ""})
       this.setState({pwConfirm: ""})
-    }
+    }}
 
 
     if(emailCheck && pwCheck) {
