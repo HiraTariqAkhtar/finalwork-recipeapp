@@ -30,6 +30,7 @@ import Favorites from "./pages/Favorites"
 import Profile from "./pages/Profile"
 import LogIn from "./pages/LogIn"
 import Register from "./pages/Register"
+import Settings from "./pages/Settings"
 
 // Navigators
 const Tab = createBottomTabNavigator();
@@ -57,6 +58,14 @@ const FavScreen = () => {
     <Stack.Navigator>
       <Stack.Screen name="Favorites" component={Favorites} options={{ headerShown: false }}/>
       <Stack.Screen name="RecipeDetail" component={RecipeDetail}/>
+    </Stack.Navigator>
+  );
+}
+const ProfileScreen = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }}/>
+      <Stack.Screen name="Settings" component={Settings}/>
     </Stack.Navigator>
   );
 }
@@ -118,7 +127,7 @@ const Tabs = () => {
       unmountOnBlur: true
     }}/>
 
-    <Tab.Screen name="Profile" component={Profile}
+    <Tab.Screen name="ProfileScreen" component={ProfileScreen}
     options= {{
       tabBarIcon: ({focused}) => (
         <Ionicons

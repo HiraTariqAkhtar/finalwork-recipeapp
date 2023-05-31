@@ -89,9 +89,10 @@ export default class Profile extends React.Component {
     if(this.state.isLoggedIn) {
       login =
       <View>
-        <TouchableOpacity style={styles.button}>
-              <Text style={styles.btnText}>Settings</Text>
-              </TouchableOpacity>
+        <TouchableOpacity style={styles.button}
+        onPress={() => this.props.navigation.navigate("Settings")}>
+          <Text style={styles.btnText}>Settings</Text>
+        </TouchableOpacity>
               
         <TouchableOpacity style={styles.button}
         onPress={() => this.logOut()}>
