@@ -137,6 +137,7 @@ export default class Register extends React.Component {
       AsyncStorage.setItem("userLoggedIn", "true")
       AsyncStorage.setItem("firstName", this.state.firstName)
       AsyncStorage.setItem("lastName", this.state.lastName)
+      AsyncStorage.setItem("email", this.state.email)
       this.props.navigation.navigate("Profile")
     
     }, 100)

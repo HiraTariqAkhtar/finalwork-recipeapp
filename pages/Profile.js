@@ -77,6 +77,7 @@ export default class Profile extends React.Component {
     await AsyncStorage.removeItem("userLoggedIn")
     await AsyncStorage.removeItem("firstName")
     await AsyncStorage.removeItem("lastName")
+    await AsyncStorage.removeItem("email")
     this.setState({firstName: ""})
     this.setState({lastName: ""})
     this.setState({profilePic: null})
