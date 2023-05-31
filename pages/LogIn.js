@@ -77,13 +77,11 @@ export default class Login extends React.Component {
           AsyncStorage.setItem("lastName", user.lastName);
           this.props.navigation.navigate("Profile");
         } else {
-          setTimeout(() => {
             Alert.alert(
               "Incorrect password",
               "Please re-enter your password",
               [{ text: "OK", onPress: () => this.setState({ isLoading: false }) }]
               );
-            }, 0);
             this.setState({ pw: "" });
           }
         }
