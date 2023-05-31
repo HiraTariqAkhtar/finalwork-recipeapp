@@ -112,28 +112,28 @@ export default class Recipes extends React.Component {
 
 
   async getRecipes() {
-    // axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${API_KEY}`)
-    // .then((res) => {
-    //   let recipes = []
-    //   res.data.recipes.forEach((rec) => {
-    //     if(rec.analyzedInstructions) {
-    //       recipes.push({
-    //         id: rec.id,
-    //         servings: rec.servings,
-    //         recipeName: rec.title,
-    //         ingredients: rec.extendedIngredients,
-    //         instructions: rec.analyzedInstructions[0].steps,
-    //         culture: rec.cuisines,
-    //         time: rec.readyInMinutes,
-    //         foodImg: rec.image,
-    //         dishTypes: rec.dishTypes,
-    //         period: rec.occasions
-    //       })
-    //     }
-    //   })
+    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${API_KEY}`)
+    .then((res) => {
+      let recipes = []
+      res.data.recipes.forEach((rec) => {
+        if(rec.analyzedInstructions) {
+          recipes.push({
+            id: rec.id,
+            servings: rec.servings,
+            recipeName: rec.title,
+            ingredients: rec.extendedIngredients,
+            instructions: rec.analyzedInstructions[0].steps,
+            culture: rec.cuisines,
+            time: rec.readyInMinutes,
+            foodImg: rec.image,
+            dishTypes: rec.dishTypes,
+            period: rec.occasions
+          })
+        }
+      })
       
-    //   this.setState({randomRecipes: recipes})
-    // })
+      this.setState({randomRecipes: recipes})
+    })
     this.getFilterData()
   }
 
@@ -271,28 +271,27 @@ export default class Recipes extends React.Component {
     let filterTags = this.state.filters.toString().toLowerCase()
     //console.log(filterTags)
 
-    // axios.get(`https://api.spoonacular.com/recipes/random?number=3&tags=${filterTags}&apiKey=${API_KEY}`)
-    // .then((res) => {
-    //   let filteredRecipes = []
-    //   res.data.recipes.forEach((rec) => {
-    //     if(rec.analyzedInstructions) {
-    //       filteredRecipes.push({
-    //         id: rec.id,
-    //         servings: rec.servings,
-    //         recipeName: rec.title,
-    //         ingredients: rec.extendedIngredients,
-    //         instructions: rec.analyzedInstructions[0].steps,
-    //         culture: rec.cuisines,
-    //         time: rec.readyInMinutes,
-    //         foodImg: rec.image,
-    //         dishTypes: rec.dishTypes,
-    //         period: rec.occasions
-    //       })
-    //     }
-    //   })
-    //   this.setState({filters: []})
-    //   this.setState({randomRecipes: filteredRecipes})
-    // })
+    axios.get(`https://api.spoonacular.com/recipes/random?number=3&tags=${filterTags}&apiKey=${API_KEY}`)
+    .then((res) => {
+      let filteredRecipes = []
+      res.data.recipes.forEach((rec) => {
+        if(rec.analyzedInstructions) {
+          filteredRecipes.push({
+            id: rec.id,
+            servings: rec.servings,
+            recipeName: rec.title,
+            ingredients: rec.extendedIngredients,
+            instructions: rec.analyzedInstructions[0].steps,
+            culture: rec.cuisines,
+            time: rec.readyInMinutes,
+            foodImg: rec.image,
+            dishTypes: rec.dishTypes,
+            period: rec.occasions
+          })
+        }
+      })
+      this.setState({randomRecipes: filteredRecipes})
+    })
 
     this.getFilterData()
   }
@@ -309,8 +308,22 @@ export default class Recipes extends React.Component {
     this.setState({filters: this.state.filters})
   }
 
+  removeFilter(filter) {
+    //console.log(`${filter} clicked`)
+    this.state.filters = this.state.filters.filter(remove => remove != filter)
+    if(this.state.filters.length == 0) {
+      this.getRecipes()
+    } else {
+      this.applyFilter()
+    }
+    this.setState({filters: this.state.filters})
+  }
+
   render() {
-    let recipes = this.state.randomRecipes.map((rec) => (
+    let recipes;
+
+    if(this.state.randomRecipes.length > 0) {
+    recipes = this.state.randomRecipes.map((rec) => (
       <TouchableOpacity
       key={rec.id}
       style={styles.recipe}
@@ -395,7 +408,20 @@ export default class Recipes extends React.Component {
         </View>
       </TouchableOpacity>
     ))
+  } else {
+    recipes = <Text style={styles.noRecipes}>No recipes found</Text>
+  }
 
+    let filters = this.state.filters.map((filter) => (
+      <View style={[styles.iconText, styles.filteredItems]}>
+        <Text style={styles.text}>{filter}</Text>
+        <Ionicons
+              name={"close"}
+              size={hp("3%")}
+              onPress={() => this.removeFilter(filter)}
+            />
+      </View>
+    ))
 
 
     return (
@@ -409,6 +435,12 @@ export default class Recipes extends React.Component {
               onPress={() => this.openFilterScreen()}
             />
         </View>
+        {this.state.filters.length > 0 && 
+        <ScrollView 
+        horizontal={true}
+        style={{marginLeft: wp("5%"), marginVertical: hp("1%")}}>
+          {filters}
+        </ScrollView>}
         <ScrollView>
           {recipes}
         </ScrollView>
@@ -493,7 +525,7 @@ const styles = StyleSheet.create({
     padding: hp("3%"),
     width: wp("85%"),
     borderRadius: 10,
-    marginTop: hp("3%"),
+    marginBottom: hp("3%"),
     marginHorizontal: wp("7.5%")
   },
   foodImg: {
@@ -545,5 +577,18 @@ const styles = StyleSheet.create({
     marginLeft: wp("5%"),
     marginBottom: hp("2%"),
     fontSize: hp("2%"),
+  },
+  filteredItems:{
+    height: hp("5%"),
+    marginRight: wp("3%"),
+    borderWidth: 1,
+    borderRadius: 20,
+    padding: wp("1%")
+  },
+  noRecipes:{
+    textAlign: "center",
+    fontFamily:"Nunito_700Bold",
+    fontSize: hp("3%"),
+    marginTop: hp("20%")
   }
 });
