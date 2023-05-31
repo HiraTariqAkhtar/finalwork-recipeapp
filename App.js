@@ -65,7 +65,14 @@ const ProfileScreen = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }}/>
-      <Stack.Screen name="Settings" component={Settings}/>
+      <Stack.Screen name="Settings" component={Settings} 
+      options={{ 
+        headerTitleStyle: {
+          fontFamily: "Nunito_700Bold",
+          fontSize: hp("3.5%")
+          },
+        headerTitleAlign: "center" 
+      }}/>
     </Stack.Navigator>
   );
 }
