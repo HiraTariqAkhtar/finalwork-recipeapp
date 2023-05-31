@@ -485,9 +485,8 @@ const styles = StyleSheet.create({
     marginHorizontal: wp("7.5%")
   },
   pageTitle: {
-    fontSize: hp("4%"),
-    color: "#34359A",
     fontFamily: "Nunito_700Bold",
+    fontSize: hp("3.5%")
   },
   recipe: {
     backgroundColor: "white",
