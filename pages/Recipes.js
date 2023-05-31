@@ -112,28 +112,28 @@ export default class Recipes extends React.Component {
 
 
   async getRecipes() {
-    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${API_KEY}`)
-    .then((res) => {
-      let recipes = []
-      res.data.recipes.forEach((rec) => {
-        if(rec.analyzedInstructions) {
-          recipes.push({
-            id: rec.id,
-            servings: rec.servings,
-            recipeName: rec.title,
-            ingredients: rec.extendedIngredients,
-            instructions: rec.analyzedInstructions[0].steps,
-            culture: rec.cuisines,
-            time: rec.readyInMinutes,
-            foodImg: rec.image,
-            dishTypes: rec.dishTypes,
-            period: rec.occasions
-          })
-        }
-      })
+    // axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${API_KEY}`)
+    // .then((res) => {
+    //   let recipes = []
+    //   res.data.recipes.forEach((rec) => {
+    //     if(rec.analyzedInstructions) {
+    //       recipes.push({
+    //         id: rec.id,
+    //         servings: rec.servings,
+    //         recipeName: rec.title,
+    //         ingredients: rec.extendedIngredients,
+    //         instructions: rec.analyzedInstructions[0].steps,
+    //         culture: rec.cuisines,
+    //         time: rec.readyInMinutes,
+    //         foodImg: rec.image,
+    //         dishTypes: rec.dishTypes,
+    //         period: rec.occasions
+    //       })
+    //     }
+    //   })
       
-      this.setState({randomRecipes: recipes})
-    })
+    //   this.setState({randomRecipes: recipes})
+    // })
     this.getFilterData()
   }
 
@@ -271,27 +271,27 @@ export default class Recipes extends React.Component {
     let filterTags = this.state.filters.toString().toLowerCase()
     //console.log(filterTags)
 
-    axios.get(`https://api.spoonacular.com/recipes/random?number=3&tags=${filterTags}&apiKey=${API_KEY}`)
-    .then((res) => {
-      let filteredRecipes = []
-      res.data.recipes.forEach((rec) => {
-        if(rec.analyzedInstructions) {
-          filteredRecipes.push({
-            id: rec.id,
-            servings: rec.servings,
-            recipeName: rec.title,
-            ingredients: rec.extendedIngredients,
-            instructions: rec.analyzedInstructions[0].steps,
-            culture: rec.cuisines,
-            time: rec.readyInMinutes,
-            foodImg: rec.image,
-            dishTypes: rec.dishTypes,
-            period: rec.occasions
-          })
-        }
-      })
-      this.setState({randomRecipes: filteredRecipes})
-    })
+    // axios.get(`https://api.spoonacular.com/recipes/random?number=3&tags=${filterTags}&apiKey=${API_KEY}`)
+    // .then((res) => {
+    //   let filteredRecipes = []
+    //   res.data.recipes.forEach((rec) => {
+    //     if(rec.analyzedInstructions) {
+    //       filteredRecipes.push({
+    //         id: rec.id,
+    //         servings: rec.servings,
+    //         recipeName: rec.title,
+    //         ingredients: rec.extendedIngredients,
+    //         instructions: rec.analyzedInstructions[0].steps,
+    //         culture: rec.cuisines,
+    //         time: rec.readyInMinutes,
+    //         foodImg: rec.image,
+    //         dishTypes: rec.dishTypes,
+    //         period: rec.occasions
+    //       })
+    //     }
+    //   })
+    //   this.setState({randomRecipes: filteredRecipes})
+    // })
 
     this.getFilterData()
   }
