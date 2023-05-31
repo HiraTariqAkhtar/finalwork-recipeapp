@@ -56,6 +56,13 @@ export default class Login extends React.Component {
           this.setState({pw: ""})
         }
       })
+    } else {
+      Alert.alert(
+        "User doesn't exist",
+        "Please make sure to sign up before logging in"
+      )
+      this.setState({email: ""})
+      this.setState({pw: ""})
     }
   }
 
