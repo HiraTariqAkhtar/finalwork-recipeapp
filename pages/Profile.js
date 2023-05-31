@@ -43,6 +43,8 @@ export default class Profile extends React.Component {
       this.getUserInfo()
     } else {
       this.setState({isLoggedIn: false})
+      this.setState({firstName: ""})
+      this.setState({lastName: ""})
     }
   }
 
