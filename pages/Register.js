@@ -7,7 +7,8 @@ import {
   TextInput,
   Text,
   Modal,
-  Alert
+  Alert,
+  ActivityIndicator
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -37,7 +38,9 @@ export default class Register extends React.Component {
 
         emailAvailable: true,
 
-        showPw: false
+        showPw: false,
+
+        isLoading: false
     }
   }
 
@@ -117,21 +120,26 @@ export default class Register extends React.Component {
 
 
   async register() {
-    var pwHash = bcrypt.hashSync(this.state.pw, 8);
+    this.setState({isLoading: true})
     
-    let userCollection = collection(DATABASE, "users")
+    setTimeout(() => {
+      var pwHash = bcrypt.hashSync(this.state.pw, 8);
 
-    await addDoc((userCollection), {
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-      email: this.state.email,
-      password:pwHash
-    })
-
-    AsyncStorage.setItem("userLoggedIn", "true")
-    AsyncStorage.setItem("firstName", this.state.firstName)
-    AsyncStorage.setItem("lastName", this.state.lastName)
-    this.props.navigation.navigate("Profile")
+      let userCollection = collection(DATABASE, "users")
+  
+       addDoc((userCollection), {
+        firstName: this.state.firstName,
+        lastName: this.state.lastName,
+        email: this.state.email,
+        password:pwHash
+      })
+  
+      AsyncStorage.setItem("userLoggedIn", "true")
+      AsyncStorage.setItem("firstName", this.state.firstName)
+      AsyncStorage.setItem("lastName", this.state.lastName)
+      this.props.navigation.navigate("Profile")
+    
+    }, 100)
 
   }
 
@@ -211,8 +219,11 @@ export default class Register extends React.Component {
 
           <Modal
           visible={this.state.confirmDetails}>
-
+            
             <Text style={[styles.question, {marginLeft:wp("5%"),  marginTop:hp("5%")}]}>Please confirm before finishing</Text>
+
+            {this.state.isLoading && <ActivityIndicator size="large"/>}
+            
             <View style={{marginLeft:wp("5%"), marginBottom:hp("1.5%")}}>
               <View style={styles.iconText}>
               <Text style={{marginBottom:hp("1.5%")}}>Name: {this.state.firstName} {this.state.lastName}</Text>
