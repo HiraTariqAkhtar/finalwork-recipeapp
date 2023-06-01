@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   Text,
   Modal,
-  Alert
+  Alert,
+  TextInput
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -27,7 +28,15 @@ export default class Settings extends React.Component {
 
         firstName: "",
         lastName: "",
-        email:""
+        email:"",
+        userId:0,
+
+        firstNameEdited:"",
+        lastNameEdited:"",
+        emailEdited:"",
+        pw:"",
+        newPw:"",
+        confirmNewPw:""
     }
 
     this.getUserDetails()
@@ -42,7 +51,24 @@ export default class Settings extends React.Component {
       this.setState({firstName: userFirstName})
       this.setState({lastName: userLastName})
       this.setState({email: userEmail})
+      
+      this.setState({firstNameEdited: userFirstName})
+      this.setState({lastNameEdited: userLastName})
+      this.setState({emailEdited: userEmail})
      }
+
+     let userId = 0
+
+    let userCollection = collection(DATABASE, "users")
+    let userData = await getDocs(userCollection)
+    if (userData.size > 0) {
+      userData.forEach((doc) => {
+        if(doc.data().email == this.state.email) {
+            userId = doc.id
+        }
+      })
+    }
+    this.setState({userId: userId})
 
   }
 
@@ -58,18 +84,8 @@ export default class Settings extends React.Component {
   }
 
   async deleteProfile() {
-    let userId = 0
-
-    let userCollection = collection(DATABASE, "users")
-    let userData = await getDocs(userCollection)
-    if (userData.size > 0) {
-      userData.forEach((doc) => {
-        if(doc.data().email == this.state.email) {
-            userId = doc.id
-        }
-      })
-    }
-    await deleteDoc(doc(DATABASE, "users", userId));
+    
+    await deleteDoc(doc(DATABASE, "users", this.state.userId));
 
     // Remove everything from storage --> navigate back to profile page
     await AsyncStorage.removeItem("userLoggedIn")
@@ -78,6 +94,31 @@ export default class Settings extends React.Component {
     await AsyncStorage.removeItem("email")
 
     this.props.navigation.navigate("Profile")
+  }
+
+  closeEditScreen() {
+    // set modal visibility to false and keep initial values
+    this.setState({editModalVisible: false})
+
+    if(this.state.firstName !== this.state.firstNameEdited) {
+      this.setState({firstNameEdited: this.state.firstName})
+    }
+
+    if(this.state.lastName !== this.state.lastNameEdited) {
+      this.setState({lastNameEdited: this.state.lastName})
+    }
+
+    if(this.state.email !== this.state.emailEdited) {
+      this.setState({emailEdited: this.state.email})
+    }
+
+    this.setState({pw: ""})
+    this.setState({newPw: ""})
+    this.setState({confirmNewPw: ""})
+  }
+
+  editProfile() {
+    this.setState({editModalVisible: false})
   }
 
   render() {
@@ -110,7 +151,97 @@ export default class Settings extends React.Component {
 
         <Modal
         visible={this.state.editModalVisible}>
+          <Ionicons
+              name={"close"}
+              size={hp("5%")}
+              marginLeft={wp("5%")}
+              marginTop={hp("3%")}
+              onPress={() => this.closeEditScreen()}
+            />
+            <View style={styles.editScreen}>
+                <Text style={styles.title}>Edit profile</Text>
 
+              <View style={styles.iconText}>
+                <Text style={styles.text}>First Name:</Text>
+  
+                <TextInput
+                style={styles.placeholder}
+                placeholder="First Name"
+                value={this.state.firstNameEdited}
+                onChangeText={(txt) => this.setState({firstNameEdited: txt})}/>
+              </View>
+    
+              <View style={styles.iconText}>
+                <Text style={styles.text}>Last Name:</Text>
+
+                <TextInput
+                style={styles.placeholder}
+                placeholder="Last Name"
+                value={this.state.lastNameEdited}
+                onChangeText={(txt) => this.setState({lastNameEdited: txt})}/>
+
+              </View>
+    
+              <View style={styles.iconText}>
+                <Text style={styles.text}>Email address:</Text>
+
+                <TextInput
+                style={[styles.placeholder, {marginBottom:hp("0%")}]}
+                placeholder="someone@example.com"
+                keyboardType="email-address"
+                value={this.state.emailEdited}
+                onChangeText={(txt) => this.setState({emailEdited: txt})}/>
+
+              </View>
+            </View>
+              <Text style={styles.title}>Change password</Text>
+
+              <View style={styles.editScreen}>
+                <View style={styles.iconText}>
+                  <Text style={styles.text}>Current Password:</Text>
+
+                <TextInput
+                style={styles.placeholder}
+                placeholder="**********"
+                secureTextEntry
+                value={this.state.pw}
+                onChangeText={(txt) => this.setState({pw: txt})}/>
+
+                </View>
+    
+              <View style={styles.iconText}>
+                <Text style={styles.text}>New Password:</Text>
+
+                <TextInput
+                style={styles.placeholder}
+                placeholder="**********"
+                secureTextEntry
+                value={this.state.newPw}
+                onChangeText={(txt) => this.setState({newPw: txt})}/>
+
+              </View>
+    
+              <View style={styles.iconText}>
+                <Text style={styles.text}>Confirm Password:</Text>
+                <TextInput
+                style={styles.placeholder}
+                placeholder="**********"
+                secureTextEntry
+                value={this.state.confirmNewPw}
+                onChangeText={(txt) => this.setState({confirmNewPw: txt})}/>
+
+              </View>
+              </View>
+
+              <View style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
+              <TouchableOpacity style={styles.buttonEdit} onPress={() => this.closeEditScreen()}>
+                <Text style={styles.btnText}>Back</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.buttonEdit} onPress={() => this.editProfile()}>
+                <Text style={styles.btnText}>Finish</Text>
+              </TouchableOpacity>
+            </View>
         </Modal>
       </View>
     );
@@ -141,5 +272,29 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
+  },
+  editScreen: {
+    marginHorizontal: wp("5%"),
+    marginBottom: hp("5%")
+  },
+  title: {
+    textAlign: 'center',
+    fontFamily: "Nunito_700Bold",
+    fontSize: hp("3.5%"),
+    marginBottom: hp("3%")
+  },
+  placeholder: {
+    height: hp("5%"),
+    borderWidth: 1,
+    padding: wp("2%"),
+    marginHorizontal: wp("3%"),
+    marginBottom: hp("3%")
+  },
+  buttonEdit: {
+    width: wp("35%"),
+    padding: hp("1%"),
+    backgroundColor: "#34359A",
+    borderRadius: wp("50%"),
+    marginTop: hp("3%"),
   },
 });
