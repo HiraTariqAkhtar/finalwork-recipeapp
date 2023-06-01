@@ -97,24 +97,29 @@ export default class Settings extends React.Component {
   }
 
   closeEditScreen() {
-    // set modal visibility to false and keep initial values
-    this.setState({editModalVisible: false})
-
-    if(this.state.firstName !== this.state.firstNameEdited) {
-      this.setState({firstNameEdited: this.state.firstName})
+    // warning before closing edit screen
+    if(this.state.firstName !== this.state.firstNameEdited || this.state.lastName !== this.state.lastNameEdited || this.state.email !== this.state.emailEdited ||
+      this.state.pw !== "" || this.state.newPw !== "" || this.state.confirmNewPw !== "") 
+    {
+      Alert.alert(
+        "Cancel editing?",
+        "All unsaved changes will be lost",
+        [
+          { text: "No", style:"cancel" },
+          { text: "Yes", onPress: () => {
+            this.setState({editModalVisible: false})
+            this.setState({firstNameEdited: this.state.firstName})
+            this.setState({lastNameEdited: this.state.lastName})
+            this.setState({emailEdited: this.state.email})
+            this.setState({pw: ""})
+            this.setState({newPw: ""})
+            this.setState({confirmNewPw: ""})
+          } }
+        ]
+      )
+    } else{
+      this.setState({editModalVisible: false})
     }
-
-    if(this.state.lastName !== this.state.lastNameEdited) {
-      this.setState({lastNameEdited: this.state.lastName})
-    }
-
-    if(this.state.email !== this.state.emailEdited) {
-      this.setState({emailEdited: this.state.email})
-    }
-
-    this.setState({pw: ""})
-    this.setState({newPw: ""})
-    this.setState({confirmNewPw: ""})
   }
 
   editProfile() {
