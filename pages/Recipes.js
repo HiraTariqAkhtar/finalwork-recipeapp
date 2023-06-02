@@ -366,78 +366,77 @@ export default class Recipes extends React.Component {
       key={rec.id}
       style={styles.recipe}
       onPress={() => this.goToRecipeDetails(rec)}>
-        <View>
-        {rec.foodImg != "" ?(
-          <Image
-          source={{uri: rec.foodImg}}
-          style={styles.foodImg}
-          />)
-          : 
-          <FontAwesome
-              name={"image"}
-              size={wp("40%")}
-              color="#D3D3D3"
-              marginHorizontal={wp("15%")}
-            />}
-
-        <Text style={styles.recipeName}>
-            {rec.recipeName}
-        </Text>
-
-         
-          <View style={styles.info}>
-          <View style={styles.iconText}>
-            <Ionicons
-              name={"people"}
-              size={hp("5%")}
-              color="#34359A"
-            />
-              <Text style={styles.text}>{rec.servings}</Text>
-          </View>
-
-            <View style={styles.iconText}>
-              <Ionicons
-              name={"stopwatch"}
-              size={hp("5%")}
-              color="#34359A"
-            />
-              <Text style={styles.text}>{rec.time} minutes</Text>
-            </View>
-          </View>
-
-            {rec.dishTypes.length > 0 && (
-            <View style={styles.iconText}>
+        <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+            {rec.foodImg != "" ?(
+            <Image
+            source={{uri: rec.foodImg}}
+            style={styles.foodImg}
+            />)
+            : 
             <FontAwesome
-              name={"cutlery"}
-              size={hp("4%")}
-              color="#34359A"
-              marginRight={wp("1%")}
-            />
-              {dishTypes}
-            </View>)}
+                name={"image"}
+                size={hp("15%")}
+                color="#D3D3D3"
+                marginRight={wp("3%")}
+              />}
+  
+              <View>
+                <Text style={styles.recipeName}>
+                  {rec.recipeName}
+                </Text>
+                
+                <View style={{display:"flex", flexDirection:"row"}}>
+                  <View style={[styles.iconText, {marginRight: wp("5%")}]}>
+                    <Ionicons
+                      name={"people"}
+                      size={hp("2.5%")}
+                      color="#34359A"
+                    />
+                    <Text style={styles.text}>{rec.servings}</Text>
 
-           {rec.period.length > 0 && (
-           <View style={styles.iconText}>
-            <Ionicons
-              name={"calendar"}
-              size={hp("4%")}
-              color="#34359A"
-              marginRight={wp("1%")}
-            />
-              {periods}
-            </View>)}
+                  </View>
 
-            {rec.culture.length > 0 && (
-            <View style={styles.iconText}>
-            <Ionicons
-              name={"flag"}
-              size={hp("4%")}
-              color="#34359A"
-              marginRight={wp("1%")}
-            />
-              {cultures}
-            </View>)}
-        </View>
+                  <View style={styles.iconText}>
+                    <Ionicons
+                      name={"stopwatch"}
+                      size={hp("2.5%")}
+                      color="#34359A"
+                    />
+                      <Text style={styles.text}>{rec.time} minutes</Text>
+                  </View>
+                </View>
+  
+                {rec.culture.length > 0 && (
+              <View style={styles.iconText}>
+              <Ionicons
+                name={"flag"}
+                size={hp("2.5%")}
+                color="#34359A"
+              />
+                {cultures}
+              </View>)}
+  
+              {rec.dishTypes.length > 0 && (
+              <View style={styles.iconText}>
+              <FontAwesome
+                name={"cutlery"}
+                size={hp("2.5%")}
+                color="#34359A"
+              />
+                {dishTypes}
+              </View>)}
+  
+                  {rec.period.length > 0 && (
+                <View style={styles.iconText}>
+                  <Ionicons
+                    name={"calendar"}
+                    size={hp("2.5%")}
+                    color="#34359A"
+                  />
+                    {periods}
+                  </View>)}
+              </View>
+            </View>
       </TouchableOpacity>
     ))
   } else {
@@ -560,29 +559,23 @@ const styles = StyleSheet.create({
   },
   recipe: {
     backgroundColor: "white",
-    padding: hp("3%"),
-    width: wp("85%"),
+    padding: hp("1.5%"),
+    width: wp("95%"),
     borderRadius: 10,
-    marginBottom: hp("3%"),
-    marginHorizontal: wp("7.5%")
+    marginTop: hp("3%"),
+    marginHorizontal: wp ("2.5%")
   },
   foodImg: {
-    width: wp("65%"),
-    height: hp("25%"),
-    marginBottom: hp("2%"),
-    marginHorizontal: wp("5%")
+    width: wp("30%"),
+    height: hp("15%"),
+    marginRight: wp("3%")
   },
   recipeName: {
-    fontSize: hp("3.5%"),
+    fontSize: hp("3%"),
     color: "#34359A",
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
-    textAlign: "center"
-  },
-  info: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly"
+    width: wp("55%")
   },
   iconText: {
     display: "flex",

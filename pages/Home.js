@@ -4,7 +4,8 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Image
+  Image,
+  ScrollView
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -13,7 +14,7 @@ import {
 import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-import {RECIPES_API_KEY} from '@env'
+import {RECIPES_API_KEY, FESTIVAL_API_KEY} from '@env'
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -36,10 +37,13 @@ export default class Home extends React.Component {
           dishTypes: [],
           period: [],
         },
+
+        festivals:{}
     };
 
     //this.getRecipeOfTheDay()
   }
+
 
   async getRecipeOfTheDay() {
     let recipe;
@@ -47,7 +51,7 @@ export default class Home extends React.Component {
       .then((res) => {
         //console.log(res.data)
         res.data.recipes.forEach((rec) => {
-          if(rec.analyzedInstructions) {
+          if(rec.analyzedInstructions != null) {
             recipe = {
               id: rec.id,
               servings: rec.servings,
@@ -81,6 +85,10 @@ export default class Home extends React.Component {
       ingredients: rec.ingredients,
       instructions: rec.instructions,
     })
+  }
+
+  async getFestivals() {
+
   }
 
 
@@ -124,59 +132,91 @@ export default class Home extends React.Component {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.sectionTitle}>Recipe of the day</Text>
-        <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
-          <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-          {rec.foodImg != "" ?(
-          <Image
-          source={{uri: rec.foodImg}}
-          style={styles.foodImg}
-          />)
-          : 
-          <FontAwesome
-              name={"image"}
-              size={hp("15%")}
-              color="#D3D3D3"
-              marginRight={wp("3%")}
-            />}
-
-            <View>
-              <Text style={styles.recipeName}>
-                {rec.recipeName}
-              </Text>
-
-              {rec.culture.length > 0 && (
-            <View style={styles.iconText}>
-            <Ionicons
-              name={"flag"}
-              size={hp("2.5%")}
-              color="#34359A"
-            />
-              {cultures}
-            </View>)}
-
-            {rec.dishTypes.length > 0 && (
-            <View style={styles.iconText}>
+        <View>
+          <Text style={styles.sectionTitle}>Recipe of the day</Text>
+          <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
+            <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+            {rec.foodImg != "" ?(
+            <Image
+            source={{uri: rec.foodImg}}
+            style={styles.foodImg}
+            />)
+            : 
             <FontAwesome
-              name={"cutlery"}
-              size={hp("2.5%")}
-              color="#34359A"
-            />
-              {dishTypes}
-            </View>)}
+                name={"image"}
+                size={hp("15%")}
+                color="#D3D3D3"
+                marginRight={wp("3%")}
+              />}
+  
+              <View>
+                <Text style={styles.recipeName}>
+                  {rec.recipeName}
+                </Text>
 
-                {rec.period.length > 0 && (
+                <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+                  <View style={[styles.iconText, {marginRight: wp("5%")}]}>
+                    <Ionicons
+                      name={"people"}
+                      size={hp("2.5%")}
+                      color="#34359A"
+                    />
+                    <Text style={styles.text}>{rec.servings}</Text>
+
+                  </View>
+
+                  <View style={styles.iconText}>
+                    <Ionicons
+                      name={"stopwatch"}
+                      size={hp("2.5%")}
+                      color="#34359A"
+                    />
+                      <Text style={styles.text}>{rec.time} minutes</Text>
+                  </View>
+                </View>
+
+                {rec.culture.length > 0 && (
               <View style={styles.iconText}>
-                <Ionicons
-                  name={"calendar"}
-                  size={hp("2.5%")}
-                  color="#34359A"
-                />
-                  {periods}
-                </View>)}
+              <Ionicons
+                name={"flag"}
+                size={hp("2.5%")}
+                color="#34359A"
+              />
+                {cultures}
+              </View>)}
+  
+              {rec.dishTypes.length > 0 && (
+              <View style={styles.iconText}>
+              <FontAwesome
+                name={"cutlery"}
+                size={hp("2.5%")}
+                color="#34359A"
+              />
+                {dishTypes}
+              </View>)}
+  
+                  {rec.period.length > 0 && (
+                <View style={styles.iconText}>
+                  <Ionicons
+                    name={"calendar"}
+                    size={hp("2.5%")}
+                    color="#34359A"
+                  />
+                    {periods}
+                  </View>)}
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
+
+        <View>
+        <Text style={styles.sectionTitle}>Upcoming holidays</Text>
+        <ScrollView horizontal>
+          <TouchableOpacity>
+
+          </TouchableOpacity>
+        </ScrollView>
+        </View>
       </View>
     );
   }
@@ -185,15 +225,15 @@ export default class Home extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     marginBottom: hp("10%"),
-    marginTop: hp("5%")
+    marginTop: hp("20%")
     
   },
   sectionTitle: {
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
-    marginLeft: wp("3%")
+    marginLeft: wp("3%"),
+    marginTop: hp("5%")
   },
   recipe: {
     backgroundColor: "white",
@@ -209,16 +249,11 @@ const styles = StyleSheet.create({
     marginRight: wp("3%")
   },
   recipeName: {
-    fontSize: hp("2.5%"),
+    fontSize: hp("3%"),
     color: "#34359A",
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
     width: wp("55%")
-  },
-  info: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly"
   },
   iconText: {
     display: "flex",
@@ -226,7 +261,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     alignItems: "center",
     marginBottom: hp("1%"),
-    width: wp("55%")
   },
   text: {
     fontFamily:"Nunito_400Regular",
