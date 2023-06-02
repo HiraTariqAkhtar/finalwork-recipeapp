@@ -139,7 +139,7 @@ export default class Settings extends React.Component {
         )
         this.setState({emailEdited:this.state.email})
       } else{
-        this.setState({pwBeforeEdit: true})
+        this.checkEmailAvailability()
       }
     } else if(this.state.currPw !== "" && (this.state.newPw === "" && this.state.confirmNewPw === "")){
       alert("Please enter a new password")
@@ -159,6 +159,27 @@ export default class Settings extends React.Component {
       }
     } else {
       this.setState({editModalVisible: false})
+    }
+  }
+
+  async checkEmailAvailability(){
+
+    let emails = []
+    let userCollection = collection(DATABASE, "users")
+    let userData = await getDocs(userCollection)
+    if (userData.size > 0) {
+      userData.forEach((doc) => {
+        emails.push(doc.data().email)
+      })
+    }
+    if(emails.includes(this.state.emailEdited)) {
+      Alert.alert(
+        "Email-address is already in use",
+        "Please use another email address"
+      )
+      this.setState({emailEdited:this.state.email})
+    } else{
+    this.setState({pwBeforeEdit: true})
     }
   }
   
