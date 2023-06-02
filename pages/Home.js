@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-import {API_KEY} from '@env'
+import {RECIPES_API_KEY} from '@env'
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -43,7 +43,7 @@ export default class Home extends React.Component {
 
   async getRecipeOfTheDay() {
     let recipe;
-      axios.get(`https://api.spoonacular.com/recipes/random?number=1&apiKey=${API_KEY}`)
+      axios.get(`https://api.spoonacular.com/recipes/random?number=1&apiKey=${RECIPES_API_KEY}`)
       .then((res) => {
         //console.log(res.data)
         res.data.recipes.forEach((rec) => {
