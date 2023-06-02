@@ -116,7 +116,7 @@ export default class Recipes extends React.Component {
     .then((res) => {
       let recipes = []
       res.data.recipes.forEach((rec) => {
-        if(rec.analyzedInstructions) {
+        if(rec.analyzedInstructions != null) {
           recipes.push({
             id: rec.id,
             servings: rec.servings,
@@ -275,7 +275,7 @@ export default class Recipes extends React.Component {
     // .then((res) => {
     //   let filteredRecipes = []
     //   res.data.recipes.forEach((rec) => {
-    //     if(rec.analyzedInstructions) {
+    //     if(rec.analyzedInstructions != null) {
     //       filteredRecipes.push({
     //         id: rec.id,
     //         servings: rec.servings,
@@ -309,6 +309,7 @@ export default class Recipes extends React.Component {
   }
 
   removeFilter(filter) {
+    this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true});
     //console.log(`${filter} clicked`)
     this.state.filters = this.state.filters.filter(remove => remove != filter)
     if(this.state.filters.length == 0) {
@@ -441,9 +442,14 @@ export default class Recipes extends React.Component {
         style={{marginLeft: wp("5%"), marginVertical: hp("1%")}}>
           {filters}
         </ScrollView>}
-        <ScrollView>
+        <ScrollView ref='_scrollView'>
           {recipes}
         </ScrollView>
+
+        <TouchableOpacity style={styles.button}
+          onPress={() => this.removeFilter()}>
+              <Text style={styles.btnText}>Show more recipes</Text>
+        </TouchableOpacity>
 
         {/* filterscreen */}
         <Modal
@@ -590,5 +596,19 @@ const styles = StyleSheet.create({
     fontFamily:"Nunito_700Bold",
     fontSize: hp("3%"),
     marginTop: hp("20%")
-  }
+  },
+  button: {
+    width: wp("80%"),
+    padding: hp("1%"),
+    backgroundColor: "#34359A",
+    borderRadius: wp("50%"),
+    marginTop: hp("10%"),
+    marginHorizontal: wp("10%")
+  },
+  btnText:{
+    fontFamily:"Nunito_400Regular",
+    fontSize: hp("2.5%"),
+    color: "#ffffff",
+    textAlign: "center"
+  },
 });
