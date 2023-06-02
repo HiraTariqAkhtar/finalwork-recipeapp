@@ -6,7 +6,8 @@ import {
   Text,
   Modal,
   Alert,
-  TextInput
+  TextInput,
+  ActivityIndicator
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -17,7 +18,7 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { collection, getDocs, deleteDoc, updateDoc, doc } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import bcrypt from 'react-native-bcrypt';
 
 export default class Settings extends React.Component {
   constructor(props) {
@@ -34,9 +35,13 @@ export default class Settings extends React.Component {
         firstNameEdited:"",
         lastNameEdited:"",
         emailEdited:"",
-        pw:"",
+        currPw:"",
         newPw:"",
-        confirmNewPw:""
+        confirmNewPw:"",
+
+        pwBeforeEdit: false,
+        pw:"",
+        isLoading: false
     }
 
     this.getUserDetails()
@@ -97,9 +102,9 @@ export default class Settings extends React.Component {
   }
 
   closeEditScreen() {
-    // warning before closing edit screen
+    // warning before closing edit screen if changes available
     if(this.state.firstName !== this.state.firstNameEdited || this.state.lastName !== this.state.lastNameEdited || this.state.email !== this.state.emailEdited ||
-      this.state.pw !== "" || this.state.newPw !== "" || this.state.confirmNewPw !== "") 
+      this.state.currPw !== "" || this.state.newPw !== "" || this.state.confirmNewPw !== "") 
     {
       Alert.alert(
         "Cancel editing?",
@@ -111,9 +116,11 @@ export default class Settings extends React.Component {
             this.setState({firstNameEdited: this.state.firstName})
             this.setState({lastNameEdited: this.state.lastName})
             this.setState({emailEdited: this.state.email})
-            this.setState({pw: ""})
+            this.setState({currPw: ""})
             this.setState({newPw: ""})
             this.setState({confirmNewPw: ""})
+
+            this.setState({pwBeforeEdit: false})
           } }
         ]
       )
@@ -122,8 +129,66 @@ export default class Settings extends React.Component {
     }
   }
 
-  editProfile() {
-    this.setState({editModalVisible: false})
+  async editProfile() {
+    if( this.state.firstName !== this.state.firstNameEdited || this.state.lastName !== this.state.lastNameEdited || this.state.email !== this.state.emailEdited && (this.state.currPw === "" && this.state.newPw === "" && this.state.confirmNewPw === "")){
+      this.setState({pwBeforeEdit: true})
+    } else if(this.state.currPw !== "" && (this.state.newPw === "" && this.state.confirmNewPw === "")){
+      alert("Please enter a new password")
+    } else if(this.state.currPw !== "" && (this.state.newPw === "" || this.state.confirmNewPw === "")){
+      alert("Please confirm new password")
+    } else if(this.state.currPw !== "" && this.state.newPw !== "" && this.state.confirmNewPw !== ""){
+      if(this.state.newPw !== this.state.confirmNewPw) {
+        Alert.alert(
+          "Passwords not same",
+          "Please rewrite your password"
+        )
+        this.setState({currPw: ""})
+        this.setState({newPw: ""})
+        this.setState({confirmNewPw: ""})
+      } else {
+        this.confirmPw(this.state.currPw)
+      }
+    } else {
+      this.setState({editModalVisible: false})
+    }
+  }
+  
+  async confirmPw(password) {
+    this.setState({ isLoading: true });
+
+    let userCollection = collection(DATABASE, "users")
+    let userData = await getDocs(userCollection)
+    
+    let userPw = ""
+
+    if (userData.size > 0) {
+      userData.forEach((doc) => {
+        if(doc.data().email == this.state.email) {
+          userPw = doc.data().password
+        }
+      })
+    }
+    let comparePasswords = bcrypt.compareSync(password, userPw);
+        if (comparePasswords) {
+          let pwHash = bcrypt.hashSync(this.state.newPw, 8);
+          updateDoc(doc(DATABASE, "users", this.state.userId), {
+            firstName: this.state.firstNameEdited,
+            lastName: this.state.lastNameEdited,
+            email: this.state.emailEdited,
+            password: pwHash
+          })
+          AsyncStorage.setItem("firstName", this.state.firstNameEdited);
+          AsyncStorage.setItem("lastName", this.state.lastNameEdited);
+          AsyncStorage.setItem("email", this.state.emailEdited);
+          this.props.navigation.navigate("Profile");
+        } else {
+            Alert.alert(
+              "Incorrect password",
+              "Please re-enter your password",
+              [{ text: "OK", onPress: () => this.setState({ isLoading: false }) }]
+              );
+            this.setState({ pw: "" });
+          }
   }
 
   render() {
@@ -164,6 +229,8 @@ export default class Settings extends React.Component {
               onPress={() => this.closeEditScreen()}
             />
             <View style={styles.editScreen}>
+            {this.state.isLoading && <ActivityIndicator size="large"/>}
+
                 <Text style={styles.title}>Edit profile</Text>
 
               <View style={styles.iconText}>
@@ -209,8 +276,8 @@ export default class Settings extends React.Component {
                 style={styles.placeholder}
                 placeholder="**********"
                 secureTextEntry
-                value={this.state.pw}
-                onChangeText={(txt) => this.setState({pw: txt})}/>
+                value={this.state.currPw}
+                onChangeText={(txt) => this.setState({currPw: txt})}/>
 
                 </View>
     
@@ -247,6 +314,33 @@ export default class Settings extends React.Component {
                 <Text style={styles.btnText}>Finish</Text>
               </TouchableOpacity>
             </View>
+        </Modal>
+
+        {/* Password before confirming edit */}
+        <Modal
+        visible={this.state.pwBeforeEdit}>
+          <View style={styles.confirmEdit}>
+          <Ionicons
+              name={"close"}
+              size={hp("5%")}
+              marginTop={hp("-45%")}
+              marginBottom={hp("15%")}
+              onPress={() => this.closeEditScreen()}
+            />
+            {this.state.isLoading && <ActivityIndicator size="large"/>}
+            <Text style={styles.title}>Please enter your password</Text>
+  
+              <TextInput
+              style={styles.placeholder}
+              placeholder="**********"
+              secureTextEntry
+              value={this.state.pw}
+              onChangeText={(txt) => this.setState({pw: txt})}/>
+  
+              <TouchableOpacity style={[styles.buttonEdit, {marginHorizontal:wp("32.5%")}]} onPress={() => this.confirmPw(this.state.pw)}>
+                <Text style={styles.btnText}>Finish</Text>
+              </TouchableOpacity>
+          </View>
         </Modal>
       </View>
     );
@@ -302,4 +396,9 @@ const styles = StyleSheet.create({
     borderRadius: wp("50%"),
     marginTop: hp("3%"),
   },
+  confirmEdit:{
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  }
 });
