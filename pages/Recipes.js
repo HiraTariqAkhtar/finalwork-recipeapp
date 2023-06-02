@@ -90,10 +90,10 @@ export default class Recipes extends React.Component {
             step: "hjg"
           },
         ],
-          culture: ["European"],
+          culture: ["Indian", "Asian"],
           time: 30,
           foodImg: "https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/vegetable-pakora-recipe.jpg",
-          dishTypes: ["snack"],
+          dishTypes: ["snack", "lunch"],
           period: [],
         },
       ],
@@ -112,28 +112,28 @@ export default class Recipes extends React.Component {
 
 
   async getRecipes() {
-    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${RECIPES_API_KEY}`)
-    .then((res) => {
-      let recipes = []
-      res.data.recipes.forEach((rec) => {
-        if(rec.analyzedInstructions != null) {
-          recipes.push({
-            id: rec.id,
-            servings: rec.servings,
-            recipeName: rec.title,
-            ingredients: rec.extendedIngredients,
-            instructions: rec.analyzedInstructions[0].steps,
-            culture: rec.cuisines,
-            time: rec.readyInMinutes,
-            foodImg: rec.image,
-            dishTypes: rec.dishTypes,
-            period: rec.occasions
-          })
-        }
-      })
+    // axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${RECIPES_API_KEY}`)
+    // .then((res) => {
+    //   let recipes = []
+    //   res.data.recipes.forEach((rec) => {
+    //     if(rec.analyzedInstructions != null) {
+    //       recipes.push({
+    //         id: rec.id,
+    //         servings: rec.servings,
+    //         recipeName: rec.title,
+    //         ingredients: rec.extendedIngredients,
+    //         instructions: rec.analyzedInstructions[0].steps,
+    //         culture: rec.cuisines,
+    //         time: rec.readyInMinutes,
+    //         foodImg: rec.image,
+    //         dishTypes: rec.dishTypes,
+    //         period: rec.occasions
+    //       })
+    //     }
+    //   })
       
-      this.setState({randomRecipes: recipes})
-    })
+    //   this.setState({randomRecipes: recipes})
+    // })
     this.getFilterData()
   }
 
@@ -321,6 +321,43 @@ export default class Recipes extends React.Component {
   }
 
   render() {
+    let cultures;
+    let dishTypes;
+    let periods;
+    this.state.randomRecipes.forEach((rec) => {
+      if(rec.culture.length > 1){
+        cultures = 
+        rec.culture.map((culture) => (
+          <Text style={styles.text}>{culture} |</Text>
+          ))
+      } else if(rec.culture.length == 1) {
+        cultures = 
+        <Text style={styles.text}>{rec.culture[0]}</Text>
+      }
+  
+  
+      if(rec.dishTypes.length > 1) {
+        dishTypes =
+        rec.dishTypes.map((type) => (
+          <Text style={styles.text}>{type} |</Text>
+        ))
+      } else if(rec.dishTypes.length == 1){
+        dishTypes =
+        <Text style={styles.text}>{rec.dishTypes[0]}</Text>
+      }
+  
+      if(rec.period.length > 1) {
+        periods =
+        rec.period.map((period) => (
+          <Text style={styles.text}>{period} |</Text>
+        ))
+      } else if(rec.period.length == 1){
+        periods =
+        <Text style={styles.text}>{rec.period[0]}</Text>
+      }
+    })
+
+
     let recipes;
 
     if(this.state.randomRecipes.length > 0) {
@@ -376,9 +413,7 @@ export default class Recipes extends React.Component {
               color="#34359A"
               marginRight={wp("1%")}
             />
-              {rec.dishTypes.map((type) => (
-                <Text style={styles.text}>{type}</Text>
-              ))}
+              {dishTypes}
             </View>)}
 
            {rec.period.length > 0 && (
@@ -389,9 +424,7 @@ export default class Recipes extends React.Component {
               color="#34359A"
               marginRight={wp("1%")}
             />
-              {rec.period.map((period) => (
-                <Text style={styles.text}>{period}</Text>
-              ))}
+              {periods}
             </View>)}
 
             {rec.culture.length > 0 && (
@@ -402,9 +435,7 @@ export default class Recipes extends React.Component {
               color="#34359A"
               marginRight={wp("1%")}
             />
-              {rec.culture.map((type) => (
-                <Text style={styles.text}>{type}</Text>
-              ))}
+              {cultures}
             </View>)}
         </View>
       </TouchableOpacity>
@@ -446,10 +477,11 @@ export default class Recipes extends React.Component {
           {recipes}
         </ScrollView>
 
-        <TouchableOpacity style={styles.button}
+        {this.state.randomRecipes.length > 0 &&
+          <TouchableOpacity style={styles.button}
           onPress={() => this.removeFilter()}>
               <Text style={styles.btnText}>Show more recipes</Text>
-        </TouchableOpacity>
+        </TouchableOpacity>}
 
         {/* filterscreen */}
         <Modal
