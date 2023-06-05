@@ -112,58 +112,41 @@ export default class Recipes extends React.Component {
 
 
   async getRecipes() {
-    // axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${RECIPES_API_KEY}`)
-    // .then((res) => {
-    //   let recipes = []
-    //   res.data.recipes.forEach((rec) => {
-    //     if(rec.analyzedInstructions != null) {
-    //       recipes.push({
-    //         id: rec.id,
-    //         servings: rec.servings,
-    //         recipeName: rec.title,
-    //         ingredients: rec.extendedIngredients,
-    //         instructions: rec.analyzedInstructions[0].steps,
-    //         culture: rec.cuisines,
-    //         time: rec.readyInMinutes,
-    //         foodImg: rec.image,
-    //         dishTypes: rec.dishTypes,
-    //         period: rec.occasions
-    //       })
-    //     }
-    //   })
+    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${RECIPES_API_KEY}`)
+    .then((res) => {
+      let recipes = []
+      res.data.recipes.forEach((rec) => {
+        if(rec.analyzedInstructions != null) {
+          recipes.push({
+            id: rec.id,
+            servings: rec.servings,
+            recipeName: rec.title,
+            ingredients: rec.extendedIngredients,
+            instructions: rec.analyzedInstructions[0].steps,
+            culture: rec.cuisines,
+            time: rec.readyInMinutes,
+            foodImg: rec.image,
+            dishTypes: rec.dishTypes,
+            period: rec.occasions
+          })
+        }
+      })
       
-    //   this.setState({randomRecipes: recipes})
-    // })
+      this.setState({randomRecipes: recipes})
+    })
     this.getFilterData()
   }
 
   async getFilterData() {
-    let cultures = []
-    let dishTypes = []
+    let cultures = ["African", "Asian", "American", "British", "Cajun", "Caribbean", "Chinese", "Eastern European", "European", "French", "German", "Greek", "Indian", "Irish", "Italian", "Japanese", "Jewish", "Korean", "Latin American", "Mediterranean", "Mexican", "Middle Eastern", "Nordic", "Southern", "Spanish", "Thai", "Vietnamese"]
+    let dishTypes = ["main course", "side dish", "dessert", "appetizer", "salad", "bread", "breakfast", "soup", "beverage", "sauce", "marinade", "fingerfood", "snack", "drink"]
     let occasions = []
 
     cultureChecked = []
     dishTypeChecked = []
     occasionChecked = []
 
-    // Check if already data available in database
-    let cultureCollection = collection(DATABASE, "cultures")
-    let cultureData = await getDocs(cultureCollection)
-    if (cultureData.size > 0) {
-      cultureData.forEach((doc) => {
-        cultures.push(doc.data().culture)
-        cultureChecked.push(false)
-      })
-    } 
-
-    let dishTypeCollection = collection(DATABASE, "dishTypes")
-    let dishTypeData = await getDocs(dishTypeCollection)
-    if (dishTypeData.size > 0) {
-      dishTypeData.forEach((doc) => {
-        dishTypes.push(doc.data().dishType)
-        dishTypeChecked.push(false)
-      })
-    } 
+// Check if already data available in database --> occasions
 
     let occasionCollection = collection(DATABASE, "occasions")
     let occasionData = await getDocs(occasionCollection)
@@ -174,27 +157,8 @@ export default class Recipes extends React.Component {
       })
     } 
 
-
-    // add data in db if not already
+    // add occasions in db if not already
     for(let rec of this.state.randomRecipes) {
-      // cultures
-      for(let culture of rec.culture) {
-        if(!cultures.includes(culture)) {
-          cultures.push(culture)
-          cultureChecked.push(false)
-          await addDoc((cultureCollection), {culture: culture})
-        }
-      }
-      
-      // dishTypes
-      for(let type of rec.dishTypes) {
-        if(!dishTypes.includes(type)) {
-          dishTypes.push(type)
-          dishTypeChecked.push(false)
-          await addDoc((dishTypeCollection), {dishType: type})
-        }
-      }
-      // occasions
       for(let occasion of rec.period) {
         if(!occasions.includes(occasion)) {
           occasions.push(occasion)
@@ -203,6 +167,20 @@ export default class Recipes extends React.Component {
         }
       }
 
+    }
+
+    // set checkbox to unchecked for cultures and dish types
+    let cultureCollection = collection(DATABASE, "cultures")
+    let dishTypeCollection = collection(DATABASE, "dishTypes")
+
+    for(let culture of cultures) {
+      cultureChecked.push(false)
+      await addDoc((cultureCollection), {culture: culture})
+    }
+
+    for(let dishType of dishTypes) {
+      dishTypeChecked.push(false)
+      await addDoc((dishTypeCollection), {dishType: dishType})
     }
 
     // order arrays alphabetically
