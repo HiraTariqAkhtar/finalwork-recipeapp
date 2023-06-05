@@ -38,7 +38,7 @@ export default class Holidays extends React.Component {
         title: this.props.route.params.country
       });
 
-    this.getHolidays()
+    //this.getHolidays()
   }
 
   async getHolidays() {
@@ -49,24 +49,26 @@ export default class Holidays extends React.Component {
 
       let holidaysThisMonth = []
 
-      axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=${this.props.route.params.countryCode}&month=${currentMonth}&year=${currentYear}`)
-      .then((res) => {
-          //console.log(res.data.response.holidays)
-          let holidays = res.data.response.holidays
-          holidays.forEach((holiday) => {
-              if(holiday.date.datetime.day >= currentDay){
-                  holidaysThisMonth.push({
-                      name: holiday.name,
-                      description: holiday.description,
-                      locations: holiday.locations,
-                      datetime: holiday.date.datetime,
-                      holidayType: holiday.primary_type
-                  })
-              }
-          });
-          console.log(holidaysThisMonth)
-          this.setState({holidays: holidaysThisMonth})
-      })
+      for(let i = currentMonth; i <= 12; i++) {
+          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=${this.props.route.params.countryCode}&month=${i}&year=${currentYear}`)
+          .then((res) => {
+              //console.log(res.data.response.holidays)
+              let holidays = res.data.response.holidays
+              holidays.forEach((holiday) => {
+                  if(holiday.date.datetime.day >= currentDay){
+                      holidaysThisMonth.push({
+                          name: holiday.name,
+                          description: holiday.description,
+                          locations: holiday.locations,
+                          datetime: holiday.date.datetime,
+                          holidayType: holiday.primary_type
+                      })
+                  }
+              });
+              holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
+              this.setState({holidays: holidaysThisMonth})
+            })
+      }
   }
 
 
@@ -78,23 +80,25 @@ export default class Holidays extends React.Component {
               <Text style={styles.holidayName}>{holiday.name} ({holiday.holidayType})</Text>
               <Text style={styles.holidayDate}>{holiday.datetime.day} - {holiday.datetime.month} - {holiday.datetime.year}</Text>
 
-              <View style={styles.iconText}>
+              {holiday.description &&
+                  <View style={styles.iconText}>
                 <Ionicons
                     name={"information-circle"}
                     size={hp("3%")}
                     marginRight={wp("2%")}
                 />
                 <Text style={styles.text}>{holiday.description}</Text>
-              </View>
+              </View>}
 
-              <View style={styles.iconText}>
+             {holiday.locations &&
+                 <View style={styles.iconText}>
                 <Ionicons
                     name={"location"}
                     size={hp("3%")}
                     marginRight={wp("2%")}
                 />
                 <Text style={styles.text}>{holiday.locations}</Text>
-              </View>
+              </View>}
           </View>
       ))
 
