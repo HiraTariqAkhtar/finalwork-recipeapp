@@ -389,7 +389,7 @@ export default class Recipes extends React.Component {
                 </View>
   
                 {rec.culture.length > 0 && (
-              <View style={styles.iconText}>
+              <View style={[styles.iconText, {width: wp("60%")}]}>
               <Ionicons
                 name={"flag"}
                 size={hp("2.5%")}
@@ -399,7 +399,7 @@ export default class Recipes extends React.Component {
               </View>)}
   
               {rec.dishTypes.length > 0 && (
-              <View style={styles.iconText}>
+              <View style={[styles.iconText, {width: wp("60%")}]}>
               <FontAwesome
                 name={"cutlery"}
                 size={hp("2.5%")}
@@ -409,7 +409,7 @@ export default class Recipes extends React.Component {
               </View>)}
   
                   {rec.period.length > 0 && (
-                <View style={styles.iconText}>
+                <View style={[styles.iconText, {width: wp("60%")}]}>
                   <Ionicons
                     name={"calendar"}
                     size={hp("2.5%")}
