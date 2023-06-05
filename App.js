@@ -31,6 +31,7 @@ import Profile from "./pages/Profile"
 import LogIn from "./pages/LogIn"
 import Register from "./pages/Register"
 import Settings from "./pages/Settings"
+import Holidays from "./pages/Holidays"
 
 // Navigators
 const Tab = createBottomTabNavigator();
@@ -42,6 +43,14 @@ const HomeScreen = () => {
     <Stack.Navigator>
       <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}/>
       <Stack.Screen name="RecipeDetail" component={RecipeDetail}/>
+      <Stack.Screen name="Holidays" component={Holidays} 
+      options={{ 
+        headerTitleStyle: {
+          fontFamily: "Nunito_700Bold",
+          fontSize: hp("3.5%")
+          },
+        headerTitleAlign: "center" 
+      }}/>
     </Stack.Navigator>
   );
 }

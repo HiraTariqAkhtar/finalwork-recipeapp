@@ -111,6 +111,13 @@ export default class Home extends React.Component {
     this.setState({countries: countries})
   }
 
+  async goToHolidaysPage(country) {
+    this.props.navigation.navigate("Holidays", {
+      country: country.country,
+      countryCode: country.countryCode
+    })
+  }
+
 
   render() {
     let rec = this.state.recipeOfTheDay
@@ -151,7 +158,7 @@ export default class Home extends React.Component {
 
 
     let countries = this.state.countries.map((country) =>
-    <TouchableOpacity style={styles.country}>
+    <TouchableOpacity style={styles.country} onPress={() => this.goToHolidaysPage(country)}>
         <SvgUri
         uri={`https://flagcdn.com/${country.countryCode}.svg`}
         width={wp("25%")}
