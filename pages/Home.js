@@ -13,8 +13,11 @@ import {
 } from "react-native-responsive-screen";
 import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { SvgUri } from 'react-native-svg';
 
-import {RECIPES_API_KEY, FESTIVAL_API_KEY} from '@env'
+import {RECIPES_API_KEY} from '@env'
+import {DATABASE} from "../firebaseConfig"
+import { collection, getDocs } from "firebase/firestore"; 
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -38,10 +41,14 @@ export default class Home extends React.Component {
           period: [],
         },
 
-        festivals:{}
+        countries:[{
+          country: "Pakistan",
+          countryCode: "pk"
+        }]
     };
 
     //this.getRecipeOfTheDay()
+    this.getCountriesForHolidays()
   }
 
 
@@ -87,8 +94,21 @@ export default class Home extends React.Component {
     })
   }
 
-  async getFestivals() {
-
+  async getCountriesForHolidays() {
+    let countries = []
+    let countryCollection = collection(DATABASE, "countries")
+    let countryData = await getDocs(countryCollection)
+    if (countryData.size > 0) {
+      countryData.forEach((doc) => {
+        countries.push({
+          country: doc.data().country,
+          countryCode: doc.data().countryCode
+        })
+      })
+    } 
+    let sorted = countries.sort((a, b) => a.country.localeCompare(b.country))
+    console.log(sorted)
+    this.setState({countries: countries})
   }
 
 
@@ -128,6 +148,18 @@ export default class Home extends React.Component {
       periods =
       <Text style={styles.text}>{rec.period[0]}</Text>
     }
+
+
+    let countries = this.state.countries.map((country) =>
+    <TouchableOpacity style={styles.country}>
+        <SvgUri
+        uri={`https://flagcdn.com/${country.countryCode}.svg`}
+        width={wp("25%")}
+        height={hp("15%")}/>
+      <Text  style={styles.countryName}>{country.country}</Text>
+    </TouchableOpacity>
+    )
+    
 
 
     return (
@@ -176,7 +208,7 @@ export default class Home extends React.Component {
                 </View>
 
                 {rec.culture.length > 0 && (
-              <View style={styles.iconText}>
+              <View style={[styles.iconText, {width: wp("60%")}]}>
               <Ionicons
                 name={"flag"}
                 size={hp("2.5%")}
@@ -186,7 +218,7 @@ export default class Home extends React.Component {
               </View>)}
   
               {rec.dishTypes.length > 0 && (
-              <View style={styles.iconText}>
+              <View style={[styles.iconText, {width: wp("60%")}]}>
               <FontAwesome
                 name={"cutlery"}
                 size={hp("2.5%")}
@@ -196,7 +228,7 @@ export default class Home extends React.Component {
               </View>)}
   
                   {rec.period.length > 0 && (
-                <View style={styles.iconText}>
+                <View style={[styles.iconText, {width: wp("60%")}]}>
                   <Ionicons
                     name={"calendar"}
                     size={hp("2.5%")}
@@ -212,9 +244,7 @@ export default class Home extends React.Component {
         <View>
         <Text style={styles.sectionTitle}>Upcoming holidays</Text>
         <ScrollView horizontal>
-          <TouchableOpacity>
-
-          </TouchableOpacity>
+         {countries}
         </ScrollView>
         </View>
       </View>
@@ -266,5 +296,18 @@ const styles = StyleSheet.create({
     fontFamily:"Nunito_400Regular",
     fontSize: hp("2%"),
     marginLeft: wp("2%")
+  },
+  country: {
+    backgroundColor: "white",
+    padding: hp("1.5%"),
+    width: wp("35%"),
+    borderRadius: 10,
+    marginTop: hp("3%"),
+    marginLeft: wp ("5%")
+  },
+  countryName: {
+    textAlign: "center",
+    fontFamily: "Nunito_700Bold",
+    fontSize: hp("2.5%"),
   }
 });
