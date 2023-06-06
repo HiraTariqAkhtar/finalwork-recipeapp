@@ -181,6 +181,19 @@ export default class RecipeDetails extends React.Component {
             </View>
           </View>
 
+          {rec.culture.length > 0 && (
+            <View style={styles.iconText}>
+            <Ionicons
+              name={"flag"}
+              size={hp("4%")}
+              color="#34359A"
+              marginRight={wp("1%")}
+            />
+              {rec.culture.map((type) => (
+                <Text style={styles.text}>{type}</Text>
+              ))}
+            </View>)}
+
             {rec.dishTypes.length > 0 && (
             <View style={styles.iconText}>
             <FontAwesome
@@ -207,19 +220,6 @@ export default class RecipeDetails extends React.Component {
               ))}
             </View>)}
 
-            {rec.culture.length > 0 && (
-            <View style={styles.iconText}>
-            <Ionicons
-              name={"flag"}
-              size={hp("4%")}
-              color="#34359A"
-              marginRight={wp("1%")}
-            />
-              {rec.culture.map((type) => (
-                <Text style={styles.text}>{type}</Text>
-              ))}
-            </View>)}
-            
                 <View>
                     <Text style={styles.title}>Ingredients</Text>
                     {rec.ingredients.map((i) => (
