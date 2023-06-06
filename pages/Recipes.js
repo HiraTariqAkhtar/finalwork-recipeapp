@@ -116,7 +116,7 @@ export default class Recipes extends React.Component {
     // .then((res) => {
     //   let recipes = []
     //   res.data.recipes.forEach((rec) => {
-    //     if(rec.analyzedInstructions != null) {
+    //     if(rec.analyzedInstructions !== null) {
     //       recipes.push({
     //         id: rec.id,
     //         servings: rec.servings,
