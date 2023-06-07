@@ -90,10 +90,10 @@ export default class Recipes extends React.Component {
             step: "hjg"
           },
         ],
-          culture: ["European"],
+          culture: ["Indian", "Asian"],
           time: 30,
           foodImg: "https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/vegetable-pakora-recipe.jpg",
-          dishTypes: ["snack"],
+          dishTypes: ["snack", "lunch"],
           period: [],
         },
       ],
@@ -112,28 +112,28 @@ export default class Recipes extends React.Component {
 
 
   async getRecipes() {
-    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${RECIPES_API_KEY}`)
-    .then((res) => {
-      let recipes = []
-      res.data.recipes.forEach((rec) => {
-        if(rec.analyzedInstructions) {
-          recipes.push({
-            id: rec.id,
-            servings: rec.servings,
-            recipeName: rec.title,
-            ingredients: rec.extendedIngredients,
-            instructions: rec.analyzedInstructions[0].steps,
-            culture: rec.cuisines,
-            time: rec.readyInMinutes,
-            foodImg: rec.image,
-            dishTypes: rec.dishTypes,
-            period: rec.occasions
-          })
-        }
-      })
+    // axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${RECIPES_API_KEY}`)
+    // .then((res) => {
+    //   let recipes = []
+    //   res.data.recipes.forEach((rec) => {
+    //     if(rec.analyzedInstructions !== null) {
+    //       recipes.push({
+    //         id: rec.id,
+    //         servings: rec.servings,
+    //         recipeName: rec.title,
+    //         ingredients: rec.extendedIngredients,
+    //         instructions: rec.analyzedInstructions[0].steps,
+    //         culture: rec.cuisines,
+    //         time: rec.readyInMinutes,
+    //         foodImg: rec.image,
+    //         dishTypes: rec.dishTypes,
+    //         period: rec.occasions
+    //       })
+    //     }
+    //   })
       
-      this.setState({randomRecipes: recipes})
-    })
+    //   this.setState({randomRecipes: recipes})
+    // })
     this.getFilterData()
   }
 
@@ -146,7 +146,7 @@ export default class Recipes extends React.Component {
     dishTypeChecked = []
     occasionChecked = []
 
-    // Check if already data available in database
+    // Push culture and dish type values from database into arrays + set checkbox to unchecked
     let cultureCollection = collection(DATABASE, "cultures")
     let cultureData = await getDocs(cultureCollection)
     if (cultureData.size > 0) {
@@ -165,6 +165,7 @@ export default class Recipes extends React.Component {
       })
     } 
 
+    // Check if already data available in database --> occasions
     let occasionCollection = collection(DATABASE, "occasions")
     let occasionData = await getDocs(occasionCollection)
     if (occasionData.size > 0) {
@@ -174,27 +175,8 @@ export default class Recipes extends React.Component {
       })
     } 
 
-
-    // add data in db if not already
+    // add occasions in db if not already
     for(let rec of this.state.randomRecipes) {
-      // cultures
-      for(let culture of rec.culture) {
-        if(!cultures.includes(culture)) {
-          cultures.push(culture)
-          cultureChecked.push(false)
-          await addDoc((cultureCollection), {culture: culture})
-        }
-      }
-      
-      // dishTypes
-      for(let type of rec.dishTypes) {
-        if(!dishTypes.includes(type)) {
-          dishTypes.push(type)
-          dishTypeChecked.push(false)
-          await addDoc((dishTypeCollection), {dishType: type})
-        }
-      }
-      // occasions
       for(let occasion of rec.period) {
         if(!occasions.includes(occasion)) {
           occasions.push(occasion)
@@ -275,7 +257,7 @@ export default class Recipes extends React.Component {
     // .then((res) => {
     //   let filteredRecipes = []
     //   res.data.recipes.forEach((rec) => {
-    //     if(rec.analyzedInstructions) {
+    //     if(rec.analyzedInstructions != null) {
     //       filteredRecipes.push({
     //         id: rec.id,
     //         servings: rec.servings,
@@ -309,6 +291,7 @@ export default class Recipes extends React.Component {
   }
 
   removeFilter(filter) {
+    this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true});
     //console.log(`${filter} clicked`)
     this.state.filters = this.state.filters.filter(remove => remove != filter)
     if(this.state.filters.length == 0) {
@@ -320,6 +303,43 @@ export default class Recipes extends React.Component {
   }
 
   render() {
+    let cultures;
+    let dishTypes;
+    let periods;
+    this.state.randomRecipes.forEach((rec) => {
+      if(rec.culture.length > 1){
+        cultures = 
+        rec.culture.map((culture) => (
+          <Text style={styles.text}>{culture} |</Text>
+          ))
+      } else if(rec.culture.length == 1) {
+        cultures = 
+        <Text style={styles.text}>{rec.culture[0]}</Text>
+      }
+  
+  
+      if(rec.dishTypes.length > 1) {
+        dishTypes =
+        rec.dishTypes.map((type) => (
+          <Text style={styles.text}>{type} |</Text>
+        ))
+      } else if(rec.dishTypes.length == 1){
+        dishTypes =
+        <Text style={styles.text}>{rec.dishTypes[0]}</Text>
+      }
+  
+      if(rec.period.length > 1) {
+        periods =
+        rec.period.map((period) => (
+          <Text style={styles.text}>{period} |</Text>
+        ))
+      } else if(rec.period.length == 1){
+        periods =
+        <Text style={styles.text}>{rec.period[0]}</Text>
+      }
+    })
+
+
     let recipes;
 
     if(this.state.randomRecipes.length > 0) {
@@ -328,84 +348,77 @@ export default class Recipes extends React.Component {
       key={rec.id}
       style={styles.recipe}
       onPress={() => this.goToRecipeDetails(rec)}>
-        <View>
-        {rec.foodImg != "" ?(
-          <Image
-          source={{uri: rec.foodImg}}
-          style={styles.foodImg}
-          />)
-          : 
-          <FontAwesome
-              name={"image"}
-              size={wp("40%")}
-              color="#D3D3D3"
-              marginHorizontal={wp("15%")}
-            />}
-
-        <Text style={styles.recipeName}>
-            {rec.recipeName}
-        </Text>
-
-         
-          <View style={styles.info}>
-          <View style={styles.iconText}>
-            <Ionicons
-              name={"people"}
-              size={hp("5%")}
-              color="#34359A"
-            />
-              <Text style={styles.text}>{rec.servings}</Text>
-          </View>
-
-            <View style={styles.iconText}>
-              <Ionicons
-              name={"stopwatch"}
-              size={hp("5%")}
-              color="#34359A"
-            />
-              <Text style={styles.text}>{rec.time} minutes</Text>
-            </View>
-          </View>
-
-            {rec.dishTypes.length > 0 && (
-            <View style={styles.iconText}>
+        <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+            {rec.foodImg != "" ?(
+            <Image
+            source={{uri: rec.foodImg}}
+            style={styles.foodImg}
+            />)
+            : 
             <FontAwesome
-              name={"cutlery"}
-              size={hp("4%")}
-              color="#34359A"
-              marginRight={wp("1%")}
-            />
-              {rec.dishTypes.map((type) => (
-                <Text style={styles.text}>{type}</Text>
-              ))}
-            </View>)}
+                name={"image"}
+                size={hp("15%")}
+                color="#D3D3D3"
+                marginRight={wp("3%")}
+              />}
+  
+              <View>
+                <Text style={styles.recipeName}>
+                  {rec.recipeName}
+                </Text>
+                
+                <View style={{display:"flex", flexDirection:"row"}}>
+                  <View style={[styles.iconText, {marginRight: wp("5%")}]}>
+                    <Ionicons
+                      name={"people"}
+                      size={hp("2.5%")}
+                      color="#34359A"
+                    />
+                    <Text style={styles.text}>{rec.servings}</Text>
 
-           {rec.period.length > 0 && (
-           <View style={styles.iconText}>
-            <Ionicons
-              name={"calendar"}
-              size={hp("4%")}
-              color="#34359A"
-              marginRight={wp("1%")}
-            />
-              {rec.period.map((period) => (
-                <Text style={styles.text}>{period}</Text>
-              ))}
-            </View>)}
+                  </View>
 
-            {rec.culture.length > 0 && (
-            <View style={styles.iconText}>
-            <Ionicons
-              name={"flag"}
-              size={hp("4%")}
-              color="#34359A"
-              marginRight={wp("1%")}
-            />
-              {rec.culture.map((type) => (
-                <Text style={styles.text}>{type}</Text>
-              ))}
-            </View>)}
-        </View>
+                  <View style={styles.iconText}>
+                    <Ionicons
+                      name={"stopwatch"}
+                      size={hp("2.5%")}
+                      color="#34359A"
+                    />
+                      <Text style={styles.text}>{rec.time} minutes</Text>
+                  </View>
+                </View>
+  
+                {rec.culture.length > 0 && (
+              <View style={[styles.iconText, {width: wp("60%")}]}>
+              <Ionicons
+                name={"flag"}
+                size={hp("2.5%")}
+                color="#34359A"
+              />
+                {cultures}
+              </View>)}
+  
+              {rec.dishTypes.length > 0 && (
+              <View style={[styles.iconText, {width: wp("60%")}]}>
+              <FontAwesome
+                name={"cutlery"}
+                size={hp("2.5%")}
+                color="#34359A"
+              />
+                {dishTypes}
+              </View>)}
+  
+                  {rec.period.length > 0 && (
+                <View style={[styles.iconText, {width: wp("60%")}]}>
+                  <Ionicons
+                    name={"calendar"}
+                    size={hp("2.5%")}
+                    color="#34359A"
+                  />
+                    {periods}
+                  </View>)}
+              </View>
+            </View>
       </TouchableOpacity>
     ))
   } else {
@@ -441,9 +454,15 @@ export default class Recipes extends React.Component {
         style={{marginLeft: wp("5%"), marginVertical: hp("1%")}}>
           {filters}
         </ScrollView>}
-        <ScrollView>
+        <ScrollView ref='_scrollView'>
           {recipes}
         </ScrollView>
+
+        {this.state.randomRecipes.length > 0 &&
+          <TouchableOpacity style={styles.button}
+          onPress={() => this.removeFilter()}>
+              <Text style={styles.btnText}>Show more recipes</Text>
+        </TouchableOpacity>}
 
         {/* filterscreen */}
         <Modal
@@ -522,29 +541,23 @@ const styles = StyleSheet.create({
   },
   recipe: {
     backgroundColor: "white",
-    padding: hp("3%"),
-    width: wp("85%"),
+    padding: hp("1.5%"),
+    width: wp("95%"),
     borderRadius: 10,
-    marginBottom: hp("3%"),
-    marginHorizontal: wp("7.5%")
+    marginTop: hp("3%"),
+    marginHorizontal: wp ("2.5%")
   },
   foodImg: {
-    width: wp("65%"),
-    height: hp("25%"),
-    marginBottom: hp("2%"),
-    marginHorizontal: wp("5%")
+    width: wp("30%"),
+    height: hp("15%"),
+    marginRight: wp("3%")
   },
   recipeName: {
-    fontSize: hp("3.5%"),
+    fontSize: hp("3%"),
     color: "#34359A",
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
-    textAlign: "center"
-  },
-  info: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly"
+    width: wp("55%")
   },
   iconText: {
     display: "flex",
@@ -590,5 +603,19 @@ const styles = StyleSheet.create({
     fontFamily:"Nunito_700Bold",
     fontSize: hp("3%"),
     marginTop: hp("20%")
-  }
+  },
+  button: {
+    width: wp("80%"),
+    padding: hp("1%"),
+    backgroundColor: "#34359A",
+    borderRadius: wp("50%"),
+    marginTop: hp("10%"),
+    marginHorizontal: wp("10%")
+  },
+  btnText:{
+    fontFamily:"Nunito_400Regular",
+    fontSize: hp("2.5%"),
+    color: "#ffffff",
+    textAlign: "center"
+  },
 });

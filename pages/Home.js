@@ -4,7 +4,8 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Image
+  Image,
+  ScrollView
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -12,8 +13,11 @@ import {
 } from "react-native-responsive-screen";
 import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { SvgUri } from 'react-native-svg';
 
 import {RECIPES_API_KEY} from '@env'
+import {DATABASE} from "../firebaseConfig"
+import { collection, getDocs } from "firebase/firestore"; 
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -36,10 +40,17 @@ export default class Home extends React.Component {
           dishTypes: [],
           period: [],
         },
+
+        countries:[{
+          country: "Pakistan",
+          countryCode: "pk"
+        }]
     };
 
     //this.getRecipeOfTheDay()
+    this.getCountriesForHolidays()
   }
+
 
   async getRecipeOfTheDay() {
     let recipe;
@@ -47,7 +58,7 @@ export default class Home extends React.Component {
       .then((res) => {
         //console.log(res.data)
         res.data.recipes.forEach((rec) => {
-          if(rec.analyzedInstructions) {
+          if(rec.analyzedInstructions != null) {
             recipe = {
               id: rec.id,
               servings: rec.servings,
@@ -80,6 +91,30 @@ export default class Home extends React.Component {
       culture: rec.culture,
       ingredients: rec.ingredients,
       instructions: rec.instructions,
+    })
+  }
+
+  async getCountriesForHolidays() {
+    let countries = []
+    let countryCollection = collection(DATABASE, "countries")
+    let countryData = await getDocs(countryCollection)
+    if (countryData.size > 0) {
+      countryData.forEach((doc) => {
+        countries.push({
+          country: doc.data().country,
+          countryCode: doc.data().countryCode
+        })
+      })
+    } 
+    let sorted = countries.sort((a, b) => a.country.localeCompare(b.country))
+    console.log(sorted)
+    this.setState({countries: countries})
+  }
+
+  async goToHolidaysPage(country) {
+    this.props.navigation.navigate("Holidays", {
+      country: country.country,
+      countryCode: country.countryCode
     })
   }
 
@@ -122,61 +157,103 @@ export default class Home extends React.Component {
     }
 
 
+    let countries = this.state.countries.map((country) =>
+    <TouchableOpacity style={styles.country} onPress={() => this.goToHolidaysPage(country)}>
+        <SvgUri
+        uri={`https://flagcdn.com/${country.countryCode}.svg`}
+        width={wp("25%")}
+        height={hp("15%")}/>
+      <Text  style={styles.countryName}>{country.country}</Text>
+    </TouchableOpacity>
+    )
+    
+
+
     return (
       <View style={styles.container}>
-        <Text style={styles.sectionTitle}>Recipe of the day</Text>
-        <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
-          <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-          {rec.foodImg != "" ?(
-          <Image
-          source={{uri: rec.foodImg}}
-          style={styles.foodImg}
-          />)
-          : 
-          <FontAwesome
-              name={"image"}
-              size={hp("15%")}
-              color="#D3D3D3"
-              marginRight={wp("3%")}
-            />}
-
-            <View>
-              <Text style={styles.recipeName}>
-                {rec.recipeName}
-              </Text>
-
-              {rec.culture.length > 0 && (
-            <View style={styles.iconText}>
-            <Ionicons
-              name={"flag"}
-              size={hp("2.5%")}
-              color="#34359A"
-            />
-              {cultures}
-            </View>)}
-
-            {rec.dishTypes.length > 0 && (
-            <View style={styles.iconText}>
+        <View>
+          <Text style={styles.sectionTitle}>Recipe of the day</Text>
+          <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
+            <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+            {rec.foodImg != "" ?(
+            <Image
+            source={{uri: rec.foodImg}}
+            style={styles.foodImg}
+            />)
+            : 
             <FontAwesome
-              name={"cutlery"}
-              size={hp("2.5%")}
-              color="#34359A"
-            />
-              {dishTypes}
-            </View>)}
+                name={"image"}
+                size={hp("15%")}
+                color="#D3D3D3"
+                marginRight={wp("3%")}
+              />}
+  
+              <View>
+                <Text style={styles.recipeName}>
+                  {rec.recipeName}
+                </Text>
 
-                {rec.period.length > 0 && (
-              <View style={styles.iconText}>
-                <Ionicons
-                  name={"calendar"}
-                  size={hp("2.5%")}
-                  color="#34359A"
-                />
-                  {periods}
-                </View>)}
+                <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+                  <View style={[styles.iconText, {marginRight: wp("5%")}]}>
+                    <Ionicons
+                      name={"people"}
+                      size={hp("2.5%")}
+                      color="#34359A"
+                    />
+                    <Text style={styles.text}>{rec.servings}</Text>
+
+                  </View>
+
+                  <View style={styles.iconText}>
+                    <Ionicons
+                      name={"stopwatch"}
+                      size={hp("2.5%")}
+                      color="#34359A"
+                    />
+                      <Text style={styles.text}>{rec.time} minutes</Text>
+                  </View>
+                </View>
+
+                {rec.culture.length > 0 && (
+              <View style={[styles.iconText, {width: wp("60%")}]}>
+              <Ionicons
+                name={"flag"}
+                size={hp("2.5%")}
+                color="#34359A"
+              />
+                {cultures}
+              </View>)}
+  
+              {rec.dishTypes.length > 0 && (
+              <View style={[styles.iconText, {width: wp("60%")}]}>
+              <FontAwesome
+                name={"cutlery"}
+                size={hp("2.5%")}
+                color="#34359A"
+              />
+                {dishTypes}
+              </View>)}
+  
+                  {rec.period.length > 0 && (
+                <View style={[styles.iconText, {width: wp("60%")}]}>
+                  <Ionicons
+                    name={"calendar"}
+                    size={hp("2.5%")}
+                    color="#34359A"
+                  />
+                    {periods}
+                  </View>)}
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
+
+        <View>
+        <Text style={styles.sectionTitle}>Upcoming holidays</Text>
+        <ScrollView horizontal>
+         {countries}
+        </ScrollView>
+        </View>
       </View>
     );
   }
@@ -185,15 +262,15 @@ export default class Home extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     marginBottom: hp("10%"),
-    marginTop: hp("5%")
+    marginTop: hp("20%")
     
   },
   sectionTitle: {
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
-    marginLeft: wp("3%")
+    marginLeft: wp("3%"),
+    marginTop: hp("5%")
   },
   recipe: {
     backgroundColor: "white",
@@ -209,16 +286,11 @@ const styles = StyleSheet.create({
     marginRight: wp("3%")
   },
   recipeName: {
-    fontSize: hp("2.5%"),
+    fontSize: hp("3%"),
     color: "#34359A",
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
     width: wp("55%")
-  },
-  info: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly"
   },
   iconText: {
     display: "flex",
@@ -226,11 +298,23 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     alignItems: "center",
     marginBottom: hp("1%"),
-    width: wp("55%")
   },
   text: {
     fontFamily:"Nunito_400Regular",
     fontSize: hp("2%"),
     marginLeft: wp("2%")
+  },
+  country: {
+    backgroundColor: "white",
+    padding: hp("1.5%"),
+    width: wp("35%"),
+    borderRadius: 10,
+    marginTop: hp("3%"),
+    marginLeft: wp ("5%")
+  },
+  countryName: {
+    textAlign: "center",
+    fontFamily: "Nunito_700Bold",
+    fontSize: hp("2.5%"),
   }
 });
