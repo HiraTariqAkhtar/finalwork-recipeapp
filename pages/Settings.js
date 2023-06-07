@@ -132,15 +132,19 @@ export default class Settings extends React.Component {
   async editProfile() {  
     if( this.state.firstName !== this.state.firstNameEdited || this.state.lastName !== this.state.lastNameEdited || this.state.email !== this.state.emailEdited && (this.state.currPw === "" && this.state.newPw === "" && this.state.confirmNewPw === "")){
       let emailCheck = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-      if (emailCheck.test(this.state.emailEdited) === false) {
-        Alert.alert(
-          "Invalid email address",
-          "Please fill in a valid email address"
-        )
-        this.setState({emailEdited:this.state.email})
+      if(this.state.email !== this.state.emailEdited) {
+        if (emailCheck.test(this.state.emailEdited) === false) {
+          Alert.alert(
+            "Invalid email address",
+            "Please fill in a valid email address"
+          )
+          this.setState({emailEdited:this.state.email})
+        } else{
+          this.checkEmailAvailability()
+        }
       } else{
-        this.checkEmailAvailability()
-      }
+        this.setState({pwBeforeEdit: true})
+        }
     } else if(this.state.currPw !== "" && (this.state.newPw === "" && this.state.confirmNewPw === "")){
       alert("Please enter a new password")
     } else if(this.state.currPw !== "" && (this.state.newPw === "" || this.state.confirmNewPw === "")){
