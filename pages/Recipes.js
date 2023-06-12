@@ -302,6 +302,10 @@ export default class Recipes extends React.Component {
     this.setState({filters: this.state.filters})
   }
 
+  addRecipe() {
+    console.log("icon pressed!!!")
+  }
+
   render() {
     let cultures;
     let dishTypes;
@@ -372,7 +376,7 @@ export default class Recipes extends React.Component {
                     <Ionicons
                       name={"people"}
                       size={hp("2.5%")}
-                      color="#34359A"
+                      color="#FF5E00"
                     />
                     <Text style={styles.text}>{rec.servings}</Text>
 
@@ -382,7 +386,7 @@ export default class Recipes extends React.Component {
                     <Ionicons
                       name={"stopwatch"}
                       size={hp("2.5%")}
-                      color="#34359A"
+                      color="#FF5E00"
                     />
                       <Text style={styles.text}>{rec.time} minutes</Text>
                   </View>
@@ -393,7 +397,7 @@ export default class Recipes extends React.Component {
               <Ionicons
                 name={"flag"}
                 size={hp("2.5%")}
-                color="#34359A"
+                color="#FF5E00"
               />
                 {cultures}
               </View>)}
@@ -403,7 +407,7 @@ export default class Recipes extends React.Component {
               <FontAwesome
                 name={"cutlery"}
                 size={hp("2.5%")}
-                color="#34359A"
+                color="#FF5E00"
               />
                 {dishTypes}
               </View>)}
@@ -413,7 +417,7 @@ export default class Recipes extends React.Component {
                   <Ionicons
                     name={"calendar"}
                     size={hp("2.5%")}
-                    color="#34359A"
+                    color="#FF5E00"
                   />
                     {periods}
                   </View>)}
@@ -431,6 +435,7 @@ export default class Recipes extends React.Component {
         <Ionicons
               name={"close"}
               size={hp("3%")}
+              color="#FF5E00"
               onPress={() => this.removeFilter(filter)}
             />
       </View>
@@ -440,11 +445,17 @@ export default class Recipes extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
+          <Ionicons
+              name={"add"}
+              size={hp("5%")}
+              color="#FF5E00"
+              onPress={() => this.addRecipe()}
+            />
           <Text style={styles.pageTitle}>Recipes</Text>
           <Ionicons
               name={"filter"}
               size={hp("5%")}
-              color="#34359A"
+              color="#FF5E00"
               onPress={() => this.openFilterScreen()}
             />
         </View>
@@ -470,14 +481,14 @@ export default class Recipes extends React.Component {
           <Ionicons
               name={"close"}
               size={hp("5%")}
-              color="#34359A"
+              color="#FF5E00"
               marginLeft={wp("85%")}
               marginTop={hp("3%")}
               onPress={() => this.closeFilterScreen()}
             />
-            <ScrollView>
-              <View style={{marginBottom:hp("3%")}}>
+              <View>
                 <Text style={styles.category}>Culture</Text>
+            <ScrollView style={styles.filterChoice}>
                 {this.state.allCultures.map((culture, index) => 
                 <View style={styles.iconText}>
                   <CheckBox
@@ -486,35 +497,40 @@ export default class Recipes extends React.Component {
                   onClick= {() => this.addFilter(this.state.cultureCheckedInFilter, index, culture)}/>
                   <Text style={styles.text}>{culture}</Text>
                 </View>)}
+              </ScrollView>
               </View>
   
-              <View style={{marginBottom:hp("3%")}}>
+              <View>
                 <Text style={styles.category}>Dish Type</Text>
-                {this.state.allDishTypes.map((type, index) => 
-                <View style={styles.iconText}>
-                  <CheckBox
-                  style={{marginLeft: wp("3%")}}
-                  isChecked = {this.state.dishTypeCheckedInFilter[index]}
-                  onClick= {() => this.addFilter(this.state.dishTypeCheckedInFilter, index, type)}/>
-                  <Text style={styles.text}>{type}</Text>
-                </View>)}
+                <ScrollView style={styles.filterChoice}>
+                  {this.state.allDishTypes.map((type, index) => 
+                    <View style={styles.iconText}>
+                      <CheckBox
+                      style={{marginLeft: wp("3%")}}
+                      isChecked = {this.state.dishTypeCheckedInFilter[index]}
+                      onClick= {() => this.addFilter(this.state.dishTypeCheckedInFilter, index, type)}/>
+                      <Text style={styles.text}>{type}</Text>
+                    </View>)}
+                </ScrollView>
               </View>
   
-              <View style={{marginBottom:hp("3%")}}>
+              <View>
                 <Text style={styles.category}>Occasion</Text>
-                {this.state.allOccasions.map((occasion, index) => 
-                <View style={styles.iconText}>
-                  <CheckBox
-                  style={{marginLeft: wp("3%")}}
-                  isChecked = {this.state.occasionCheckedInFilter[index]}
-                  onClick= {() => this.addFilter(this.state.occasionCheckedInFilter, index, occasion)}/>
-                  <Text style={styles.text}>{occasion}</Text>
-                </View>)}
+                <ScrollView style={styles.filterChoice}>
+                  {this.state.allOccasions.map((occasion, index) => 
+                  <View style={styles.iconText}>
+                    <CheckBox
+                    style={{marginLeft: wp("3%")}}
+                    isChecked = {this.state.occasionCheckedInFilter[index]}
+                    onClick= {() => this.addFilter(this.state.occasionCheckedInFilter, index, occasion)}/>
+                    <Text style={styles.text}>{occasion}</Text>
+                  </View>)}
+                </ScrollView>
               </View>
             <TouchableOpacity style={styles.filterBtn} onPress={() => this.applyFilter()}>
               <Text style={styles.filterText}>Apply filter(s)</Text>
             </TouchableOpacity>
-            </ScrollView>
+            
         </Modal>
       </View>
     );
@@ -525,9 +541,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    marginBottom: hp("10%"),
-    marginTop: hp("5%")
-    
+    paddingBottom: hp("5%"),
+    paddingTop: hp("5%"),
+    backgroundColor:"#FFFFFF"    
   },
   header: {
     display:"flex",
@@ -537,24 +553,27 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     fontFamily: "Nunito_700Bold",
-    fontSize: hp("3.5%")
+    fontSize: hp("3.5%"),
+    color:"#FF0000"
   },
   recipe: {
     backgroundColor: "white",
     padding: hp("1.5%"),
     width: wp("95%"),
     borderRadius: 10,
+    borderColor: "#FF5E00",
+    borderWidth: 3,
     marginTop: hp("3%"),
     marginHorizontal: wp ("2.5%")
   },
   foodImg: {
     width: wp("30%"),
     height: hp("15%"),
-    marginRight: wp("3%")
+    marginRight: wp("3%"),
+    borderRadius: 10,
   },
   recipeName: {
     fontSize: hp("3%"),
-    color: "#34359A",
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
     width: wp("55%")
@@ -580,15 +599,15 @@ const styles = StyleSheet.create({
   filterBtn:{
     width: wp("50%"),
     padding: hp("1%"),
-    backgroundColor: "#34359A",
-    borderRadius: wp("50%"),
+    backgroundColor: "#FF5E00",
+    borderRadius: 10,
     marginHorizontal: wp("25%"),
     marginBottom: hp("3%"),
   },
   category:{
     fontFamily:"Nunito_700Bold",
     marginLeft: wp("5%"),
-    marginBottom: hp("2%"),
+    marginBottom: hp("1%"),
     fontSize: hp("2%"),
   },
   filteredItems:{
@@ -607,8 +626,8 @@ const styles = StyleSheet.create({
   button: {
     width: wp("80%"),
     padding: hp("1%"),
-    backgroundColor: "#34359A",
-    borderRadius: wp("50%"),
+    backgroundColor: "#FF5E00",
+    borderRadius: 10,
     marginTop: hp("10%"),
     marginHorizontal: wp("10%")
   },
@@ -618,4 +637,13 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     textAlign: "center"
   },
+  filterChoice: {
+    marginBottom:hp("3%"),
+    height: hp("20%"),
+    borderRadius: 10,
+    borderColor: "#FF5E00",
+    borderWidth: 3,
+    width: wp("90%"),
+    marginHorizontal: wp("5%"),
+  }
 });

@@ -107,7 +107,7 @@ export default class Home extends React.Component {
       })
     } 
     let sorted = countries.sort((a, b) => a.country.localeCompare(b.country))
-    console.log(sorted)
+    //console.log(sorted)
     this.setState({countries: countries})
   }
 
@@ -198,7 +198,7 @@ export default class Home extends React.Component {
                     <Ionicons
                       name={"people"}
                       size={hp("2.5%")}
-                      color="#34359A"
+                      color="#FF5E00"
                     />
                     <Text style={styles.text}>{rec.servings}</Text>
 
@@ -208,7 +208,7 @@ export default class Home extends React.Component {
                     <Ionicons
                       name={"stopwatch"}
                       size={hp("2.5%")}
-                      color="#34359A"
+                      color="#FF5E00"
                     />
                       <Text style={styles.text}>{rec.time} minutes</Text>
                   </View>
@@ -219,7 +219,7 @@ export default class Home extends React.Component {
               <Ionicons
                 name={"flag"}
                 size={hp("2.5%")}
-                color="#34359A"
+                color="#FF5E00"
               />
                 {cultures}
               </View>)}
@@ -229,7 +229,7 @@ export default class Home extends React.Component {
               <FontAwesome
                 name={"cutlery"}
                 size={hp("2.5%")}
-                color="#34359A"
+                color="#FF5E00"
               />
                 {dishTypes}
               </View>)}
@@ -239,7 +239,7 @@ export default class Home extends React.Component {
                   <Ionicons
                     name={"calendar"}
                     size={hp("2.5%")}
-                    color="#34359A"
+                    color="#FF5E00"
                   />
                     {periods}
                   </View>)}
@@ -262,32 +262,36 @@ export default class Home extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom: hp("10%"),
-    marginTop: hp("20%")
+    paddingBottom: hp("10%"),
+    paddingTop: hp("20%"),
+    backgroundColor:"#FFFFFF" 
     
   },
   sectionTitle: {
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
     marginLeft: wp("3%"),
-    marginTop: hp("5%")
+    marginTop: hp("5%"),
+    color: "#FF0000"
   },
   recipe: {
     backgroundColor: "white",
     padding: hp("1.5%"),
     width: wp("95%"),
     borderRadius: 10,
+    borderColor: "#FF5E00",
+    borderWidth: 3,
     marginTop: hp("3%"),
     marginHorizontal: wp ("2.5%")
   },
   foodImg: {
     width: wp("30%"),
     height: hp("15%"),
-    marginRight: wp("3%")
+    marginRight: wp("3%"),
+    borderRadius: 10,
   },
   recipeName: {
     fontSize: hp("3%"),
-    color: "#34359A",
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
     width: wp("55%")
@@ -309,6 +313,8 @@ const styles = StyleSheet.create({
     padding: hp("1.5%"),
     width: wp("35%"),
     borderRadius: 10,
+    borderColor: "#FF5E00",
+    borderWidth: 3,
     marginTop: hp("3%"),
     marginLeft: wp ("5%")
   },

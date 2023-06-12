@@ -34,10 +34,6 @@ export default class Holidays extends React.Component {
         }]
     }
 
-    this.props.navigation.setOptions({
-        title: this.props.route.params.country
-      });
-
     //this.getHolidays()
   }
 
@@ -86,6 +82,7 @@ export default class Holidays extends React.Component {
                     name={"information-circle"}
                     size={hp("3%")}
                     marginRight={wp("2%")}
+                    color="#FF5E00"
                 />
                 <Text style={styles.text}>{holiday.description}</Text>
               </View>}
@@ -96,6 +93,7 @@ export default class Holidays extends React.Component {
                     name={"location"}
                     size={hp("3%")}
                     marginRight={wp("2%")}
+                    color="#FF5E00"
                 />
                 <Text style={styles.text}>{holiday.locations}</Text>
               </View>}
@@ -104,6 +102,15 @@ export default class Holidays extends React.Component {
 
     return (
       <View style={styles.container}>
+        <View style={styles.header}>
+          <Ionicons
+              name={"arrow-back"}
+              size={hp("5%")}
+              color="#FF5E00"
+              onPress={() => this.props.navigation.goBack()}
+            />
+          <Text style={styles.pageTitle}>{this.props.route.params.country}</Text>
+        </View>
           <ScrollView style={{marginBottom: hp("5%")}}>
               {holidays}
           </ScrollView>
@@ -115,13 +122,29 @@ export default class Holidays extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: hp("5%"),
+    paddingTop: hp("5%"),
+    backgroundColor:"#FFFFFF" 
+  },
+  header: {
+    display:"flex",
+    flexDirection:"row",
+    marginHorizontal: wp("7.5%")
+  },
+  pageTitle: {
+    fontFamily: "Nunito_700Bold",
+    fontSize: hp("3.5%"),
+    color:"#FF0000",
+    marginLeft: wp("10%")
   },
   holiday: {
     backgroundColor: "white",
     padding: hp("1.5%"),
     width: wp("90%"),
     borderRadius: 10,
+    borderColor: "#FF5E00",
+    borderWidth: 2,
     marginTop: hp("3%"),
     marginHorizontal: wp ("5%")
   },
