@@ -146,12 +146,27 @@ export default class Register extends React.Component {
 
 
   render() {
-
     let pw;
+    let showPassword;
+
     if(this.state.showPw) {
       pw = this.state.pw
+      showPassword =
+      <Ionicons
+        name="eye-off"
+        size={hp("2.5%")}
+        marginLeft={wp("3%")}
+        color="#FF5E00"
+        onPress={() => this.setState({showPw: !this.state.showPw})}/>
     } else {
       pw = "**********"
+      showPassword =
+      <Ionicons
+        name="eye"
+        size={hp("2.5%")}
+        marginLeft={wp("3%")}
+        color="#FF5E00"
+        onPress={() => this.setState({showPw: !this.state.showPw})}/>
     }
 
     let emailAvailable;
@@ -212,10 +227,10 @@ export default class Register extends React.Component {
             value={this.state.pwConfirm}
             onChangeText={(txt) => this.setState({pwConfirm: txt})}/>
 
+          </ScrollView>
           <TouchableOpacity style={[styles.button, {marginLeft: wp("50%")}]} onPress={() => this.checkInputData()}>
             <Text style={styles.btnText}>Next</Text>
           </TouchableOpacity>
-          </ScrollView>
 
 
           <Modal
@@ -232,6 +247,7 @@ export default class Register extends React.Component {
                 name="pencil"
                 size={hp("2.5%")}
                 marginLeft={wp("3%")}
+                color="#FF5E00"
                 onPress={() => this.setState({confirmDetails: false})}/>
 
               </View>
@@ -241,27 +257,25 @@ export default class Register extends React.Component {
                 name="pencil"
                 size={hp("2.5%")}
                 marginLeft={wp("3%")}
+                color="#FF5E00"
                 onPress={() => this.setState({confirmDetails: false})}/>
 
               </View>
               <View style={styles.iconText}>
                 <Text>Password: {pw}</Text>
-                <Ionicons
-                name="eye"
-                size={hp("2.5%")}
-                marginLeft={wp("3%")}
-                onPress={() => this.setState({showPw: !this.state.showPw})}/>
+                {showPassword}
 
                 <FontAwesome
                 name="pencil"
                 size={hp("2.5%")}
                 marginLeft={wp("3%")}
+                color="#FF5E00"
                 onPress={() => this.setState({confirmDetails: false})}/>
 
               </View>
             </View>
 
-          <View style={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}>
+          <View style={{display:"flex", flexDirection:"row", justifyContent:"space-between", marginHorizontal:wp("2%")}}>
             <TouchableOpacity style={styles.button} onPress={() => this.setState({confirmDetails: false})}>
               <Text style={styles.btnText}>Back</Text>
             </TouchableOpacity>
@@ -278,19 +292,23 @@ export default class Register extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: hp("8%")    
+    paddingBottom: hp("5%"),
+    paddingTop: hp("5%"),
+    backgroundColor:"#FFFFFF" 
   },
   title: {
     textAlign: 'center',
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
-    marginBottom: hp("5%")
+    marginBottom: hp("5%"),
+    color: "#FF0000"
   },
   question: {
       fontFamily: "Nunito_600SemiBold",
       fontSize: hp("2%"),
       marginBottom: hp("5%"),
-      marginRight: wp("5%")
+      marginRight: wp("5%"),
+      color: "#FF5E00"
   },
   nav: {
       fontFamily: "Nunito_300Light_Italic",
@@ -314,8 +332,8 @@ const styles = StyleSheet.create({
   button: {
     width: wp("45%"),
     padding: hp("1%"),
-    backgroundColor: "#34359A",
-    borderRadius: wp("50%"),
+    backgroundColor: "#FF5E00",
+    borderRadius: 10,
     marginTop: hp("3%"),
   },
   btnText:{

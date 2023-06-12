@@ -104,21 +104,28 @@ export default class Cart extends React.Component {
           icon={clearIcon}
           buttonStyle={styles.clear}
           onPress={() => this.confirmClear()}/>
-        <ScrollView>
-        {this.state.hasData ? 
-          this.state.cartItems.map((item) => (
-            <View style={styles.iconText}>
-              <Text style={styles.cartItem}>{item}</Text>
-              <FontAwesome
-              name={"remove"}
-              size={hp("3%")}
-              color="#ff0000"
-              onPress={() => this.confirmDelete(item)}/>
-            </View>
-          )) 
-        :
-        <Text style={styles.cartItem}>Cart is empty.{'\n'} Add ingredients to see your cart</Text>}
-        </ScrollView>
+        <View style={styles.cart}>
+          <ScrollView>
+          {this.state.hasData ? 
+            this.state.cartItems.map((item) => (
+              <View style={styles.iconText}>
+                <FontAwesome
+                  name={"circle"}
+                  size={hp("1%")}
+                  color="#FF5E00"
+                />
+                <Text style={styles.cartItem}>{item}</Text>
+                <FontAwesome
+                name={"remove"}
+                size={hp("3%")}
+                color="#FF5E00"
+                onPress={() => this.confirmDelete(item)}/>
+              </View>
+            )) 
+          :
+          <Text style={styles.cartItem}>Cart is empty.{'\n'} Add ingredients to see your cart</Text>}
+          </ScrollView>
+        </View>
       </View>
     );
   }
@@ -128,13 +135,15 @@ export default class Cart extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    marginTop: hp("8%"),
+    paddingBottom: hp("5%"),
+    paddingTop: hp("5%"),
+    backgroundColor:"#FFFFFF" 
   },
   title: {
     textAlign: 'center',
     fontFamily: "Nunito_700Bold",
-    fontSize: hp("3.5%")
+    fontSize: hp("3.5%"),
+    color: "#FF0000"
   },
   iconText: {
     display: "flex",
@@ -144,7 +153,7 @@ const styles = StyleSheet.create({
   },
   cartItem: {
     marginBottom: hp("3%"),
-    marginHorizontal: wp("5%"),
+    marginHorizontal: wp("3%"),
     fontFamily: "Nunito_400Regular",
     fontSize: hp("2.5%"),
     textAlign: "center"
@@ -154,5 +163,10 @@ const styles = StyleSheet.create({
     width: wp("30%"),
     left: wp("65%"),
     marginBottom: hp("3%")
+  },
+  cart: {
+    width: wp("80%"),
+    marginLeft: wp("5%"),
   }
+
 });

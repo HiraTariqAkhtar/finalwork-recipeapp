@@ -137,27 +137,30 @@ export default class Login extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: hp("8%"),
-    position: 'relative'
+    paddingBottom: hp("5%"),
+    paddingTop: hp("5%"),
+    backgroundColor:"#FFFFFF" 
   },
   title: {
     textAlign: 'center',
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
-    marginBottom: hp("5%")
+    marginBottom: hp("5%"),
+    color: "#FF0000"
   },
   question: {
       fontFamily: "Nunito_600SemiBold",
       fontSize: hp("2%"),
       marginBottom: hp("5%"),
-      marginRight: wp("5%")
+      marginRight: wp("5%"),
+      color: "#FF5E00"
   },
   nav: {
       fontFamily: "Nunito_300Light_Italic",
       fontSize: hp("2%"),
       marginBottom: hp("5%"),
       marginRight: wp("5%"),
-      textDecorationLine: "underline"
+      textDecorationLine: "underline",
   },
   text: {
       fontFamily: "Nunito_700Bold",
@@ -174,8 +177,8 @@ const styles = StyleSheet.create({
   button: {
     width: wp("80%"),
     padding: hp("1%"),
-    backgroundColor: "#34359A",
-    borderRadius: wp("50%"),
+    backgroundColor: "#FF5E00",
+    borderRadius: 10,
     marginHorizontal: wp("10%"),
     marginTop: hp("5%"),
   },

@@ -133,12 +133,15 @@ export default class Profile extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: hp("8%"),
-    alignItems:"center"
+    alignItems: "center",
+    paddingBottom: hp("5%"),
+    paddingTop: hp("5%"),
+    backgroundColor:"#FFFFFF"
   },
   title: {
     fontFamily: "Nunito_700Bold",
-    fontSize: hp("3.5%")
+    fontSize: hp("3.5%"),
+    color: "#FF0000"
   },
   name: {
     fontFamily: "Nunito_400Regular",
@@ -147,8 +150,8 @@ const styles = StyleSheet.create({
   button: {
     width: wp("80%"),
     padding: hp("1%"),
-    backgroundColor: "#34359A",
-    borderRadius: wp("50%"),
+    backgroundColor: "#FF5E00",
+    borderRadius: 10,
     marginBottom: hp("3%")
   },
   btnText:{

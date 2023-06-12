@@ -36,10 +36,6 @@ export default class RecipeDetails extends React.Component {
       fav: false,
     }
 
-    this.props.navigation.setOptions({
-        title: ""
-      });
-
       this.checkFav()
   }
 
@@ -142,12 +138,17 @@ export default class RecipeDetails extends React.Component {
     let rec = this.state.recipe
     return (
       <View style={styles.container}>
-          <ScrollView>
-        <View style={styles.button1}>
-        <View style={styles.addToFav}>
-          <Text style={styles.title}>{rec.recipeName}</Text>
+         <View style={styles.header}>
+          <Ionicons
+              name={"arrow-back"}
+              size={hp("5%")}
+              color="#FF5E00"
+              onPress={() => this.props.navigation.goBack()}
+            />
+          <Text style={styles.pageTitle}>{rec.recipeName}</Text>
           {fav}
         </View>
+          <ScrollView style={styles.recipe}> 
         {rec.foodImg != "" ?(
           <Image
           source={{uri: rec.foodImg}}
@@ -166,7 +167,7 @@ export default class RecipeDetails extends React.Component {
             <Ionicons
               name={"people"}
               size={hp("5%")}
-              color="#34359A"
+              color="#FF5E00"
             />
               <Text style={styles.text}>{rec.servings}</Text>
           </View>
@@ -175,7 +176,7 @@ export default class RecipeDetails extends React.Component {
               <Ionicons
               name={"stopwatch"}
               size={hp("5%")}
-              color="#34359A"
+              color="#FF5E00"
             />
               <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
             </View>
@@ -186,7 +187,7 @@ export default class RecipeDetails extends React.Component {
             <Ionicons
               name={"flag"}
               size={hp("4%")}
-              color="#34359A"
+              color="#FF5E00"
               marginRight={wp("1%")}
             />
               {rec.culture.map((type) => (
@@ -199,7 +200,7 @@ export default class RecipeDetails extends React.Component {
             <FontAwesome
               name={"cutlery"}
               size={hp("4%")}
-              color="#34359A"
+              color="#FF5E00"
               marginRight={wp("1%")}
             />
               {rec.dishTypes.map((type) => (
@@ -212,7 +213,7 @@ export default class RecipeDetails extends React.Component {
             <Ionicons
               name={"calendar"}
               size={hp("4%")}
-              color="#34359A"
+              color="#FF5E00"
               marginRight={wp("1%")}
             />
               {rec.period.map((period) => (
@@ -221,19 +222,19 @@ export default class RecipeDetails extends React.Component {
             </View>)}
 
                 <View>
-                    <Text style={styles.title}>Ingredients</Text>
+                    <Text style={styles.pageTitle}>Ingredients</Text>
                     {rec.ingredients.map((i) => (
                     <View style={styles.iconText}>
                         <FontAwesome
                           name={"circle"}
                           size={hp("1%")}
-                          color="#000000"
+                          color="#FF5E00"
                         />
                         <Text style={styles.text}>{i.original}</Text>
                         <Ionicons
                           name={"cart"}
                           size={hp("3%")}
-                          color="#34359A"
+                          color="#FF5E00"
                           marginLeft={wp("5%")}
                           onPress={() => this.addToCart(i.nameClean)}
                         />
@@ -241,8 +242,8 @@ export default class RecipeDetails extends React.Component {
               ))}
                 </View>
 
-                <View>
-                    <Text style={styles.title}>Instructions</Text>
+                <View style={{marginBottom: hp("5%")}}>
+                    <Text style={styles.pageTitle}>Instructions</Text>
                     {rec.instructions.map((step) => (
                     <View style= {{marginBottom: hp("2%")}}>
                         <Text style={styles.steps}>Step {step.number}:</Text>
@@ -250,7 +251,6 @@ export default class RecipeDetails extends React.Component {
                     </View>
               ))}
                 </View>
-        </View>
             </ScrollView>
       </View>
     );
@@ -261,24 +261,26 @@ export default class RecipeDetails extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    
+    justifyContent: "center",
+    paddingBottom: hp("5%"),
+    paddingTop: hp("5%"),
+    backgroundColor:"#FFFFFF"    
   },
-  button1: {
-    backgroundColor: "white",
-    padding: hp("3%"),
-    width: wp("90%"),
-    borderRadius: 10,
-    marginBottom: hp("1%"),
+  header: {
+    display:"flex",
+    flexDirection:"row",
+    justifyContent:"space-between",
+    marginHorizontal: wp("7.5%")
   },
   food: {
     width: wp("75%"),
     height: hp("25%"),
-    marginBottom: hp("2%")
+    marginBottom: hp("2%"),
+    borderRadius: 10
   },
-  title: {
+  pageTitle: {
     fontSize: hp("3.5%"),
-    color: "#34359A",
+    color: "#FF0000",
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
   },
@@ -289,7 +291,8 @@ const styles = StyleSheet.create({
   },
   steps: {
     fontFamily:"Nunito_700Bold",
-    fontSize: hp("2.5%")
+    fontSize: hp("2.5%"),
+    color: "#FF5E00"
   },
   iconText: {
     display: "flex",
@@ -309,5 +312,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent:"space-between",
     marginBottom: hp("2%")
+  },
+  recipe:{
+    backgroundColor: "white",
+    padding: hp("3%"),
+    width: wp("90%"),
+    borderRadius: 10,
+    marginBottom: hp("1%"),
+    marginHorizontal: wp("5%")
   }
 });

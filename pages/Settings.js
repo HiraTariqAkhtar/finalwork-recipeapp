@@ -229,35 +229,49 @@ export default class Settings extends React.Component {
 
     return (
       <View style={styles.container}>
-          <TouchableOpacity style={styles.button}
-          onPress={() => this.setState({editModalVisible: true})}>
-          <View style={styles.iconText}>
-              <FontAwesome
-              name="pencil"
-              color="#FFFFFF"
-              size={hp("3%")}
-              marginHorizontal={wp("5%")}/>
-              <Text style={styles.btnText}>Edit profile</Text>
+        <View style={styles.header}>
+          <Ionicons
+              name={"arrow-back"}
+              size={hp("5%")}
+              color="#FF5E00"
+              onPress={() => this.props.navigation.goBack()}
+            />
+          <Text style={styles.pageTitle}>Account settings</Text>
+        </View>
+          <View style={{marginTop: hp("25%"), marginHorizontal: wp("10%")}}>
+            <TouchableOpacity style={styles.button}
+            onPress={() => this.setState({editModalVisible: true})}>
+            <View style={styles.iconText}>
+                <FontAwesome
+                name="pencil"
+                color="#FFFFFF"
+                size={hp("3%")}
+                marginHorizontal={wp("5%")}/>
+                <Text style={styles.btnText}>Edit profile</Text>
+            </View>
+          </TouchableOpacity>
+                
+          <TouchableOpacity style={[styles.button, {backgroundColor: "#FF0000"}]}
+          onPress={() => this.confirmDelete()}>
+            <View style={styles.iconText}>
+                <Ionicons
+                name="trash-outline"
+                color="#FFFFFF"
+                size={hp("3%")}
+                marginHorizontal={wp("5%")}/>
+                <Text style={styles.btnText}>Delete profile</Text>
+            </View>
+          </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-              
-        <TouchableOpacity style={[styles.button, {backgroundColor: "#FF0000"}]}
-        onPress={() => this.confirmDelete()}>
-          <View style={styles.iconText}>
-              <Ionicons
-              name="trash-outline"
-              color="#FFFFFF"
-              size={hp("3%")}
-              marginHorizontal={wp("5%")}/>
-              <Text style={styles.btnText}>Delete profile</Text>
-          </View>
-        </TouchableOpacity>
 
+
+          {/* edit profile */}
         <Modal
         visible={this.state.editModalVisible}>
           <Ionicons
               name={"close"}
               size={hp("5%")}
+              color="#FF5E00"
               marginLeft={wp("5%")}
               marginTop={hp("3%")}
               onPress={() => this.closeEditScreen()}
@@ -359,6 +373,7 @@ export default class Settings extends React.Component {
               size={hp("5%")}
               marginTop={hp("-45%")}
               marginBottom={hp("15%")}
+              color="#FF5E00"
               onPress={() => this.closeEditScreen()}
             />
             {this.state.isLoading && <ActivityIndicator size="large"/>}
@@ -384,14 +399,26 @@ export default class Settings extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    paddingBottom: hp("5%"),
+    paddingTop: hp("5%"),
+    backgroundColor:"#FFFFFF" 
+  },
+  header: {
+    display:"flex",
+    flexDirection:"row",
+    marginHorizontal: wp("7.5%")
+  },
+  pageTitle: {
+    fontFamily: "Nunito_700Bold",
+    fontSize: hp("3.5%"),
+    color:"#FF0000",
+    marginLeft: wp("10%")
   },
   button: {
     width: wp("80%"),
     padding: hp("1%"),
-    backgroundColor: "#34359A",
-    borderRadius: wp("50%"),
+    backgroundColor: "#FF5E00",
+    borderRadius: 10,
     marginBottom: hp("3%")
   },
   btnText:{
@@ -414,20 +441,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
-    marginBottom: hp("3%")
+    marginBottom: hp("3%"),
+    color:"#FF0000",
   },
   placeholder: {
     height: hp("5%"),
     borderWidth: 1,
     padding: wp("2%"),
     marginHorizontal: wp("3%"),
-    marginBottom: hp("3%")
+    marginBottom: hp("3%"),
+    borderRadius: 10
   },
   buttonEdit: {
     width: wp("35%"),
     padding: hp("1%"),
-    backgroundColor: "#34359A",
-    borderRadius: wp("50%"),
+    backgroundColor: "#FF5E00",
+    borderRadius: 10,
     marginTop: hp("3%"),
   },
   confirmEdit:{
