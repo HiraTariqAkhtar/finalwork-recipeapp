@@ -32,6 +32,7 @@ import LogIn from "./pages/LogIn"
 import Register from "./pages/Register"
 import Settings from "./pages/Settings"
 import Holidays from "./pages/Holidays"
+import { color } from "react-native-elements/dist/helpers";
 
 // Navigators
 const Tab = createBottomTabNavigator();
@@ -42,15 +43,8 @@ const HomeScreen = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}/>
-      <Stack.Screen name="RecipeDetail" component={RecipeDetail}/>
-      <Stack.Screen name="Holidays" component={Holidays} 
-      options={{ 
-        headerTitleStyle: {
-          fontFamily: "Nunito_700Bold",
-          fontSize: hp("3.5%")
-          },
-        headerTitleAlign: "center" 
-      }}/>
+      <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ headerShown: false }}/>
+      <Stack.Screen name="Holidays" component={Holidays} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -58,7 +52,7 @@ const RecipesScreen = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Recipes" component={Recipes} options={{ headerShown: false }}/>
-      <Stack.Screen name="RecipeDetail" component={RecipeDetail}/>
+      <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -66,7 +60,7 @@ const FavScreen = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Favorites" component={Favorites} options={{ headerShown: false }}/>
-      <Stack.Screen name="RecipeDetail" component={RecipeDetail}/>
+      <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -74,14 +68,7 @@ const ProfileScreen = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }}/>
-      <Stack.Screen name="Settings" component={Settings} 
-      options={{ 
-        headerTitleStyle: {
-          fontFamily: "Nunito_700Bold",
-          fontSize: hp("3.5%")
-          },
-        headerTitleAlign: "center" 
-      }}/>
+      <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
