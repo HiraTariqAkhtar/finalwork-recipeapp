@@ -143,7 +143,7 @@ export default class Favorites extends React.Component {
         style={styles.recipe}
         onPress={() => this.goToRecipeDetails(rec)}>
           <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-              {rec.foodImg != "" ?(
+              {rec.foodImg != "" && rec.foodImg !== undefined ?(
               <Image
               source={{uri: rec.foodImg}}
               style={styles.foodImg}
