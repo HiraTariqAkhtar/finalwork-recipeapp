@@ -32,12 +32,8 @@ export default class AddRecipe extends React.Component {
         recipeName: "",
         ingredients: [{
             id: 0,
-            name: "",
-            quantity: ""
-        }],
-        ingredientsForDetailPage: [{
-            id: 0,
             nameClean: "",
+            quantity: "",
             original: ""
         }],
         instructions: [{
@@ -149,24 +145,20 @@ export default class AddRecipe extends React.Component {
   addIngredient(ingredient, index, param) {
       let ingredients= [... this.state.ingredients]
       ingredients[index][param] = ingredient
+      ingredients[index].original = `${this.state.ingredients[index].quantity} ${this.state.ingredients[index].nameClean}`
 
       //console.log(ingredients)
 
-      let ingredientsForDetailPage= [... this.state.ingredientsForDetailPage]
-      ingredientsForDetailPage[index].id = index
-      ingredientsForDetailPage[index].nameClean = this.state.ingredients[index].name
-      ingredientsForDetailPage[index].original = `${this.state.ingredients[index].quantity} ${this.state.ingredients[index].name}`
-
       this.setState({ingredients: ingredients})
-      this.setState({ingredientsForDetailPage: ingredientsForDetailPage})
   }
 
   addNewIngredient(index){
       let ingredients= [... this.state.ingredients]
       ingredients.push({
           id: index+1,
-          name:"",
-          quantity:""
+          nameClean:"",
+          quantity:"",
+          original: ""
         })
         
       this.setState({ingredients: ingredients})
@@ -253,7 +245,7 @@ export default class AddRecipe extends React.Component {
       dishTypes: this.state.dishTypes,
       period: this.state.period,
       culture: this.state.culture,
-      ingredients: this.state.ingredientsForDetailPage,
+      ingredients: this.state.ingredients,
       instructions: this.state.instructions
     })
 
@@ -264,15 +256,11 @@ export default class AddRecipe extends React.Component {
         dishTypes: [],
         period: [],
         culture: [],
-        ingredientsForDetailPage : [{
-            id: 0,
-            nameClean: "",
-            original: ""
-        }],
         ingredients: [{
             id: 0,
-            name: "",
-            quantity: ""
+            nameClean: "",
+            quantity: "",
+            original: ""
         }],
         instructions: [{
             number: 0, 
@@ -372,8 +360,8 @@ export default class AddRecipe extends React.Component {
                 <TextInput
                 style={[styles.placeholder, {width:wp("45%")}]}
                 placeholder="ingredient"
-                value={ingredient.name}
-                onChangeText={(txt) => this.addIngredient(txt, index, "name")}/>
+                value={ingredient.nameClean}
+                onChangeText={(txt) => this.addIngredient(txt, index, "nameClean")}/>
 
                 {index == this.state.ingredients.length-1 &&(
                 <Ionicons
