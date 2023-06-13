@@ -6,7 +6,6 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  ToastAndroid,
   Alert
 } from "react-native";
 import {
@@ -47,7 +46,6 @@ export default class AddRecipe extends React.Component {
         }],
         culture: [],
         time: 0,
-        foodImg: "",
         dishTypes: [],
         period: [],
 
@@ -59,17 +57,10 @@ export default class AddRecipe extends React.Component {
         dishTypeCheckedInFilter: [],
         occasionCheckedInFilter: [],
     }
-  }
-
-  componentDidMount() {
     this.getUser()
     this.getAllFilters()
-  
-    this.focusListener = this.props.navigation.addListener('focus', () => {
-        this.getUser()
-        this.getAllFilters()
-    });
   }
+
 
   async getUser() {
     let userEmail = await AsyncStorage.getItem("email")
@@ -265,6 +256,32 @@ export default class AddRecipe extends React.Component {
       ingredients: this.state.ingredientsForDetailPage,
       instructions: this.state.instructions
     })
+
+    this.setState({
+        recipeName: "",
+        servings: "",
+        time: "",
+        dishTypes: [],
+        period: [],
+        culture: [],
+        ingredientsForDetailPage : [{
+            id: 0,
+            nameClean: "",
+            original: ""
+        }],
+        ingredients: [{
+            id: 0,
+            name: "",
+            quantity: ""
+        }],
+        instructions: [{
+            number: 0, 
+            step: "",
+        }],
+        cultureCheckedInFilter: [],
+        dishTypeCheckedInFilter: [],
+        occasionCheckedInFilter: [],
+    })
   }
 
 
@@ -287,6 +304,7 @@ export default class AddRecipe extends React.Component {
             <TextInput
             style={styles.placeholder}
             placeholder="Recipe Name"
+            value={this.state.recipeName}
             onChangeText={(txt) => this.setState({recipeName: txt})}/>
             
             <Text style={styles.text}>Servings:</Text>
@@ -294,6 +312,7 @@ export default class AddRecipe extends React.Component {
             style={styles.placeholder}
             placeholder="0"
             inputMode="numeric"
+            value={this.state.servings}
             onChangeText={(txt) => this.setState({servings: parseInt(txt)})}/>
             
             <Text style={styles.text}>Time needed (in minutes):</Text>
@@ -301,6 +320,7 @@ export default class AddRecipe extends React.Component {
             style={styles.placeholder}
             placeholder="0 minutes"
             inputMode="numeric"
+            value={this.state.time}
             onChangeText={(txt) => this.setState({time: parseInt(txt)})}/>
 
             <Text style={styles.text}>Select all possible filters</Text>
