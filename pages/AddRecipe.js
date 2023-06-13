@@ -6,7 +6,8 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  ToastAndroid
+  ToastAndroid,
+  Alert
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -19,12 +20,15 @@ import CheckBox from 'react-native-check-box'
 
 import { collection, getDocs, addDoc } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default class AddRecipe extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+        userId: 0,
+        
         servings: 0,
         recipeName: "",
         ingredients: [{
@@ -50,9 +54,37 @@ export default class AddRecipe extends React.Component {
         dishTypeCheckedInFilter: [],
         occasionCheckedInFilter: [],
     }
-
-    this.getAllFilters()
   }
+
+  componentDidMount() {
+    this.getUser()
+    this.getAllFilters()
+  
+    this.focusListener = this.props.navigation.addListener('focus', () => {
+        this.getUser()
+        this.getAllFilters()
+    });
+  }
+
+  async getUser() {
+    let userEmail = await AsyncStorage.getItem("email")
+    let userId = 0
+
+    if(userEmail !== null) {
+        let userCollection = collection(DATABASE, "users")
+        let userData = await getDocs(userCollection)
+    
+        if (userData.size > 0) {
+          userData.forEach((doc) => {
+            if(doc.data().email == userEmail) {
+                userId = doc.id
+            }
+          })
+        }
+        this.setState({userId: userId})
+    }
+
+}
 
   async getAllFilters() {
     let cultures = []
@@ -156,6 +188,31 @@ export default class AddRecipe extends React.Component {
       this.setState({ instructions: instructions });
   }
 
+   checkInputFields() {
+      if(this.state.recipeName == "") {
+          Alert.alert(
+              "Recipe name required",
+              "Please enter a recipe name"
+              )
+      } else if(this.state.ingredients.length == 1 && (this.state.ingredients[0].name == "" || this.state.ingredients[0].quantity == "")) {
+          Alert.alert(
+              "Ingredients required",
+              "Please enter all ingredients"
+              )
+      } else if(this.state.instructions.length == 1 && this.state.instructions[0].step == "") {
+          Alert.alert(
+              "Instructions required",
+              "Please enter the instructions"
+              )
+      } else {
+          this.addRecipe()
+      }
+  }
+
+  async addRecipe() {
+
+  }
+
 
   render() {
 
@@ -172,7 +229,7 @@ export default class AddRecipe extends React.Component {
         </View>
 
         <ScrollView style={{marginTop: hp("3%")}} nestedScrollEnabled>
-            <Text style={styles.text}>Recipe name:</Text>
+            <Text style={styles.text}>Recipe name*:</Text>
             <TextInput
             style={styles.placeholder}
             placeholder="Recipe Name"
@@ -230,7 +287,7 @@ export default class AddRecipe extends React.Component {
                   </View>)}
                 </ScrollView>
 
-            <Text style={styles.text}>Ingredients</Text>
+            <Text style={styles.text}>Ingredients*</Text>
             {this.state.ingredients.map((ingredient, index) => (
                 <View style={{display:"flex", flexDirection:"row"}} key={index}>
                 <TextInput
@@ -254,7 +311,7 @@ export default class AddRecipe extends React.Component {
             </View>
             ))}
 
-            <Text style={styles.text}>Instructions</Text>
+            <Text style={styles.text}>Instructions*</Text>
             {this.state.instructions.map((instruction, index) => (
                 <View style={[styles.iconText, {display:"flex", flexDirection:"row"}]} key={index}>
                 <Text style={styles.text}>{index + 1}</Text>
@@ -274,11 +331,10 @@ export default class AddRecipe extends React.Component {
             </View>
             ))}
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => this.checkInputFields()}>
             <Text style={styles.btnText}>Add recipe</Text>
           </TouchableOpacity> 
           </ScrollView>
-
 
       </View>
     );
