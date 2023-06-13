@@ -21,13 +21,15 @@ import { collection, getDocs, addDoc } from "firebase/firestore";
 import {DATABASE} from "../firebaseConfig"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import uuid from 'react-native-uuid';
+
 
 export default class AddRecipe extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
         userId: 0,
-        
+
         servings: 0,
         recipeName: "",
         ingredients: [{
@@ -213,8 +215,9 @@ export default class AddRecipe extends React.Component {
               )
       } else {
           this.addRecipe()
-      }
-  }
+        }
+    }
+
 
   async addRecipe() {
 
@@ -223,6 +226,7 @@ export default class AddRecipe extends React.Component {
     await addDoc((recipeCollection), {
      userId: this.state.userId,
      recipe: {
+         id: uuid.v4(),
          servings: this.state.servings,
          recipeName: this.state.recipeName,
          ingredients: this.state.ingredients,
@@ -272,6 +276,17 @@ export default class AddRecipe extends React.Component {
     })
   }
 
+  goBack() {
+          Alert.alert(
+            "Leave page?",
+            "All unsaved changes will be lost",
+            [
+              { text: "No", style:"cancel" },
+              { text: "Yes", onPress: () => {this.props.navigation.goBack()} }
+            ]
+          )
+  }
+
 
   render() {
 
@@ -282,7 +297,7 @@ export default class AddRecipe extends React.Component {
               name={"arrow-back"}
               size={hp("5%")}
               color="#FF5E00"
-              onPress={() => this.props.navigation.goBack()}
+              onPress={() => this.goBack()}
             />
           <Text style={styles.pageTitle}>Add a new recipe</Text>
         </View>
