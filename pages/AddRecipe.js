@@ -36,6 +36,11 @@ export default class AddRecipe extends React.Component {
             name: "",
             quantity: ""
         }],
+        ingredientsForDetailPage: [{
+            id: 0,
+            nameClean: "",
+            original: ""
+        }],
         instructions: [{
             number: 0, 
             step: "",
@@ -155,7 +160,14 @@ export default class AddRecipe extends React.Component {
       ingredients[index][param] = ingredient
 
       //console.log(ingredients)
+
+      let ingredientsForDetailPage= [... this.state.ingredientsForDetailPage]
+      ingredientsForDetailPage[index].id = index
+      ingredientsForDetailPage[index].nameClean = this.state.ingredients[index].name
+      ingredientsForDetailPage[index].original = `${this.state.ingredients[index].quantity} ${this.state.ingredients[index].name}`
+
       this.setState({ingredients: ingredients})
+      this.setState({ingredientsForDetailPage: ingredientsForDetailPage})
   }
 
   addNewIngredient(index){
@@ -164,8 +176,8 @@ export default class AddRecipe extends React.Component {
           id: index+1,
           name:"",
           quantity:""
-      })
-
+        })
+        
       this.setState({ingredients: ingredients})
   }
 
@@ -223,6 +235,36 @@ export default class AddRecipe extends React.Component {
 
   async addRecipe() {
 
+    let recipeCollection = collection(DATABASE, "recipes")
+  
+    await addDoc((recipeCollection), {
+     userId: this.state.userId,
+     recipe: {
+         servings: this.state.servings,
+         recipeName: this.state.recipeName,
+         ingredients: this.state.ingredients,
+         instructions: this.state.instructions,
+         culture: this.state.culture,
+         timeNeeded: this.state.time,
+         dishTypes: this.state.dishTypes,
+         period: this.state.period
+     }
+   })
+
+   this.goToRecipeDetails()
+  }
+
+  goToRecipeDetails() {
+    this.props.navigation.navigate("RecipeDetail", {
+      recipeName: this.state.recipeName,
+      servings: this.state.servings,
+      timeNeeded: this.state.time,
+      dishTypes: this.state.dishTypes,
+      period: this.state.period,
+      culture: this.state.culture,
+      ingredients: this.state.ingredientsForDetailPage,
+      instructions: this.state.instructions
+    })
   }
 
 
