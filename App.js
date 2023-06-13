@@ -32,7 +32,8 @@ import LogIn from "./pages/LogIn"
 import Register from "./pages/Register"
 import Settings from "./pages/Settings"
 import Holidays from "./pages/Holidays"
-import { color } from "react-native-elements/dist/helpers";
+import AddRecipe from "./pages/AddRecipe"
+
 
 // Navigators
 const Tab = createBottomTabNavigator();
@@ -53,6 +54,7 @@ const RecipesScreen = () => {
     <Stack.Navigator>
       <Stack.Screen name="Recipes" component={Recipes} options={{ headerShown: false }}/>
       <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ headerShown: false }}/>
+      <Stack.Screen name="AddRecipe" component={AddRecipe} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
