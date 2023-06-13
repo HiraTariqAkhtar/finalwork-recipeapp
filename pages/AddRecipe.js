@@ -169,6 +169,12 @@ export default class AddRecipe extends React.Component {
       this.setState({ingredients: ingredients})
   }
 
+  removeIngredient(index) {
+      this.state.ingredients.splice(index, 1)
+
+      this.setState({ingredients: this.state.ingredients})
+  }
+
   addInstruction(instruction, index) {
       let instructions= [... this.state.instructions]
       instructions[index].number = index+1
@@ -187,6 +193,12 @@ export default class AddRecipe extends React.Component {
 
       this.setState({ instructions: instructions });
   }
+
+  removeInstruction(index) {
+    this.state.instructions.splice(index, 1)
+
+    this.setState({instructions: this.state.instructions})
+}
 
    checkInputFields() {
       if(this.state.recipeName == "") {
@@ -296,7 +308,7 @@ export default class AddRecipe extends React.Component {
                 value={ingredient.quantity}
                 onChangeText={(txt) => this.addIngredient(txt, index, "quantity")}/>
                 <TextInput
-                style={[styles.placeholder, {width:wp("55%")}]}
+                style={[styles.placeholder, {width:wp("45%")}]}
                 placeholder="ingredient"
                 value={ingredient.name}
                 onChangeText={(txt) => this.addIngredient(txt, index, "name")}/>
@@ -308,6 +320,13 @@ export default class AddRecipe extends React.Component {
                 color="#FF5E00"
                 onPress={() => this.addNewIngredient(index)}/>
                 )}
+                {(index == this.state.ingredients.length-1 && index > 0) &&(
+                <Ionicons
+                name={"remove"}
+                size={hp("5%")}
+                color="#FF0000"
+                onPress={() => this.removeIngredient(index)}/>
+                )}
             </View>
             ))}
 
@@ -316,7 +335,7 @@ export default class AddRecipe extends React.Component {
                 <View style={[styles.iconText, {display:"flex", flexDirection:"row"}]} key={index}>
                 <Text style={styles.text}>{index + 1}</Text>
                 <TextInput
-                style={[styles.placeholder, {width:wp("75%")}]}
+                style={[styles.placeholder, {width:wp("65%")}]}
                 placeholder="To do"
                 value={instruction.step}
                 onChangeText={(txt) => this.addInstruction(txt, index)}/>
@@ -327,6 +346,13 @@ export default class AddRecipe extends React.Component {
                 size={hp("5%")}
                 color="#FF5E00"
                 onPress={() => this.addNewInstruction(index)}/>
+                )}
+                {(index == this.state.instructions.length-1 && index > 0) &&(
+                <Ionicons
+                name={"remove"}
+                size={hp("5%")}
+                color="#FF0000"
+                onPress={() => this.removeInstruction(index)}/>
                 )}
             </View>
             ))}
