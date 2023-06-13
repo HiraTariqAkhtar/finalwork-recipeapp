@@ -172,7 +172,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: wp("2%"),
     marginHorizontal: wp("3%"),
-    marginBottom: hp("3%")
+    marginBottom: hp("3%"),
+    borderColor: "#FF5E00"
   },
   button: {
     width: wp("80%"),
