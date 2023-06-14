@@ -41,7 +41,12 @@ export default class Settings extends React.Component {
 
         pwBeforeEdit: false,
         pw:"",
-        isLoading: false
+        isLoading: false,
+
+        myRecipes:[{
+          id:0,
+          recipe:{}
+        }]
     }
 
     this.getUserDetails()
@@ -73,7 +78,22 @@ export default class Settings extends React.Component {
         }
       })
     }
-    this.setState({userId: userId})
+
+    let myRecipes = []
+
+    let recipeCollection = collection(DATABASE, "recipes")
+    let recipes = await getDocs(recipeCollection)
+    if (recipes.size > 0) {
+        recipes.forEach((doc) => {
+        if(doc.data().userId === userId) {
+            myRecipes.push({
+              id: doc.id,
+              recipe: doc.data().recipe
+            })
+        }
+    })
+    }
+    this.setState({userId: userId, myRecipes: myRecipes})
 
   }
 
@@ -91,6 +111,12 @@ export default class Settings extends React.Component {
   async deleteProfile() {
     
     await deleteDoc(doc(DATABASE, "users", this.state.userId));
+
+   if(this.state.myRecipes.length > 0) {
+    for(let recipe of this.state.myRecipes) {
+      await deleteDoc(doc(DATABASE, "recipes", recipe.id))
+    }
+   }
 
     // Remove everything from storage --> navigate back to profile page
     await AsyncStorage.removeItem("userLoggedIn")
