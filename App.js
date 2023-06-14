@@ -33,6 +33,7 @@ import Register from "./pages/Register"
 import Settings from "./pages/Settings"
 import Holidays from "./pages/Holidays"
 import AddRecipe from "./pages/AddRecipe"
+import Cookbook from "./pages/Cookbook"
 
 
 // Navigators
@@ -71,6 +72,7 @@ const ProfileScreen = () => {
     <Stack.Navigator>
       <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }}/>
       <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }}/>
+      <Stack.Screen name="Cookbook" component={Cookbook} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }

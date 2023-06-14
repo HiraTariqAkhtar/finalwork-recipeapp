@@ -93,6 +93,11 @@ export default class Profile extends React.Component {
       login =
       <View>
         <TouchableOpacity style={styles.button}
+        onPress={() => this.props.navigation.navigate("Cookbook")}>
+          <Text style={styles.btnText}>My Cookbook</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button}
         onPress={() => this.props.navigation.navigate("Settings")}>
           <Text style={styles.btnText}>Settings</Text>
         </TouchableOpacity>
