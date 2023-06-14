@@ -56,6 +56,7 @@ const RecipesScreen = () => {
       <Stack.Screen name="Recipes" component={Recipes} options={{ headerShown: false }}/>
       <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ headerShown: false }}/>
       <Stack.Screen name="AddRecipe" component={AddRecipe} options={{ headerShown: false }}/>
+      <Stack.Screen name="Cookbook" component={Cookbook} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -73,6 +74,8 @@ const ProfileScreen = () => {
       <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }}/>
       <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }}/>
       <Stack.Screen name="Cookbook" component={Cookbook} options={{ headerShown: false }}/>
+      <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ headerShown: false }}/>
+      <Stack.Screen name="AddRecipe" component={AddRecipe} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
