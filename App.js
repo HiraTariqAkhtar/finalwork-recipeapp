@@ -32,7 +32,9 @@ import LogIn from "./pages/LogIn"
 import Register from "./pages/Register"
 import Settings from "./pages/Settings"
 import Holidays from "./pages/Holidays"
-import { color } from "react-native-elements/dist/helpers";
+import AddRecipe from "./pages/AddRecipe"
+import Cookbook from "./pages/Cookbook"
+
 
 // Navigators
 const Tab = createBottomTabNavigator();
@@ -53,6 +55,8 @@ const RecipesScreen = () => {
     <Stack.Navigator>
       <Stack.Screen name="Recipes" component={Recipes} options={{ headerShown: false }}/>
       <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ headerShown: false }}/>
+      <Stack.Screen name="AddRecipe" component={AddRecipe} options={{ headerShown: false }}/>
+      <Stack.Screen name="Cookbook" component={Cookbook} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -69,6 +73,9 @@ const ProfileScreen = () => {
     <Stack.Navigator>
       <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }}/>
       <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }}/>
+      <Stack.Screen name="Cookbook" component={Cookbook} options={{ headerShown: false }}/>
+      <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ headerShown: false }}/>
+      <Stack.Screen name="AddRecipe" component={AddRecipe} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }

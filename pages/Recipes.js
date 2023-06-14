@@ -7,6 +7,7 @@ import {
   Text,
   Image,
   Modal,
+  Alert
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -20,6 +21,9 @@ import {RECIPES_API_KEY} from '@env'
 
 import { collection, getDocs, addDoc } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export default class Recipes extends React.Component {
   constructor(props) {
@@ -302,8 +306,20 @@ export default class Recipes extends React.Component {
     this.setState({filters: this.state.filters})
   }
 
-  addRecipe() {
-    console.log("icon pressed!!!")
+  async addRecipe() {
+    let loggedIn = await AsyncStorage.getItem("userLoggedIn")
+    if(loggedIn !==  null) {
+      this.props.navigation.navigate("AddRecipe")
+    } else {
+      Alert.alert(
+        "Not logged in",
+        "You need to log in to add a new recipe",
+        [
+          {text: "Cancel", style: "cancel"},
+          {text: "Log in", onPress: () => this.props.navigation.navigate("LogIn")}
+        ]
+      )
+    }
   }
 
   render() {

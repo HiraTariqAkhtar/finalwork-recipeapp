@@ -149,7 +149,7 @@ export default class RecipeDetails extends React.Component {
           {fav}
         </View>
           <ScrollView style={styles.recipe}> 
-        {rec.foodImg != "" ?(
+        {rec.foodImg != "" && rec.foodImg !== undefined ?(
           <Image
           source={{uri: rec.foodImg}}
           style={styles.food}

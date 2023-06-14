@@ -13,72 +13,67 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
-import { Button } from "react-native-elements/dist/buttons/Button";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {DATABASE} from "../firebaseConfig"
+import { collection, getDocs } from "firebase/firestore"; 
 
 
-export default class Favorites extends React.Component {
+export default class Cookbook extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      hasData: false,
-      favRecipes:[]
-    }
-  }
-  componentDidMount() {
-    this.getFavList();
-  
-    this.focusListener = this.props.navigation.addListener('focus', () => {
-      this.getFavList();
-    });
+        userId: "",
+        hasData: false,
+        myRecipes:[]
+      }
+
+      this.getUser()
   }
 
-  async getFavList() {
-    let favList = await AsyncStorage.getItem("favorites")
-    if(favList !== null) {
-      this.setState({favRecipes: JSON.parse(favList)})
-      this.checkListItems()
+  async getUser() {
+    let userEmail = await AsyncStorage.getItem("email")
+    let userId = 0
+
+    let userCollection = collection(DATABASE, "users")
+    let userData = await getDocs(userCollection)
+    if (userData.size > 0) {
+      userData.forEach((doc) => {
+        if(doc.data().email === userEmail) {
+            userId = doc.id
+        }
+      })
+    }
+    this.setState({userId: userId})
+    this.getRecipeList()
+  }
+
+  async getRecipeList() {
+    let myRecipes = []
+
+    let recipeCollection = collection(DATABASE, "recipes")
+    let recipes = await getDocs(recipeCollection)
+    if (recipes.size > 0) {
+        recipes.forEach((doc) => {
+        if(doc.data().userId === this.state.userId) {
+            this.setState({hasData: true})
+            myRecipes.push(doc.data().recipe)
+        }
+    })
     } else {
-      this.setState({hasData: false})
+        this.setState({hasData: false})
     }
-  }
-
-  async checkListItems() {
-    if(this.state.favRecipes.length >0) {
-      this.setState({hasData: true})
-    } else {
-      this.setState({hasData: false})
-    }
-  }
-
-
-  confirmClear() {
-    Alert.alert(
-      "Clear list",
-      `Are you sure you want to clear the list?`,
-      [
-        {text: "No", style: "cancel"},
-        {text: "Yes", onPress: () => this.clearList()}
-      ]
-    )
-  }
-
-  async clearList() {
-    let emptyList = []
-    this.setState({favRecipes: emptyList})
-    this.setState({hasData: false})
-    await AsyncStorage.removeItem("favorites")
-    ToastAndroid.show("list cleared", ToastAndroid.SHORT)
+    console.log(myRecipes)
+    this.setState({myRecipes: myRecipes})
   }
 
   goToRecipeDetails(rec) {
     this.props.navigation.navigate("RecipeDetail", {
       id: rec.id,
       recipeName: rec.recipeName,
-      foodImg: rec.foodImg,
       servings: rec.servings,
       timeNeeded: rec.timeNeeded,
       dishTypes: rec.dishTypes,
@@ -91,18 +86,11 @@ export default class Favorites extends React.Component {
 
 
   render() {
-
-    let clearIcon =
-    <Ionicons
-    name="trash-outline"
-    color="#FFFFFF"
-    size={hp("3%")}/>
-
-
     let cultures;
     let dishTypes;
     let periods;
-    this.state.favRecipes.forEach((rec) => {
+
+    this.state.myRecipes.forEach((rec) => {
       if(rec.culture.length > 1){
         cultures = 
         rec.culture.map((culture) => (
@@ -136,25 +124,20 @@ export default class Favorites extends React.Component {
     })
 
     let recipes;
-    if(this.state.favRecipes.length > 0) {
-      recipes = this.state.favRecipes.map((rec) => (
+    if(this.state.myRecipes.length > 0) {
+      recipes = this.state.myRecipes.map((rec) => (
         <TouchableOpacity
         key={rec.id}
         style={styles.recipe}
         onPress={() => this.goToRecipeDetails(rec)}>
           <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-              {rec.foodImg != "" && rec.foodImg !== undefined ?(
-              <Image
-              source={{uri: rec.foodImg}}
-              style={styles.foodImg}
-              />)
-              : 
+             
               <FontAwesome
                   name={"image"}
                   size={hp("15%")}
                   color="#D3D3D3"
                   marginRight={wp("3%")}
-                />}
+                />
     
                 <View>
                   <Text style={styles.recipeName}>
@@ -216,94 +199,107 @@ export default class Favorites extends React.Component {
         </TouchableOpacity>
       ))
     } else {
-      recipes = <Text style={styles.noRecipes}>No recipes found</Text>
+      recipes = 
+      <View>
+          <Text style={styles.noRecipes}>No recipes added yet</Text>
+          <View style={{display:"flex", flexDirection:"row", justifyContent:"center"}}>
+                <Text style={styles.question}>Add a new recipe?</Text>
+                <Text style={styles.nav} onPress={() => this.props.navigation.navigate("AddRecipe")}>Click here</Text>
+        </View>
+      </View>
     }
 
     return (
       <View style={styles.container}>
-          <Text style={styles.title}>Favorites</Text>
-          <Button
-          title="Clear list"
-          icon={clearIcon}
-          buttonStyle={styles.clear}
-          onPress={() => this.confirmClear()}/>
+          <View style={styles.header}>
+          <Ionicons
+              name={"arrow-back"}
+              size={hp("5%")}
+              color="#FF5E00"
+              onPress={() => this.props.navigation.goBack()}
+            />
+          <Text style={styles.title}>My Cookbook</Text>
+        </View>
         <ScrollView>
-        {recipes}
+            {recipes}
         </ScrollView>
       </View>
     );
   }
 }
 
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingBottom: hp("5%"),
-    paddingTop: hp("5%"),
-    backgroundColor:"#FFFFFF" 
-  },
-  title: {
-    textAlign: 'center',
-    fontFamily: "Nunito_700Bold",
-    fontSize: hp("3.5%"),
-    color: "#FF0000"
-  },
-  iconText: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-  },
-  clear: {
-    backgroundColor:"#ff0000",
-    width: wp("30%"),
-    left: wp("65%"),
-    marginBottom: hp("3%")
-  },
-  recipe: {
-    backgroundColor: "white",
-    padding: hp("1.5%"),
-    width: wp("95%"),
-    borderRadius: 10,
-    borderColor: "#FF5E00",
-    borderWidth: 3,
-    marginTop: hp("3%"),
-    marginHorizontal: wp ("2.5%")
-  },
-  foodImg: {
-    width: wp("30%"),
-    height: hp("15%"),
-    marginRight: wp("3%"),
-    borderRadius: 10,
-  },
-  recipeName: {
-    fontSize: hp("2.5%"),
-    fontFamily: "Nunito_700Bold",
-    marginBottom: hp("1%"),
-    width: wp("55%")
-  },
-  info: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly"
-  },
-  iconText: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    marginBottom: hp("1%"),
-  },
-  text: {
-    fontFamily:"Nunito_400Regular",
-    fontSize: hp("2%"),
-    marginLeft: wp("2%")
-  },
-  noRecipes:{
-    marginBottom: hp("3%"),
-    marginHorizontal: wp("3%"),
-    fontFamily: "Nunito_400Regular",
-    fontSize: hp("2.5%"),
-    textAlign: "center"
-  },
+    container: {
+        flex: 1,
+        paddingBottom: hp("5%"),
+        paddingTop: hp("5%"),
+        backgroundColor:"#FFFFFF" 
+      },
+    header: {
+        display:"flex",
+        flexDirection:"row",
+        marginHorizontal: wp("7.5%")
+    },
+    title: {
+        fontFamily: "Nunito_700Bold",
+        fontSize: hp("3.5%"),
+        color:"#FF0000",
+        marginLeft: wp("10%")
+    },
+    recipe: {
+        backgroundColor: "white",
+        padding: hp("1.5%"),
+        width: wp("95%"),
+        borderRadius: 10,
+        borderColor: "#FF5E00",
+        borderWidth: 3,
+        marginTop: hp("3%"),
+        marginHorizontal: wp ("2.5%")
+      },
+      recipeName: {
+        fontSize: hp("2.5%"),
+        fontFamily: "Nunito_700Bold",
+        marginBottom: hp("1%"),
+        width: wp("55%")
+      },
+      info: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-evenly"
+      },
+      iconText: {
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        alignItems: "center",
+        marginBottom: hp("1%"),
+      },
+      text: {
+        fontFamily:"Nunito_400Regular",
+        fontSize: hp("2%"),
+        marginLeft: wp("2%")
+      },
+      noRecipes:{
+        marginTop: hp("5%"),
+        marginBottom: hp("3%"),
+        marginHorizontal: wp("3%"),
+        fontFamily: "Nunito_400Regular",
+        fontSize: hp("2.5%"),
+        textAlign: "center"
+      },
+      question: {
+        fontFamily: "Nunito_600SemiBold",
+        fontSize: hp("2%"),
+        marginBottom: hp("5%"),
+        marginRight: wp("5%"),
+        color: "#FF5E00"
+    },
+    nav: {
+        fontFamily: "Nunito_300Light_Italic",
+        fontSize: hp("2%"),
+        marginBottom: hp("5%"),
+        marginRight: wp("5%"),
+        textDecorationLine: "underline"
+    },
 });
