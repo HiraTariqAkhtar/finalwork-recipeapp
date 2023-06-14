@@ -242,16 +242,7 @@ export default class AddRecipe extends React.Component {
   }
 
   goToRecipeDetails() {
-    this.props.navigation.navigate("RecipeDetail", {
-      recipeName: this.state.recipeName,
-      servings: this.state.servings,
-      timeNeeded: this.state.time,
-      dishTypes: this.state.dishTypes,
-      period: this.state.period,
-      culture: this.state.culture,
-      ingredients: this.state.ingredients,
-      instructions: this.state.instructions
-    })
+    this.props.navigation.navigate("Cookbook")
 
     this.setState({
         recipeName: "",
