@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   Text,
   Image,
-  ScrollView
+  ScrollView,
+  ImageBackground
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -189,13 +190,15 @@ export default class Home extends React.Component {
     return (
       <ScrollView>
         <View style={styles.container}>
-          <View>
-          <Text style={styles.sectionTitle}>Cultural eating habit</Text>
-          <View style={styles.recipe}>
-            <Text  style={styles.countryName}>Did you know that ...</Text>
-            <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
-          </View>
-          </View>
+          <ImageBackground
+          source={require("../assets/recipeApp/food.jpg")}
+          resizeMode="cover"
+          style={styles.backgroundImage}>
+            <View style={styles.didYouKnow}>
+              <Text  style={styles.countryName}>Did you know that ...</Text>
+              <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
+            </View>
+          </ImageBackground>
           <View>
             <Text style={styles.sectionTitle}>Recipe of the day</Text>
             <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
@@ -289,7 +292,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingBottom: hp("3%"),
-    paddingTop: hp("5%"),
+    paddingTop: hp("3%"),
     backgroundColor:"#FFFFFF" 
     
   },
@@ -354,5 +357,20 @@ const styles = StyleSheet.create({
     fontFamily:"Nunito_400Regular",
     textAlign:"center",
     fontSize: hp("2%"),
-  }
+  },
+  didYouKnow: {
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    padding: hp("1.5%"),
+    width: wp("60%"),
+    borderRadius: 10,
+    borderColor: "#FF5E00",
+    borderWidth: 3,
+    marginHorizontal: wp ("20%"),
+  },
+  backgroundImage: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: wp("100%"),
+    height: hp("30%"),
+  },
 });
