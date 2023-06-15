@@ -34,7 +34,7 @@ export default class Holidays extends React.Component {
         }]
     }
 
-    //this.getHolidays()
+    this.getHolidays()
   }
 
   async getHolidays() {
@@ -45,8 +45,7 @@ export default class Holidays extends React.Component {
 
       let holidaysThisMonth = []
 
-      for(let i = currentMonth; i <= 12; i++) {
-          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=${this.props.route.params.countryCode}&month=${i}&year=${currentYear}`)
+          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=${this.props.route.params.countryCode}&month=${currentMonth}&year=${currentYear}`)
           .then((res) => {
               //console.log(res.data.response.holidays)
               let holidays = res.data.response.holidays
@@ -64,7 +63,28 @@ export default class Holidays extends React.Component {
               holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
               this.setState({holidays: holidaysThisMonth})
             })
+
+      if(currentMonth != 12) {
+        for(let i = currentMonth+1; i <= 12; i++) {
+          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=${this.props.route.params.countryCode}&month=${i}&year=${currentYear}`)
+          .then((res) => {
+              //console.log(res.data.response.holidays)
+              let holidays = res.data.response.holidays
+              holidays.forEach((holiday) => {
+                      holidaysThisMonth.push({
+                          name: holiday.name,
+                          description: holiday.description,
+                          locations: holiday.locations,
+                          datetime: holiday.date.datetime,
+                          holidayType: holiday.primary_type
+                      })
+              });
+              holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
+              this.setState({holidays: holidaysThisMonth})
+            })
       }
+      }
+      
   }
 
 
