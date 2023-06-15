@@ -44,11 +44,14 @@ export default class Home extends React.Component {
         countries:[{
           country: "Pakistan",
           countryCode: "pk"
-        }]
+        }], 
+
+        didYouKnow: ""
     };
 
     //this.getRecipeOfTheDay()
     this.getCountriesForHolidays()
+    this.getDidYouKnow()
   }
 
 
@@ -106,8 +109,7 @@ export default class Home extends React.Component {
         })
       })
     } 
-    let sorted = countries.sort((a, b) => a.country.localeCompare(b.country))
-    //console.log(sorted)
+    countries.sort((a, b) => a.country.localeCompare(b.country))
     this.setState({countries: countries})
   }
 
@@ -116,6 +118,21 @@ export default class Home extends React.Component {
       country: country.country,
       countryCode: country.countryCode
     })
+  }
+
+  async getDidYouKnow() {
+    let didYouKnows = []
+    let didYouKnowCollection = collection(DATABASE, "didyouknows")
+    let didYouKnowData = await getDocs(didYouKnowCollection)
+    if (didYouKnowData.size > 0) {
+      didYouKnowData.forEach((doc) => {
+        didYouKnows.push(doc.data().didYouKnow)
+      })
+    } 
+    let randomFact = didYouKnows[Math.floor(Math.random() * didYouKnows.length)]
+    console.log(didYouKnows)
+
+    this.setState({didYouKnow: randomFact})
   }
 
 
@@ -170,91 +187,100 @@ export default class Home extends React.Component {
 
 
     return (
-      <View style={styles.container}>
-        <View>
-          <Text style={styles.sectionTitle}>Recipe of the day</Text>
-          <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
-            <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-            {rec.foodImg != "" ?(
-            <Image
-            source={{uri: rec.foodImg}}
-            style={styles.foodImg}
-            />)
-            : 
-            <FontAwesome
-                name={"image"}
-                size={hp("15%")}
-                color="#D3D3D3"
-                marginRight={wp("3%")}
-              />}
-  
-              <View>
-                <Text style={styles.recipeName}>
-                  {rec.recipeName}
-                </Text>
-
-                <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-                  <View style={[styles.iconText, {marginRight: wp("5%")}]}>
-                    <Ionicons
-                      name={"people"}
-                      size={hp("2.5%")}
-                      color="#FF5E00"
-                    />
-                    <Text style={styles.text}>{rec.servings}</Text>
-
-                  </View>
-
-                  <View style={styles.iconText}>
-                    <Ionicons
-                      name={"stopwatch"}
-                      size={hp("2.5%")}
-                      color="#FF5E00"
-                    />
-                      <Text style={styles.text}>{rec.time} minutes</Text>
-                  </View>
-                </View>
-
-                {rec.culture.length > 0 && (
-              <View style={[styles.iconText, {width: wp("60%")}]}>
-              <Ionicons
-                name={"flag"}
-                size={hp("2.5%")}
-                color="#FF5E00"
-              />
-                {cultures}
-              </View>)}
-  
-              {rec.dishTypes.length > 0 && (
-              <View style={[styles.iconText, {width: wp("60%")}]}>
+      <ScrollView>
+        <View style={styles.container}>
+          <View>
+          <Text style={styles.sectionTitle}>Cultural eating habit</Text>
+          <View style={styles.recipe}>
+            <Text  style={styles.countryName}>Did you know that ...</Text>
+            <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
+          </View>
+          </View>
+          <View>
+            <Text style={styles.sectionTitle}>Recipe of the day</Text>
+            <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
+              <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+              {rec.foodImg != "" ?(
+              <Image
+              source={{uri: rec.foodImg}}
+              style={styles.foodImg}
+              />)
+              : 
               <FontAwesome
-                name={"cutlery"}
-                size={hp("2.5%")}
-                color="#FF5E00"
-              />
-                {dishTypes}
-              </View>)}
+                  name={"image"}
+                  size={hp("15%")}
+                  color="#D3D3D3"
+                  marginRight={wp("3%")}
+                />}
+    
+                <View>
+                  <Text style={styles.recipeName}>
+                    {rec.recipeName}
+                  </Text>
   
-                  {rec.period.length > 0 && (
+                  <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+                    <View style={[styles.iconText, {marginRight: wp("5%")}]}>
+                      <Ionicons
+                        name={"people"}
+                        size={hp("2.5%")}
+                        color="#FF5E00"
+                      />
+                      <Text style={styles.text}>{rec.servings}</Text>
+  
+                    </View>
+  
+                    <View style={styles.iconText}>
+                      <Ionicons
+                        name={"stopwatch"}
+                        size={hp("2.5%")}
+                        color="#FF5E00"
+                      />
+                        <Text style={styles.text}>{rec.time} minutes</Text>
+                    </View>
+                  </View>
+  
+                  {rec.culture.length > 0 && (
                 <View style={[styles.iconText, {width: wp("60%")}]}>
-                  <Ionicons
-                    name={"calendar"}
-                    size={hp("2.5%")}
-                    color="#FF5E00"
-                  />
-                    {periods}
-                  </View>)}
+                <Ionicons
+                  name={"flag"}
+                  size={hp("2.5%")}
+                  color="#FF5E00"
+                />
+                  {cultures}
+                </View>)}
+    
+                {rec.dishTypes.length > 0 && (
+                <View style={[styles.iconText, {width: wp("60%")}]}>
+                <FontAwesome
+                  name={"cutlery"}
+                  size={hp("2.5%")}
+                  color="#FF5E00"
+                />
+                  {dishTypes}
+                </View>)}
+    
+                    {rec.period.length > 0 && (
+                  <View style={[styles.iconText, {width: wp("60%")}]}>
+                    <Ionicons
+                      name={"calendar"}
+                      size={hp("2.5%")}
+                      color="#FF5E00"
+                    />
+                      {periods}
+                    </View>)}
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        <View>
-        <Text style={styles.sectionTitle}>Upcoming holidays</Text>
-        <ScrollView horizontal>
-         {countries}
-        </ScrollView>
-        </View>
+            </TouchableOpacity>
+          </View>
+  
+          <View>
+          <Text style={styles.sectionTitle}>Upcoming holidays</Text>
+          <ScrollView horizontal>
+           {countries}
+          </ScrollView>
+          </View>
       </View>
+        </ScrollView>
     );
   }
 }
@@ -262,8 +288,8 @@ export default class Home extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: hp("10%"),
-    paddingTop: hp("20%"),
+    paddingBottom: hp("3%"),
+    paddingTop: hp("5%"),
     backgroundColor:"#FFFFFF" 
     
   },
@@ -271,7 +297,7 @@ const styles = StyleSheet.create({
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
     marginLeft: wp("3%"),
-    marginTop: hp("5%"),
+    marginTop: hp("3%"),
     color: "#FF0000"
   },
   recipe: {
@@ -312,6 +338,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: hp("1.5%"),
     width: wp("35%"),
+    height: wp("40%"),
     borderRadius: 10,
     borderColor: "#FF5E00",
     borderWidth: 3,
@@ -322,5 +349,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "Nunito_700Bold",
     fontSize: hp("2.5%"),
+  },
+  fact:{
+    fontFamily:"Nunito_400Regular",
+    textAlign:"center",
+    fontSize: hp("2%"),
   }
 });
