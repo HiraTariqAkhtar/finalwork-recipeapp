@@ -109,8 +109,7 @@ export default class Home extends React.Component {
         })
       })
     } 
-    let sorted = countries.sort((a, b) => a.country.localeCompare(b.country))
-    //console.log(sorted)
+    countries.sort((a, b) => a.country.localeCompare(b.country))
     this.setState({countries: countries})
   }
 
