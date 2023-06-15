@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import {FIREBASE_API_KEY} from '@env'
+import {FIREBASE_API_KEY , FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID, FIREBASE_MEASUREMENT_ID} from '@env'
 
 // Optionally import the services that you want to use
 // import {...} from "firebase/auth";
@@ -10,13 +10,13 @@ import {getFirestore} from "firebase/firestore";
 
 // Initialize Firebase
 const firebaseConfig = {
-    apiKey: {FIREBASE_API_KEY},
-    authDomain: "finalwork-recipeapp.firebaseapp.com",
-    projectId: "finalwork-recipeapp",
-    storageBucket: "finalwork-recipeapp.appspot.com",
-    messagingSenderId: "253167603919",
-    appId: "1:253167603919:web:607abf97e1025ba18d27ba",
-    measurementId: "G-4JYNGWPB89"
+    apiKey: FIREBASE_API_KEY,
+    authDomain: FIREBASE_AUTH_DOMAIN,
+    projectId: FIREBASE_PROJECT_ID,
+    storageBucket: FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+    appId: FIREBASE_APP_ID,
+    measurementId: FIREBASE_MEASUREMENT_ID
   };
 
 const app = initializeApp(firebaseConfig);
