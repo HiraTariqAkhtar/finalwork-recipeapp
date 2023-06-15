@@ -230,13 +230,22 @@ export default class Settings extends React.Component {
     }
     let comparePasswords = bcrypt.compareSync(password, userPw);
         if (comparePasswords) {
-          let pwHash = bcrypt.hashSync(this.state.newPw, 8);
-          updateDoc(doc(DATABASE, "users", this.state.userId), {
-            firstName: this.state.firstNameEdited,
-            lastName: this.state.lastNameEdited,
-            email: this.state.emailEdited,
-            password: pwHash
-          })
+          if(this.state.currPw === "" && this.state.newPw === "" && this.state.confirmNewPw === "") {
+            updateDoc(doc(DATABASE, "users", this.state.userId), {
+              firstName: this.state.firstNameEdited,
+              lastName: this.state.lastNameEdited,
+              email: this.state.emailEdited,
+            })
+          } else{
+            let pwHash = bcrypt.hashSync(this.state.newPw, 8);
+            updateDoc(doc(DATABASE, "users", this.state.userId), {
+              firstName: this.state.firstNameEdited,
+              lastName: this.state.lastNameEdited,
+              email: this.state.emailEdited,
+              password: pwHash
+            })
+          }
+          
           AsyncStorage.setItem("firstName", this.state.firstNameEdited);
           AsyncStorage.setItem("lastName", this.state.lastNameEdited);
           AsyncStorage.setItem("email", this.state.emailEdited);
