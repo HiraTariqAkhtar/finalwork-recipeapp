@@ -339,6 +339,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: hp("1.5%"),
     width: wp("35%"),
+    height: wp("40%"),
     borderRadius: 10,
     borderColor: "#FF5E00",
     borderWidth: 3,
