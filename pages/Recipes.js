@@ -32,75 +32,25 @@ export default class Recipes extends React.Component {
 
 
     this.state = {
-      // randomRecipes: [
-      //   {
-      //     id:0,
-      //     servings: 0,
-      //     recipeName: "",
-      //     ingredients: [{
-      //       id: 0,
-      //       nameAndQuantity: "",
-      //       img: "",
-      //     }],
-      //     instructions: [],
-      //     culture: [],
-      //     time: 0,
-      //     foodImg: "",
-      //     dishTypes: [],
-      //     period: [],
-      //   },
-      // ],
-
       randomRecipes: [
         {
           id:0,
-          servings: 5,
-          recipeName: "Pakora",
-          ingredients: [
-            {
+          servings: 0,
+          recipeName: "",
+          ingredients: [{
             id: 0,
-            original: "2 gujvjfdhg",
+            nameAndQuantity: "",
             img: "",
-            nameClean: "jfdgujvjfdhghg"
-          },
-          {
-            id: 0,
-            original: "1 chilhbghkv",
-            img: "",
-            nameClean: "chilhbghkv"
-          },
-          {
-            id: 0,
-            original: "7 fejvgilqbchjqd ",
-            img: "",
-            nameClean: "fejvgilqbchjqd"
-          }
-        ],
-          instructions: [
-            {
-            number: 1,
-            step: "hjg"
-          },
-          {
-            number: 2,
-            step: "hjg"
-          },
-          {
-            number: 3,
-            step: "hjg"
-          },
-          {
-            number: 4,
-            step: "hjg"
-          },
-        ],
-          culture: ["Indian", "Asian"],
-          time: 30,
-          foodImg: "https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/vegetable-pakora-recipe.jpg",
-          dishTypes: ["snack", "lunch"],
+          }],
+          instructions: [],
+          culture: [],
+          time: 0,
+          foodImg: "",
+          dishTypes: [],
           period: [],
         },
       ],
+
       allCultures:[],
       allDishTypes:[],
       allOccasions:[],
@@ -116,28 +66,28 @@ export default class Recipes extends React.Component {
 
 
   async getRecipes() {
-    // axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${RECIPES_API_KEY}`)
-    // .then((res) => {
-    //   let recipes = []
-    //   res.data.recipes.forEach((rec) => {
-    //     if(rec.analyzedInstructions !== null) {
-    //       recipes.push({
-    //         id: rec.id,
-    //         servings: rec.servings,
-    //         recipeName: rec.title,
-    //         ingredients: rec.extendedIngredients,
-    //         instructions: rec.analyzedInstructions[0].steps,
-    //         culture: rec.cuisines,
-    //         time: rec.readyInMinutes,
-    //         foodImg: rec.image,
-    //         dishTypes: rec.dishTypes,
-    //         period: rec.occasions
-    //       })
-    //     }
-    //   })
+    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${RECIPES_API_KEY}`)
+    .then((res) => {
+      let recipes = []
+      res.data.recipes.forEach((rec) => {
+        if(rec.analyzedInstructions !== null) {
+          recipes.push({
+            id: rec.id,
+            servings: rec.servings,
+            recipeName: rec.title,
+            ingredients: rec.extendedIngredients,
+            instructions: rec.analyzedInstructions[0].steps,
+            culture: rec.cuisines,
+            time: rec.readyInMinutes,
+            foodImg: rec.image,
+            dishTypes: rec.dishTypes,
+            period: rec.occasions
+          })
+        }
+      })
       
-    //   this.setState({randomRecipes: recipes})
-    // })
+      this.setState({randomRecipes: recipes})
+    })
     this.getFilterData()
   }
 
@@ -257,27 +207,27 @@ export default class Recipes extends React.Component {
     let filterTags = this.state.filters.toString().toLowerCase()
     //console.log(filterTags)
 
-    // axios.get(`https://api.spoonacular.com/recipes/random?number=3&tags=${filterTags}&apiKey=${RECIPES_API_KEY}`)
-    // .then((res) => {
-    //   let filteredRecipes = []
-    //   res.data.recipes.forEach((rec) => {
-    //     if(rec.analyzedInstructions != null) {
-    //       filteredRecipes.push({
-    //         id: rec.id,
-    //         servings: rec.servings,
-    //         recipeName: rec.title,
-    //         ingredients: rec.extendedIngredients,
-    //         instructions: rec.analyzedInstructions[0].steps,
-    //         culture: rec.cuisines,
-    //         time: rec.readyInMinutes,
-    //         foodImg: rec.image,
-    //         dishTypes: rec.dishTypes,
-    //         period: rec.occasions
-    //       })
-    //     }
-    //   })
-    //   this.setState({randomRecipes: filteredRecipes})
-    // })
+    axios.get(`https://api.spoonacular.com/recipes/random?number=3&tags=${filterTags}&apiKey=${RECIPES_API_KEY}`)
+    .then((res) => {
+      let filteredRecipes = []
+      res.data.recipes.forEach((rec) => {
+        if(rec.analyzedInstructions != null) {
+          filteredRecipes.push({
+            id: rec.id,
+            servings: rec.servings,
+            recipeName: rec.title,
+            ingredients: rec.extendedIngredients,
+            instructions: rec.analyzedInstructions[0].steps,
+            culture: rec.cuisines,
+            time: rec.readyInMinutes,
+            foodImg: rec.image,
+            dishTypes: rec.dishTypes,
+            period: rec.occasions
+          })
+        }
+      })
+      this.setState({randomRecipes: filteredRecipes})
+    })
 
     this.getFilterData()
   }

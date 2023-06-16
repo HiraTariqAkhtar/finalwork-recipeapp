@@ -270,7 +270,8 @@ const styles = StyleSheet.create({
     display:"flex",
     flexDirection:"row",
     justifyContent:"space-between",
-    marginHorizontal: wp("7.5%")
+    marginHorizontal: wp("7.5%"),
+    flexWrap:"wrap"
   },
   food: {
     width: wp("75%"),

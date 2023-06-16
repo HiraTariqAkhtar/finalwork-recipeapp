@@ -50,7 +50,7 @@ export default class Home extends React.Component {
         didYouKnow: ""
     };
 
-    //this.getRecipeOfTheDay()
+    this.getRecipeOfTheDay()
     this.getCountriesForHolidays()
     this.getDidYouKnow()
   }
@@ -341,7 +341,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: hp("1.5%"),
     width: wp("35%"),
-    height: wp("40%"),
     borderRadius: 10,
     borderColor: "#FF5E00",
     borderWidth: 3,
