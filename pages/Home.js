@@ -68,10 +68,10 @@ export default class Home extends React.Component {
     //this.getRecipeOfTheDay()
     //this.getHolidays()
     this.getDidYouKnow()
-    this.getTimeDate()
+    this.getTimeDateAndWeather()
   }
 
-  async getTimeDate() {
+  async getTimeDateAndWeather() {
     axios.get("https://api.open-meteo.com/v1/forecast?latitude=33.7215&longitude=73.0433&hourly=temperature_2m&current_weather=true")
       .then((res) => {
         let weatherInIslamabad = res.data.current_weather.temperature
