@@ -34,7 +34,7 @@ export default class Holidays extends React.Component {
         }]
     }
 
-    this.getHolidays()
+    //this.getHolidays()
   }
 
   async getHolidays() {
@@ -45,7 +45,7 @@ export default class Holidays extends React.Component {
 
       let holidaysThisMonth = []
 
-          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=${this.props.route.params.countryCode}&month=${currentMonth}&year=${currentYear}`)
+          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${currentMonth}&year=${currentYear}`)
           .then((res) => {
               //console.log(res.data.response.holidays)
               let holidays = res.data.response.holidays
@@ -66,7 +66,7 @@ export default class Holidays extends React.Component {
 
       if(currentMonth != 12) {
         for(let i = currentMonth+1; i <= 12; i++) {
-          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=${this.props.route.params.countryCode}&month=${i}&year=${currentYear}`)
+          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${i}&year=${currentYear}`)
           .then((res) => {
               //console.log(res.data.response.holidays)
               let holidays = res.data.response.holidays
@@ -129,7 +129,7 @@ export default class Holidays extends React.Component {
               color="#FF5E00"
               onPress={() => this.props.navigation.goBack()}
             />
-          <Text style={styles.pageTitle}>{this.props.route.params.country}</Text>
+          <Text style={styles.pageTitle}>Pakistani holidays</Text>
         </View>
           <ScrollView style={{marginBottom: hp("5%")}}>
               {holidays}
