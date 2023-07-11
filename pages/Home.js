@@ -58,7 +58,7 @@ export default class Home extends React.Component {
     };
 
     this.getRecipeOfTheDay()
-    this.getHolidays()
+    //this.getHolidays()
     this.getDidYouKnow()
   }
 
@@ -216,6 +216,15 @@ export default class Home extends React.Component {
     <TouchableOpacity style={styles.holidays} onPress={() => this.goToHolidaysPage()}>
       <Text  style={styles.holidayName}>{holiday.name}</Text>
       <Text  style={styles.holidayDate}>{holiday.datetime.day} - {holiday.datetime.month} - {holiday.datetime.year}</Text>
+      {holiday.holidayType &&
+                  <View style={styles.iconText}>
+                <Ionicons
+                    name={"information-circle"}
+                    size={hp("3%")}
+                    color="#FF5E00"
+                />
+                <Text style={styles.text}>{holiday.holidayType}</Text>
+              </View>}
     </TouchableOpacity>
     )
     
@@ -388,7 +397,7 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_700Bold",
     fontSize: hp("2%"),
     textAlign: "center",
-    marginTop: hp("1.5%"),
+    marginVertical: hp("1.5%"),
   },
   fact:{
     fontFamily:"Nunito_400Regular",
