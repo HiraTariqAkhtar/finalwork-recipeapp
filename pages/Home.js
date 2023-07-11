@@ -42,24 +42,49 @@ export default class Home extends React.Component {
           period: [],
         },
 
-        holidays: [{
-          name: "Independence day",
-          description: "This is the description",
-          locations: "All",
-          datetime: {
-              year: 2023,
-              month: 8,
-              day: 14
-          },
-          holidayType: "Public holiday"
+      holidays: [{
+        name: "Independence day",
+        description: "This is the description",
+        locations: "All",
+        datetime: {
+            year: 2023,
+            month: 8,
+            day: 14
+        },
+        holidayType: "Public holiday"
       }], 
 
-        didYouKnow: ""
+      didYouKnow: "",
+
+      dateTime: {
+        date: "",
+        time: ""
+      },
     };
 
-    this.getRecipeOfTheDay()
+  }
+  
+  componentDidMount() {
+    //this.getRecipeOfTheDay()
     //this.getHolidays()
     this.getDidYouKnow()
+    this.getTimeDate()
+  }
+
+  async getTimeDate() {
+    setInterval(()=>{
+      let date = new Date().toLocaleDateString("en-GB", {timeZone: "Asia/Karachi"})
+      let time = new Date().toLocaleTimeString("en-GB", {timeZone: "Asia/Karachi"})
+      let timeWithoutSeconds = time.slice(0, -3)
+      //console.log(timeWithoutSeconds)
+      
+      let dateAndTime = {
+        date: date,
+        time: timeWithoutSeconds
+      }
+      //console.log(dateAndTime)
+      this.setState({dateTime: dateAndTime})
+    }, 1000)
   }
 
 
@@ -168,7 +193,7 @@ export default class Home extends React.Component {
       })
     } 
     let randomFact = didYouKnows[Math.floor(Math.random() * didYouKnows.length)]
-    console.log(didYouKnows)
+    //console.log(didYouKnows)
 
     this.setState({didYouKnow: randomFact})
   }
@@ -227,12 +252,15 @@ export default class Home extends React.Component {
               </View>}
     </TouchableOpacity>
     )
-    
 
-
+  
     return (
       <ScrollView>
         <View style={styles.container}>
+          <View style={styles.didYouKnow}>
+          <Text style={styles.dateTime}>{this.state.dateTime.date}</Text>
+          <Text style={styles.dateTime}>{this.state.dateTime.time}</Text>
+          </View>
           <ImageBackground
           source={require("../assets/recipeApp/food.jpg")}
           resizeMode="cover"
@@ -335,8 +363,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:"#FFFFFF",
-    height: hp("100%")
-    
+    height: hp("100%"),
+    marginVertical: hp("5%"),
   },
   sectionTitle: {
     fontSize: hp("3%"),
@@ -420,4 +448,9 @@ const styles = StyleSheet.create({
     height: hp("30%"),
     marginTop: hp("5%")
   },
+  dateTime: {
+    fontFamily: "Nunito_700Bold",
+    fontSize: hp("2.5%"),
+    textAlign: "center",
+  }
 });
