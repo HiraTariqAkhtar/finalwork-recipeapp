@@ -325,9 +325,8 @@ export default class Home extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: hp("3%"),
-    paddingTop: hp("3%"),
-    backgroundColor:"#FFFFFF" 
+    backgroundColor:"#FFFFFF",
+    height: hp("100%")
     
   },
   sectionTitle: {
@@ -374,12 +373,11 @@ const styles = StyleSheet.create({
   holidays: {
     backgroundColor: "white",
     padding: hp("1.5%"),
-    width: wp("35%"),
     borderRadius: 10,
     borderColor: "#FF5E00",
     borderWidth: 3,
     marginTop: hp("3%"),
-    marginLeft: wp ("5%")
+    marginLeft: wp ("2.5%")
   },
   holidayName: {
     textAlign: "center",
@@ -389,6 +387,8 @@ const styles = StyleSheet.create({
   holidayDate: {
     fontFamily: "Nunito_700Bold",
     fontSize: hp("2%"),
+    textAlign: "center",
+    marginTop: hp("1.5%"),
   },
   fact:{
     fontFamily:"Nunito_400Regular",
@@ -396,18 +396,19 @@ const styles = StyleSheet.create({
     fontSize: hp("2%"),
   },
   didYouKnow: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     padding: hp("1.5%"),
-    width: wp("60%"),
+    width: wp("95%"),
     borderRadius: 10,
     borderColor: "#FF5E00",
     borderWidth: 3,
-    marginHorizontal: wp ("20%"),
+    marginHorizontal: wp ("2.5%"),
   },
   backgroundImage: {
     justifyContent: "center",
     alignItems: "center",
     width: wp("100%"),
     height: hp("30%"),
+    marginTop: hp("5%")
   },
 });
