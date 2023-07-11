@@ -60,6 +60,7 @@ export default class Home extends React.Component {
         date: "",
         time: ""
       },
+      weather: ""
     };
 
   }
@@ -72,6 +73,11 @@ export default class Home extends React.Component {
   }
 
   async getTimeDate() {
+    axios.get("https://api.open-meteo.com/v1/forecast?latitude=33.7215&longitude=73.0433&hourly=temperature_2m&current_weather=true")
+      .then((res) => {
+        let weatherInIslamabad = res.data.current_weather.temperature
+        this.setState({weather: `${weatherInIslamabad}°C`})
+      })
     setInterval(()=>{
       let date = new Date().toLocaleDateString("en-GB", {timeZone: "Asia/Karachi"})
       let time = new Date().toLocaleTimeString("en-GB", {timeZone: "Asia/Karachi"})
@@ -260,6 +266,7 @@ export default class Home extends React.Component {
           <View style={styles.didYouKnow}>
           <Text style={styles.dateTime}>{this.state.dateTime.date}</Text>
           <Text style={styles.dateTime}>{this.state.dateTime.time}</Text>
+          <Text style={styles.dateTime}>{this.state.weather}</Text>
           </View>
           <ImageBackground
           source={require("../assets/recipeApp/food.jpg")}
