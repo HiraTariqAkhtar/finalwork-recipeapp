@@ -16,7 +16,7 @@ import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { SvgUri } from 'react-native-svg';
 
-import {RECIPES_API_KEY} from '@env'
+import {RECIPES_API_KEY, HOLIDAYS_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs } from "firebase/firestore"; 
 
@@ -42,16 +42,23 @@ export default class Home extends React.Component {
           period: [],
         },
 
-        countries:[{
-          country: "Pakistan",
-          countryCode: "pk"
-        }], 
+        holidays: [{
+          name: "Independence day",
+          description: "This is the description",
+          locations: "All",
+          datetime: {
+              year: 2023,
+              month: 8,
+              day: 14
+          },
+          holidayType: "Public holiday"
+      }], 
 
         didYouKnow: ""
     };
 
     this.getRecipeOfTheDay()
-    this.getCountriesForHolidays()
+    this.getHolidays()
     this.getDidYouKnow()
   }
 
@@ -98,27 +105,57 @@ export default class Home extends React.Component {
     })
   }
 
-  async getCountriesForHolidays() {
-    let countries = []
-    let countryCollection = collection(DATABASE, "countries")
-    let countryData = await getDocs(countryCollection)
-    if (countryData.size > 0) {
-      countryData.forEach((doc) => {
-        countries.push({
-          country: doc.data().country,
-          countryCode: doc.data().countryCode
-        })
-      })
-    } 
-    countries.sort((a, b) => a.country.localeCompare(b.country))
-    this.setState({countries: countries})
+  async getHolidays() {
+    let date = new Date()
+      let currentDay = date.getDate()
+      let currentMonth = date.getMonth()+1
+      let currentYear = date.getFullYear()
+
+      let holidaysThisMonth = []
+
+          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${currentMonth}&year=${currentYear}`)
+          .then((res) => {
+              //console.log(res.data.response.holidays)
+              let holidays = res.data.response.holidays
+              holidays.forEach((holiday) => {
+                  if(holiday.date.datetime.day >= currentDay){
+                      holidaysThisMonth.push({
+                          name: holiday.name,
+                          description: holiday.description,
+                          locations: holiday.locations,
+                          datetime: holiday.date.datetime,
+                          holidayType: holiday.primary_type
+                      })
+                  }
+              });
+              holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
+              this.setState({holidays: holidaysThisMonth})
+            })
+
+      if(currentMonth != 12) {
+        for(let i = currentMonth+1; i <= 12; i++) {
+          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${i}&year=${currentYear}`)
+          .then((res) => {
+              //console.log(res.data.response.holidays)
+              let holidays = res.data.response.holidays
+              holidays.forEach((holiday) => {
+                      holidaysThisMonth.push({
+                          name: holiday.name,
+                          description: holiday.description,
+                          locations: holiday.locations,
+                          datetime: holiday.date.datetime,
+                          holidayType: holiday.primary_type
+                      })
+              });
+              holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
+              this.setState({holidays: holidaysThisMonth})
+            })
+      }
+      }
   }
 
-  async goToHolidaysPage(country) {
-    this.props.navigation.navigate("Holidays", {
-      country: country.country,
-      countryCode: country.countryCode
-    })
+  async goToHolidaysPage() {
+    this.props.navigation.navigate("Holidays")
   }
 
   async getDidYouKnow() {
@@ -175,13 +212,10 @@ export default class Home extends React.Component {
     }
 
 
-    let countries = this.state.countries.map((country) =>
-    <TouchableOpacity style={styles.country} onPress={() => this.goToHolidaysPage(country)}>
-        <SvgUri
-        uri={`https://flagcdn.com/${country.countryCode}.svg`}
-        width={wp("25%")}
-        height={hp("15%")}/>
-      <Text  style={styles.countryName}>{country.country}</Text>
+    let holidays = this.state.holidays.map((holiday) =>
+    <TouchableOpacity style={styles.holidays} onPress={() => this.goToHolidaysPage()}>
+      <Text  style={styles.holidayName}>{holiday.name}</Text>
+      <Text  style={styles.holidayDate}>{holiday.datetime.day} - {holiday.datetime.month} - {holiday.datetime.year}</Text>
     </TouchableOpacity>
     )
     
@@ -195,7 +229,7 @@ export default class Home extends React.Component {
           resizeMode="cover"
           style={styles.backgroundImage}>
             <View style={styles.didYouKnow}>
-              <Text  style={styles.countryName}>Did you know that ...</Text>
+              <Text  style={styles.holidayName}>Did you know that ...</Text>
               <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
             </View>
           </ImageBackground>
@@ -279,7 +313,7 @@ export default class Home extends React.Component {
           <View>
           <Text style={styles.sectionTitle}>Upcoming holidays</Text>
           <ScrollView horizontal>
-           {countries}
+           {holidays}
           </ScrollView>
           </View>
       </View>
@@ -337,7 +371,7 @@ const styles = StyleSheet.create({
     fontSize: hp("2%"),
     marginLeft: wp("2%")
   },
-  country: {
+  holidays: {
     backgroundColor: "white",
     padding: hp("1.5%"),
     width: wp("35%"),
@@ -347,10 +381,14 @@ const styles = StyleSheet.create({
     marginTop: hp("3%"),
     marginLeft: wp ("5%")
   },
-  countryName: {
+  holidayName: {
     textAlign: "center",
     fontFamily: "Nunito_700Bold",
     fontSize: hp("2.5%"),
+  },
+  holidayDate: {
+    fontFamily: "Nunito_700Bold",
+    fontSize: hp("2%"),
   },
   fact:{
     fontFamily:"Nunito_400Regular",
