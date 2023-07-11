@@ -20,105 +20,13 @@ export default class Holidays extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-        holidays: [{
-            name: "Independence day",
-            description: "This is the description",
-            locations: "All",
-            datetime: {
-                year: 2023,
-                month: 8,
-                day: 14
-            },
-            holidayType: "Public holiday"
-        }]
-    }
+    this.state = {}
 
-    //this.getHolidays()
-  }
-
-  async getHolidays() {
-      let date = new Date()
-      let currentDay = date.getDate()
-      let currentMonth = date.getMonth()+1
-      let currentYear = date.getFullYear()
-
-      let holidaysThisMonth = []
-
-          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${currentMonth}&year=${currentYear}`)
-          .then((res) => {
-              //console.log(res.data.response.holidays)
-              let holidays = res.data.response.holidays
-              holidays.forEach((holiday) => {
-                  if(holiday.date.datetime.day >= currentDay){
-                      holidaysThisMonth.push({
-                          name: holiday.name,
-                          description: holiday.description,
-                          locations: holiday.locations,
-                          datetime: holiday.date.datetime,
-                          holidayType: holiday.primary_type
-                      })
-                  }
-              });
-              holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
-              this.setState({holidays: holidaysThisMonth})
-            })
-
-      if(currentMonth != 12) {
-        for(let i = currentMonth+1; i <= 12; i++) {
-          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${i}&year=${currentYear}`)
-          .then((res) => {
-              //console.log(res.data.response.holidays)
-              let holidays = res.data.response.holidays
-              holidays.forEach((holiday) => {
-                      holidaysThisMonth.push({
-                          name: holiday.name,
-                          description: holiday.description,
-                          locations: holiday.locations,
-                          datetime: holiday.date.datetime,
-                          holidayType: holiday.primary_type
-                      })
-              });
-              holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
-              this.setState({holidays: holidaysThisMonth})
-            })
-      }
-      }
-      
   }
 
 
   render() {
-     
-      
-      let holidays = this.state.holidays.map((holiday) => (
-          <View style={styles.holiday}>
-              <Text style={styles.holidayName}>{holiday.name} ({holiday.holidayType})</Text>
-              <Text style={styles.holidayDate}>{holiday.datetime.day} - {holiday.datetime.month} - {holiday.datetime.year}</Text>
 
-              {holiday.description &&
-                  <View style={styles.iconText}>
-                <Ionicons
-                    name={"information-circle"}
-                    size={hp("3%")}
-                    marginRight={wp("2%")}
-                    color="#FF5E00"
-                />
-                <Text style={styles.text}>{holiday.description}</Text>
-              </View>}
-
-             {holiday.locations &&
-                 <View style={styles.iconText}>
-                <Ionicons
-                    name={"location"}
-                    size={hp("3%")}
-                    marginRight={wp("2%")}
-                    color="#FF5E00"
-                />
-                <Text style={styles.text}>{holiday.locations}</Text>
-              </View>}
-          </View>
-      ))
 
     return (
       <View style={styles.container}>
@@ -129,11 +37,38 @@ export default class Holidays extends React.Component {
               color="#FF5E00"
               onPress={() => this.props.navigation.goBack()}
             />
-          <Text style={styles.pageTitle}>Pakistani holidays</Text>
+          <Text style={styles.pageTitle}>{this.props.route.params.name}</Text>
         </View>
-          <ScrollView style={{marginBottom: hp("5%")}}>
-              {holidays}
-          </ScrollView>
+        <ScrollView style={{marginHorizontal: wp("7.5%"), marginTop: hp("3%")}}>
+           <View style={styles.iconText}>
+            <Ionicons
+              name={"calendar"}
+              size={hp("3.5%")}
+              color="#FF5E00"
+            />
+            <Text style={styles.text}>{this.props.route.params.day} - {this.props.route.params.month} - {this.props.route.params.year}</Text>
+           </View>
+
+           {this.props.route.params.locations && 
+            <View style={styles.iconText}>
+              <Ionicons
+                name={"location"}
+                size={hp("3.5%")}
+                color="#FF5E00"
+              />
+              <Text style={styles.text}>{this.props.route.params.locations}</Text>
+             </View>}
+
+           {this.props.route.params.description && 
+            <View style={styles.iconText}>
+              <Ionicons
+                name={"information-circle"}
+                size={hp("3.5%")}
+                color="#FF5E00"
+              />
+              <Text style={styles.text}>{this.props.route.params.description}</Text>
+             </View>}
+        </ScrollView>
       </View>
     );
   }
@@ -173,12 +108,13 @@ const styles = StyleSheet.create({
   },
   holidayDate: {
     fontFamily: "Nunito_700Bold",
-    fontSize: hp("2%"),
+    fontSize: hp("2.5%"),
   },
   text: {
     fontFamily: "Nunito_400Regular",
-    fontSize: hp("2%"),
-    width:wp("75%")
+    fontSize: hp("2.5%"),
+    width:wp("75%"),
+    marginLeft: wp("2%")
   },
   iconText: {
     display: "flex",

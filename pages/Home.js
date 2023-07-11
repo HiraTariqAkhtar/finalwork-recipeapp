@@ -14,7 +14,6 @@ import {
 } from "react-native-responsive-screen";
 import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
-import { SvgUri } from 'react-native-svg';
 
 import {RECIPES_API_KEY, HOLIDAYS_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
@@ -185,8 +184,16 @@ export default class Home extends React.Component {
       }
   }
 
-  async goToHolidaysPage() {
-    this.props.navigation.navigate("Holidays")
+  async goToHolidaysPage(name, description, locations, day, month, year, holidayType) {
+    this.props.navigation.navigate("Holidays", {
+      name: name,
+      description: description,
+      locations: locations,
+      day: day,
+      month: month,
+      year: year,
+      holidayType: holidayType
+    })
   }
 
   async getDidYouKnow() {
@@ -244,7 +251,7 @@ export default class Home extends React.Component {
 
 
     let holidays = this.state.holidays.map((holiday) =>
-    <TouchableOpacity style={styles.holidays} onPress={() => this.goToHolidaysPage()}>
+    <TouchableOpacity style={styles.holidays} onPress={() => this.goToHolidaysPage(holiday.name, holiday.description, holiday.locations, holiday.datetime.day, holiday.datetime.month, holiday.datetime.year, holiday.holidayType)}>
       <Text  style={styles.holidayName}>{holiday.name}</Text>
       <Text  style={styles.holidayDate}>{holiday.datetime.day} - {holiday.datetime.month} - {holiday.datetime.year}</Text>
       {holiday.holidayType &&
