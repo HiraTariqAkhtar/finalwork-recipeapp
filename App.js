@@ -34,6 +34,7 @@ import Settings from "./pages/Settings"
 import Holidays from "./pages/Holidays"
 import AddRecipe from "./pages/AddRecipe"
 import Cookbook from "./pages/Cookbook"
+import Map from "./pages/Map"
 
 
 // Navigators
@@ -94,6 +95,18 @@ const Tabs = () => {
       tabBarIcon: ({focused}) => (
         <Ionicons
         name={focused? 'home' : 'home-outline'}
+        size={hp("5%")}
+        color = "#ff0000"
+        />
+      ),
+      unmountOnBlur: true
+    }}/>
+
+    <Tab.Screen name="MapScreen" component={Map}
+    options= {{
+      tabBarIcon: ({focused}) => (
+        <Ionicons
+        name={focused? 'map' : 'map-outline'}
         size={hp("5%")}
         color = "#ff0000"
         />
