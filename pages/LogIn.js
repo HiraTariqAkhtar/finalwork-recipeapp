@@ -179,15 +179,15 @@ const styles = StyleSheet.create({
   button: {
     width: wp("80%"),
     padding: hp("1%"),
-    backgroundColor: "#FF5E00",
+    backgroundColor: "#115740",
     borderRadius: 10,
-    marginHorizontal: wp("10%"),
     marginTop: hp("5%"),
+    marginHorizontal: wp("10%")
   },
-  btnText:{
-    fontFamily:"Nunito_400Regular",
+btnText:{
+    fontFamily:"Nunito_700Bold",
     fontSize: hp("2.5%"),
     color: "#ffffff",
     textAlign: "center"
-  },
+},
 });

@@ -28,7 +28,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default class Recipes extends React.Component {
   constructor(props) {
     super(props);
-    this.getRecipes()
+    //this.getRecipes()
 
 
     this.state = {
@@ -494,7 +494,7 @@ export default class Recipes extends React.Component {
                 </ScrollView>
               </View>
             <TouchableOpacity style={styles.filterBtn} onPress={() => this.applyFilter()}>
-              <Text style={styles.filterText}>Apply filter(s)</Text>
+              <Text style={styles.btnText}>Apply filter(s)</Text>
             </TouchableOpacity>
             
         </Modal>
@@ -556,16 +556,11 @@ const styles = StyleSheet.create({
     fontSize: hp("2%"),
     marginLeft: wp("2%")
   },
-  filterText: {
-    fontFamily:"Nunito_700Bold",
-    fontSize: hp("2.5%"),
-    color: "#ffffff",
-    textAlign: "center"
-  },
+
   filterBtn:{
     width: wp("50%"),
     padding: hp("1%"),
-    backgroundColor: "#FF5E00",
+    backgroundColor: "#115740",
     borderRadius: 10,
     marginHorizontal: wp("25%"),
     marginBottom: hp("3%"),
@@ -592,17 +587,17 @@ const styles = StyleSheet.create({
   button: {
     width: wp("80%"),
     padding: hp("1%"),
-    backgroundColor: "#FF5E00",
+    backgroundColor: "#115740",
     borderRadius: 10,
     marginTop: hp("10%"),
     marginHorizontal: wp("10%")
   },
-  btnText:{
-    fontFamily:"Nunito_400Regular",
+btnText:{
+    fontFamily:"Nunito_700Bold",
     fontSize: hp("2.5%"),
     color: "#ffffff",
     textAlign: "center"
-  },
+},
   filterChoice: {
     marginBottom:hp("3%"),
     height: hp("20%"),

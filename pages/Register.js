@@ -334,16 +334,16 @@ const styles = StyleSheet.create({
   button: {
     width: wp("45%"),
     padding: hp("1%"),
-    backgroundColor: "#FF5E00",
+    backgroundColor: "#115740",
     borderRadius: 10,
     marginTop: hp("3%"),
   },
   btnText:{
-    fontFamily:"Nunito_400Regular",
+    fontFamily:"Nunito_700Bold",
     fontSize: hp("2.5%"),
     color: "#ffffff",
     textAlign: "center"
-  },
+},
   iconText: {
     display: "flex",
     flexDirection: "row",
@@ -351,4 +351,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: hp("1%"),
   },
+
 });
