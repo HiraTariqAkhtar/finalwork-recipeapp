@@ -43,7 +43,7 @@ export default class Home extends React.Component {
 
       holidays: [{
         name: "Independence day",
-        description: "This is the description",
+        description: "Pakistan celebrates its Independence Day on August 14. This day marks Pakistan’s emergence as an independent state.",
         locations: "All",
         datetime: {
             year: 2023,
@@ -143,7 +143,7 @@ export default class Home extends React.Component {
 
       let holidaysThisMonth = []
 
-          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${currentMonth}&year=${currentYear}`)
+      axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${currentMonth}&year=${currentYear}`)
           .then((res) => {
               //console.log(res.data.response.holidays)
               let holidays = res.data.response.holidays
