@@ -14,6 +14,7 @@ import {
 import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import SelectDropdown from 'react-native-select-dropdown'
+import MapView from 'react-native-maps';
 
 
 export default class Map extends React.Component {
@@ -78,6 +79,17 @@ export default class Map extends React.Component {
               </View>
             </View>
           </View>
+
+          <MapView 
+          style={{height: '65%', width: '100%', marginTop: hp("5%")}}
+          showsUserLocation={true}
+          initialRegion={{
+            latitude: 50.8503396,
+            longitude: 4.3517103,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}/> 
+
       </View>
     );
   }
