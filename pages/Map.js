@@ -13,8 +13,10 @@ import {
 } from "react-native-responsive-screen";
 import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
+
 import SelectDropdown from 'react-native-select-dropdown'
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 
 
 export default class Map extends React.Component {
@@ -22,8 +24,24 @@ export default class Map extends React.Component {
     super(props);
 
     this.state = {
-      mapOptions: ["All", "Restaurants", "Supermarkets"]
+      mapOptions: ["All", "Restaurants", "Supermarkets"],
+      permissionGranted: "",
+      userLocation: {
+        latitude: 0,
+        longitude: 0
+      }
     }
+
+    this.askLocationPermission()
+  }
+
+  async askLocationPermission() {
+    let status = await Location.requestForegroundPermissionsAsync();
+    //console.log(status)
+
+    let location = await Location.getCurrentPositionAsync({});
+    //console.log(location);
+    this.setState({permissionGranted: status, userLocation: {latitude: location.coords.latitude, longitude: location.coords.longitude}})
   }
 
   async filterResults(selected) {
@@ -82,13 +100,50 @@ export default class Map extends React.Component {
 
           <MapView 
           style={{height: '65%', width: '100%', marginTop: hp("5%")}}
-          showsUserLocation={true}
           initialRegion={{
             latitude: 50.8503396,
             longitude: 4.3517103,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
-          }}/> 
+          }}>
+
+            <Marker
+            coordinate={this.state.userLocation}>
+              <Ionicons
+                  name={"location"}
+                  size={hp("5%")}
+                  color="#FF0000"
+                />
+            </Marker>
+
+            <Marker
+            title="Iqbal Traders sprl"
+            description="Otletstraat 63, 1070 Brussel"
+            coordinate={{
+              latitude: 50.841720,
+              longitude: 4.336440
+            }}>
+              <Ionicons
+                  name={"cart"}
+                  size={hp("5%")}
+                  color="#115740"
+                />
+            </Marker>
+
+            <Marker
+            title="Tandoori village"
+            description="Charleroise Steenweg 248, 1060 Sint-Gillis"
+            coordinate={{
+              latitude: 50.823140,
+              longitude: 4.354060
+            }}>
+              <FontAwesome
+                  name={"cutlery"}
+                  size={hp("4%")}
+                  color="#FF5E00"
+                />
+            </Marker>
+          </MapView>
 
       </View>
     );
