@@ -140,7 +140,6 @@ export default class Map extends React.Component {
             data = {this.state.mapOptions}
             onSelect={(selectedItem) => {
               this.setState({category: selectedItem})
-              this.setMarkers()
             }}
             defaultValue = "All"
             renderDropdownIcon={isOpened => {
