@@ -71,11 +71,16 @@ export default class Map extends React.Component {
 
     supermarkets.push(
       {title: "Iqbal Traders sprl", description: "Otletstraat 63, 1070 Brussel", coordinate:{latitude: 50.841720, longitude: 4.336440}},
-      {title: "Ideal Cash & Carry", description: "Steenweg op Gent 33, 1080 Sint-Jans-Molenbeek", coordinate:{latitude: 50.856710, longitude: 4.336840}}
+      {title: "Ideal Cash & Carry", description: "Steenweg op Gent 33, 1080 Sint-Jans-Molenbeek", coordinate:{latitude: 50.856710, longitude: 4.336840}},
+      {title: "Express Afro-Indian", description: "Zuidlaan 98, 1000 Brussel", coordinate:{latitude: 50.8370456, longitude: 4.3423893}},
     )
     restaurants.push(
         {title: "Tandoori village", description: "Charleroise Steenweg 248, 1060 Sint-Gillis", coordinate:{latitude: 50.823140, longitude: 4.354060}},
-        {title: "Maharaja Tandoori", description: "Beursstraat 12, 1000 Brussel", coordinate:{latitude: 50.848390, longitude: 4.350570}}
+        {title: "Maharaja Tandoori", description: "Beursstraat 12, 1000 Brussel", coordinate:{latitude: 50.848390, longitude: 4.350570}},
+        {title: "Maharaja Tandoori Restaurant", description: "Rue de Fiennesstraat 48, 1070 Anderlecht", coordinate:{latitude: 50.838910, longitude: 4.332180}},
+        {title: "Chanab Tandoori", description: "Rue de Fiennes 19, 1070 Anderlecht", coordinate:{latitude: 50.838910, longitude: 4.332180}},
+        {title: "Shezan", description: "Waverse Steenweg 120,1050 Ixelles", coordinate:{latitude: 50.8364988, longitude: 4.3674027}},
+        {title: "Zam Zam", description: "Rue Brogniez 78, 1070 Anderlecht", coordinate:{latitude: 50.8404409, longitude: 4.3355466}},
     )
 
     this.setState({supermarkets: supermarkets, restaurants:restaurants})
