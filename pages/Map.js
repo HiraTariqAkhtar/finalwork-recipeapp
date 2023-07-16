@@ -2,10 +2,8 @@ import React from "react";
 import {
   StyleSheet,
   View,
-  TouchableOpacity,
-  ScrollView,
   Text,
-  Image
+  ToastAndroid
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -29,27 +27,106 @@ export default class Map extends React.Component {
       userLocation: {
         latitude: 0,
         longitude: 0
-      }
+      },
+      category : "All",
+      restaurants: [],
+      supermarkets: [],
     }
 
+  }
+  
+  componentDidMount() {
     this.askLocationPermission()
   }
 
   async askLocationPermission() {
     let status = await Location.requestForegroundPermissionsAsync();
     //console.log(status)
+    if(status.status !== "granted") {
+      ToastAndroid.show("Current location needed so you can view nearby Pakistani supermarkets end restaurants", ToastAndroid.LONG)
+    }
+    this.setState({permissionGranted: status.status})
 
-    let location = await Location.getCurrentPositionAsync({});
-    //console.log(location);
-    this.setState({permissionGranted: status, userLocation: {latitude: location.coords.latitude, longitude: location.coords.longitude}})
+    this.getUserLocation()
   }
 
-  async filterResults(selected) {
-    console.log(selected)
+  async getUserLocation() {
+    Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.High,
+        distanceInterval: 10,
+      },
+      (location) => {
+        //console.log(location)
+      this.setState({userLocation: {latitude: location.coords.latitude, longitude: location.coords.longitude}})
+      }
+    );
+
+    this.setMarkers()
+  }
+
+  async setMarkers() {
+    let supermarkets = [];
+    let restaurants = [];
+
+    supermarkets.push(
+      {title: "Iqbal Traders sprl", description: "Otletstraat 63, 1070 Brussel", coordinate:{latitude: 50.841720, longitude: 4.336440}},
+      {title: "Ideal Cash & Carry", description: "Steenweg op Gent 33, 1080 Sint-Jans-Molenbeek", coordinate:{latitude: 50.856710, longitude: 4.336840}}
+    )
+    restaurants.push(
+        {title: "Tandoori village", description: "Charleroise Steenweg 248, 1060 Sint-Gillis", coordinate:{latitude: 50.823140, longitude: 4.354060}},
+        {title: "Maharaja Tandoori", description: "Beursstraat 12, 1000 Brussel", coordinate:{latitude: 50.848390, longitude: 4.350570}}
+    )
+
+    this.setState({supermarkets: supermarkets, restaurants:restaurants})
   }
 
 
   render() {
+    let restaurants =  this.state.restaurants.map((location) => (
+      <Marker
+        key={location.description}
+        title={location.title}
+        description={location.description}
+        coordinate={{
+          latitude: location.coordinate.latitude,
+          longitude: location.coordinate.longitude
+        }}
+      >
+          <FontAwesome 
+            name={"cutlery"} 
+            size={hp("4%")} 
+            color="#FF5E00"
+          />
+      </Marker>
+    ))
+
+    let supermarkets =  this.state.supermarkets.map((location) => (
+      <Marker
+        key={location.description}
+        title={location.title}
+        description={location.description}
+        coordinate={{
+          latitude: location.coordinate.latitude,
+          longitude: location.coordinate.longitude
+        }}
+      >
+          <Ionicons
+            name={"cart"}
+            size={hp("5%")}
+            color="#115740"
+          />
+      </Marker>
+    ))
+
+    let locations = []
+    if(this.state.category === "All"){
+      locations = restaurants.concat(supermarkets)
+    } else if(this.state.category === "Restaurants") {
+      locations = restaurants
+    } else if(this.state.category === "Supermarkets") {
+      locations = supermarkets
+    }
 
     return (
       <View style={styles.container}>
@@ -62,7 +139,8 @@ export default class Map extends React.Component {
             rowTextStyle = {styles.dropDownText}
             data = {this.state.mapOptions}
             onSelect={(selectedItem) => {
-              this.filterResults(selectedItem)
+              this.setState({category: selectedItem})
+              this.setMarkers()
             }}
             defaultValue = "All"
             renderDropdownIcon={isOpened => {
@@ -115,34 +193,7 @@ export default class Map extends React.Component {
                   color="#FF0000"
                 />
             </Marker>
-
-            <Marker
-            title="Iqbal Traders sprl"
-            description="Otletstraat 63, 1070 Brussel"
-            coordinate={{
-              latitude: 50.841720,
-              longitude: 4.336440
-            }}>
-              <Ionicons
-                  name={"cart"}
-                  size={hp("5%")}
-                  color="#115740"
-                />
-            </Marker>
-
-            <Marker
-            title="Tandoori village"
-            description="Charleroise Steenweg 248, 1060 Sint-Gillis"
-            coordinate={{
-              latitude: 50.823140,
-              longitude: 4.354060
-            }}>
-              <FontAwesome
-                  name={"cutlery"}
-                  size={hp("4%")}
-                  color="#FF5E00"
-                />
-            </Marker>
+            {locations}
           </MapView>
 
       </View>
