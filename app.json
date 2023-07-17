@@ -33,6 +33,9 @@
       "eas": {
         "projectId": "e88e5503-9ee4-483e-8fd3-fc00b263cd61"
       }
-    }
+    },
+    "plugins": [
+      "expo-facebook"
+    ]
   }
 }
