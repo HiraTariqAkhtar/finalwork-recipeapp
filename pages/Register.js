@@ -20,6 +20,9 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, getDocs, addDoc } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
+import {AUTH} from "../firebaseConfig"
+import { createUserWithEmailAndPassword } from "firebase/auth"; 
+
 
 import bcrypt from 'react-native-bcrypt';
 
@@ -123,23 +126,30 @@ export default class Register extends React.Component {
     this.setState({isLoading: true})
     
     setTimeout(() => {
-      var pwHash = bcrypt.hashSync(this.state.pw, 8);
+      createUserWithEmailAndPassword(AUTH, this.state.email, this.state.pw)
+      .then(() => {
+        const user = {
+          firstName: this.state.firstName,
+          lastName: this.state.lastName,
+          email: this.state.email,
+        };
 
-      let userCollection = collection(DATABASE, "users")
-  
-       addDoc((userCollection), {
-        firstName: this.state.firstName,
-        lastName: this.state.lastName,
-        email: this.state.email,
-        password:pwHash
+        // Add gebruiker to database
+        const userCollection = collection(DATABASE, "users");
+        addDoc(userCollection, user);
+
+        AsyncStorage.setItem("userLoggedIn", "true")
+        AsyncStorage.setItem("firstName", this.state.firstName)
+        AsyncStorage.setItem("lastName", this.state.lastName)
+        AsyncStorage.setItem("email", this.state.email)
+        this.props.navigation.navigate("Profile")
       })
-  
-      AsyncStorage.setItem("userLoggedIn", "true")
-      AsyncStorage.setItem("firstName", this.state.firstName)
-      AsyncStorage.setItem("lastName", this.state.lastName)
-      AsyncStorage.setItem("email", this.state.email)
-      this.props.navigation.navigate("Profile")
-    
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMsg = error.message;
+
+        console.log(`Error occured with code ${errorCode} : ${errorMsg}`)
+      })
     }, 100)
 
   }
