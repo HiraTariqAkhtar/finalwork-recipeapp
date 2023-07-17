@@ -287,7 +287,7 @@ export default class AddRecipe extends React.Component {
           <Ionicons
               name={"arrow-back"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.goBack()}
             />
           <Text style={styles.pageTitle}>Add a new recipe</Text>
@@ -373,7 +373,7 @@ export default class AddRecipe extends React.Component {
                 <Ionicons
                 name={"add"}
                 size={hp("5%")}
-                color="#FF5E00"
+                color="#115740"
                 onPress={() => this.addNewIngredient(index)}/>
                 )}
                 {(index == this.state.ingredients.length-1 && index > 0) &&(
@@ -400,7 +400,7 @@ export default class AddRecipe extends React.Component {
                 <Ionicons
                 name={"add"}
                 size={hp("5%")}
-                color="#FF5E00"
+                color="#115740"
                 onPress={() => this.addNewInstruction(index)}/>
                 )}
                 {(index == this.state.instructions.length-1 && index > 0) &&(
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
     pageTitle: {
         fontFamily: "Nunito_700Bold",
         fontSize: hp("3.5%"),
-        color:"#FF0000",
+        color:"#FF5E00",
         marginLeft: wp("10%")
     },
     text: {
@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
         padding: wp("2%"),
         marginHorizontal: wp("3%"),
         marginBottom: hp("2%"),
-        borderColor: "#FF5E00",
+        borderColor: "#115740",
         borderRadius: 10,
     },
     category: {
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
         marginBottom:hp("2%"),
         height: hp("15%"),
         borderRadius: 10,
-        borderColor: "#FF5E00",
+        borderColor: "#115740",
         borderWidth: 1,
         width: wp("80%"),
         marginHorizontal: wp("10%"),

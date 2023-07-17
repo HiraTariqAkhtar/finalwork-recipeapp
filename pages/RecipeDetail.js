@@ -142,7 +142,7 @@ export default class RecipeDetails extends React.Component {
           <Ionicons
               name={"arrow-back"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.props.navigation.goBack()}
             />
           <Text style={styles.pageTitle}>{rec.recipeName}</Text>
@@ -167,7 +167,7 @@ export default class RecipeDetails extends React.Component {
             <Ionicons
               name={"people"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
             />
               <Text style={styles.text}>{rec.servings}</Text>
           </View>
@@ -176,7 +176,7 @@ export default class RecipeDetails extends React.Component {
               <Ionicons
               name={"stopwatch"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
             />
               <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
             </View>
@@ -187,7 +187,7 @@ export default class RecipeDetails extends React.Component {
             <Ionicons
               name={"flag"}
               size={hp("4%")}
-              color="#FF5E00"
+              color="#115740"
               marginRight={wp("1%")}
             />
               {rec.culture.map((type) => (
@@ -200,7 +200,7 @@ export default class RecipeDetails extends React.Component {
             <FontAwesome
               name={"cutlery"}
               size={hp("4%")}
-              color="#FF5E00"
+              color="#115740"
               marginRight={wp("1%")}
             />
               {rec.dishTypes.map((type) => (
@@ -213,7 +213,7 @@ export default class RecipeDetails extends React.Component {
             <Ionicons
               name={"calendar"}
               size={hp("4%")}
-              color="#FF5E00"
+              color="#115740"
               marginRight={wp("1%")}
             />
               {rec.period.map((period) => (
@@ -228,13 +228,13 @@ export default class RecipeDetails extends React.Component {
                         <FontAwesome
                           name={"circle"}
                           size={hp("1%")}
-                          color="#FF5E00"
+                          color="#115740"
                         />
                         <Text style={styles.text}>{i.original}</Text>
                         <Ionicons
                           name={"cart"}
                           size={hp("3%")}
-                          color="#FF5E00"
+                          color="#115740"
                           marginLeft={wp("5%")}
                           onPress={() => this.addToCart(i.nameClean)}
                         />
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     fontSize: hp("3.5%"),
-    color: "#FF0000",
+    color: "#FF5E00",
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
   },
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   steps: {
     fontFamily:"Nunito_700Bold",
     fontSize: hp("2.5%"),
-    color: "#FF5E00"
+    color: "#115740"
   },
   iconText: {
     display: "flex",

@@ -149,7 +149,7 @@ export default class Cookbook extends React.Component {
                       <Ionicons
                         name={"people"}
                         size={hp("2.5%")}
-                        color="#FF5E00"
+                        color="#115740"
                       />
                       <Text style={styles.text}>{rec.servings}</Text>
   
@@ -159,7 +159,7 @@ export default class Cookbook extends React.Component {
                       <Ionicons
                         name={"stopwatch"}
                         size={hp("2.5%")}
-                        color="#FF5E00"
+                        color="#115740"
                       />
                         <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
                     </View>
@@ -170,7 +170,7 @@ export default class Cookbook extends React.Component {
                 <Ionicons
                   name={"flag"}
                   size={hp("2.5%")}
-                  color="#FF5E00"
+                  color="#115740"
                 />
                   {cultures}
                 </View>)}
@@ -180,7 +180,7 @@ export default class Cookbook extends React.Component {
                 <FontAwesome
                   name={"cutlery"}
                   size={hp("2.5%")}
-                  color="#FF5E00"
+                  color="#115740"
                 />
                   {dishTypes}
                 </View>)}
@@ -190,7 +190,7 @@ export default class Cookbook extends React.Component {
                     <Ionicons
                       name={"calendar"}
                       size={hp("2.5%")}
-                      color="#FF5E00"
+                      color="#115740"
                     />
                       {periods}
                     </View>)}
@@ -215,7 +215,7 @@ export default class Cookbook extends React.Component {
           <Ionicons
               name={"arrow-back"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.props.navigation.goBack()}
             />
           <Text style={styles.title}>My Cookbook</Text>
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: "Nunito_700Bold",
         fontSize: hp("3.5%"),
-        color:"#FF0000",
+        color:"#FF5E00",
         marginLeft: wp("10%")
     },
     recipe: {
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
         padding: hp("1.5%"),
         width: wp("95%"),
         borderRadius: 10,
-        borderColor: "#FF5E00",
+        borderColor: "#115740",
         borderWidth: 3,
         marginTop: hp("3%"),
         marginHorizontal: wp ("2.5%")
@@ -300,6 +300,7 @@ const styles = StyleSheet.create({
         fontSize: hp("2%"),
         marginBottom: hp("5%"),
         marginRight: wp("5%"),
-        textDecorationLine: "underline"
+        textDecorationLine: "underline",
+        color: "#115740"
     },
 });

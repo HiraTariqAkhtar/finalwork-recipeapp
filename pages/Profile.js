@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
-    color: "#FF0000"
+    color: "#FF5E00"
   },
   name: {
     fontFamily: "Nunito_400Regular",

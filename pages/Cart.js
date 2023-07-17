@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
-    color: "#FF0000"
+    color: "#FF5E00"
   },
   iconText: {
     display: "flex",
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     marginBottom: hp("3%")
   },
   cart: {
-    width: wp("80%"),
+    width: wp("90%"),
     marginLeft: wp("5%"),
   }
 

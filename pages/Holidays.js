@@ -34,7 +34,7 @@ export default class Holidays extends React.Component {
           <Ionicons
               name={"arrow-back"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.props.navigation.goBack()}
             />
           <Text style={styles.pageTitle}>{this.props.route.params.name}</Text>
@@ -44,7 +44,7 @@ export default class Holidays extends React.Component {
             <Ionicons
               name={"calendar"}
               size={hp("3.5%")}
-              color="#FF5E00"
+              color="#115740"
             />
             <Text style={styles.text}>{this.props.route.params.day} - {this.props.route.params.month} - {this.props.route.params.year}</Text>
            </View>
@@ -54,7 +54,7 @@ export default class Holidays extends React.Component {
               <Ionicons
                 name={"location"}
                 size={hp("3.5%")}
-                color="#FF5E00"
+                color="#115740"
               />
               <Text style={styles.text}>{this.props.route.params.locations}</Text>
              </View>}
@@ -64,7 +64,7 @@ export default class Holidays extends React.Component {
               <Ionicons
                 name={"information-circle"}
                 size={hp("3.5%")}
-                color="#FF5E00"
+                color="#115740"
               />
               <Text style={styles.text}>{this.props.route.params.description}</Text>
              </View>}
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
-    color:"#FF0000",
+    color:"#FF5E00",
     marginLeft: wp("10%")
   },
   holiday: {

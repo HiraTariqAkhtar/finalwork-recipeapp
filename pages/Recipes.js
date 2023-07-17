@@ -342,7 +342,7 @@ export default class Recipes extends React.Component {
                     <Ionicons
                       name={"people"}
                       size={hp("2.5%")}
-                      color="#FF5E00"
+                      color="#115740"
                     />
                     <Text style={styles.text}>{rec.servings}</Text>
 
@@ -352,7 +352,7 @@ export default class Recipes extends React.Component {
                     <Ionicons
                       name={"stopwatch"}
                       size={hp("2.5%")}
-                      color="#FF5E00"
+                      color="#115740"
                     />
                       <Text style={styles.text}>{rec.time} minutes</Text>
                   </View>
@@ -363,7 +363,7 @@ export default class Recipes extends React.Component {
               <Ionicons
                 name={"flag"}
                 size={hp("2.5%")}
-                color="#FF5E00"
+                color="#115740"
               />
                 {cultures}
               </View>)}
@@ -373,7 +373,7 @@ export default class Recipes extends React.Component {
               <FontAwesome
                 name={"cutlery"}
                 size={hp("2.5%")}
-                color="#FF5E00"
+                color="#115740"
               />
                 {dishTypes}
               </View>)}
@@ -383,7 +383,7 @@ export default class Recipes extends React.Component {
                   <Ionicons
                     name={"calendar"}
                     size={hp("2.5%")}
-                    color="#FF5E00"
+                    color="#115740"
                   />
                     {periods}
                   </View>)}
@@ -401,7 +401,7 @@ export default class Recipes extends React.Component {
         <Ionicons
               name={"close"}
               size={hp("3%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.removeFilter(filter)}
             />
       </View>
@@ -414,14 +414,14 @@ export default class Recipes extends React.Component {
           <Ionicons
               name={"add"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.addRecipe()}
             />
           <Text style={styles.pageTitle}>Recipes</Text>
           <Ionicons
               name={"filter"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.openFilterScreen()}
             />
         </View>
@@ -447,7 +447,7 @@ export default class Recipes extends React.Component {
           <Ionicons
               name={"close"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               marginLeft={wp("85%")}
               marginTop={hp("3%")}
               onPress={() => this.closeFilterScreen()}
@@ -520,14 +520,14 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
-    color:"#FF0000"
+    color:"#FF5E00"
   },
   recipe: {
     backgroundColor: "white",
     padding: hp("1.5%"),
     width: wp("95%"),
     borderRadius: 10,
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderWidth: 3,
     marginTop: hp("3%"),
     marginHorizontal: wp ("2.5%")
@@ -602,7 +602,7 @@ btnText:{
     marginBottom:hp("3%"),
     height: hp("20%"),
     borderRadius: 10,
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderWidth: 3,
     width: wp("90%"),
     marginHorizontal: wp("5%"),

@@ -86,7 +86,7 @@ export default class Login extends React.Component {
           <Ionicons
               name={"arrow-back"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               marginRight={wp("20%")}
               onPress={() => this.props.navigation.goBack()}
             />
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
     marginBottom: hp("5%"),
-    color: "#FF0000"
+    color: "#FF5E00"
   },
   question: {
       fontFamily: "Nunito_600SemiBold",
@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
       marginBottom: hp("5%"),
       marginRight: wp("5%"),
       textDecorationLine: "underline",
+      color: "#115740"
   },
   text: {
       fontFamily: "Nunito_700Bold",
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
     padding: wp("2%"),
     marginHorizontal: wp("3%"),
     marginBottom: hp("3%"),
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderRadius: 10,
   },
   button: {

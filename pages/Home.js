@@ -232,7 +232,7 @@ export default class Home extends React.Component {
                 <Ionicons
                     name={"information-circle"}
                     size={hp("3%")}
-                    color="#FF5E00"
+                    color="#115740"
                 />
                 <Text style={styles.text}>{holiday.holidayType}</Text>
               </View>}
@@ -297,7 +297,7 @@ export default class Home extends React.Component {
                       <Ionicons
                         name={"people"}
                         size={hp("2.5%")}
-                        color="#FF5E00"
+                        color="#115740"
                       />
                       <Text style={styles.text}>{rec.servings}</Text>
   
@@ -307,7 +307,7 @@ export default class Home extends React.Component {
                       <Ionicons
                         name={"stopwatch"}
                         size={hp("2.5%")}
-                        color="#FF5E00"
+                        color="#115740"
                       />
                         <Text style={styles.text}>{rec.time} minutes</Text>
                     </View>
@@ -318,7 +318,7 @@ export default class Home extends React.Component {
                 <Ionicons
                   name={"flag"}
                   size={hp("2.5%")}
-                  color="#FF5E00"
+                  color="#115740"
                 />
                   {cultures}
                 </View>)}
@@ -328,7 +328,7 @@ export default class Home extends React.Component {
                 <FontAwesome
                   name={"cutlery"}
                   size={hp("2.5%")}
-                  color="#FF5E00"
+                  color="#115740"
                 />
                   {dishTypes}
                 </View>)}
@@ -338,7 +338,7 @@ export default class Home extends React.Component {
                     <Ionicons
                       name={"calendar"}
                       size={hp("2.5%")}
-                      color="#FF5E00"
+                      color="#115740"
                     />
                       {periods}
                     </View>)}
@@ -376,14 +376,14 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_700Bold",
     marginLeft: wp("5%"),
     marginTop: hp("1%"),
-    color: "#FF0000"
+    color: "#FF5E00"
   },
   recipe: {
     backgroundColor: "white",
     padding: hp("1.5%"),
     width: wp("90%"),
     borderRadius: 10,
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderWidth: 3,
     marginTop: hp("1%"),
     marginHorizontal: wp ("5%")
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: hp("1.5%"),
     borderRadius: 10,
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderWidth: 3,
     marginTop: hp("1%"),
     marginLeft: wp ("5%")
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
     padding: hp("1.5%"),
     width: wp("90%"),
     borderRadius: 10,
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderWidth: 3,
     marginHorizontal: wp ("5%"),
     marginTop: hp("1%")

@@ -268,7 +268,7 @@ export default class Settings extends React.Component {
           <Ionicons
               name={"arrow-back"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.props.navigation.goBack()}
             />
           <Text style={styles.pageTitle}>Account settings</Text>
@@ -306,7 +306,7 @@ export default class Settings extends React.Component {
           <Ionicons
               name={"close"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               marginLeft={wp("5%")}
               marginTop={hp("3%")}
               onPress={() => this.closeEditScreen()}
@@ -408,7 +408,7 @@ export default class Settings extends React.Component {
               size={hp("5%")}
               marginTop={hp("-45%")}
               marginBottom={hp("15%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.closeEditScreen()}
             />
             {this.state.isLoading && <ActivityIndicator size="large"/>}
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
-    color:"#FF0000",
+    color:"#FF5E00",
     marginLeft: wp("10%")
   },
   button: {
@@ -477,7 +477,7 @@ btnText:{
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
     marginBottom: hp("3%"),
-    color:"#FF0000",
+    color:"#FF5E00",
   },
   placeholder: {
     height: hp("5%"),
@@ -490,7 +490,7 @@ btnText:{
   buttonEdit: {
     width: wp("35%"),
     padding: hp("1%"),
-    backgroundColor: "#FF5E00",
+    backgroundColor: "#115740",
     borderRadius: 10,
     marginTop: hp("3%"),
   },

@@ -166,7 +166,7 @@ export default class Register extends React.Component {
         name="eye-off"
         size={hp("2.5%")}
         marginLeft={wp("3%")}
-        color="#FF5E00"
+        color="#115740"
         onPress={() => this.setState({showPw: !this.state.showPw})}/>
     } else {
       pw = "**********"
@@ -175,7 +175,7 @@ export default class Register extends React.Component {
         name="eye"
         size={hp("2.5%")}
         marginLeft={wp("3%")}
-        color="#FF5E00"
+        color="#115740"
         onPress={() => this.setState({showPw: !this.state.showPw})}/>
     }
 
@@ -196,7 +196,7 @@ export default class Register extends React.Component {
           <Ionicons
               name={"arrow-back"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               marginRight={wp("20%")}
               onPress={() => this.props.navigation.goBack()}
             />
@@ -266,7 +266,7 @@ export default class Register extends React.Component {
                 name="pencil"
                 size={hp("2.5%")}
                 marginLeft={wp("3%")}
-                color="#FF5E00"
+                color="#115740"
                 onPress={() => this.setState({confirmDetails: false})}/>
 
               </View>
@@ -276,7 +276,7 @@ export default class Register extends React.Component {
                 name="pencil"
                 size={hp("2.5%")}
                 marginLeft={wp("3%")}
-                color="#FF5E00"
+                color="#115740"
                 onPress={() => this.setState({confirmDetails: false})}/>
 
               </View>
@@ -288,7 +288,7 @@ export default class Register extends React.Component {
                 name="pencil"
                 size={hp("2.5%")}
                 marginLeft={wp("3%")}
-                color="#FF5E00"
+                color="#115740"
                 onPress={() => this.setState({confirmDetails: false})}/>
 
               </View>
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
     marginBottom: hp("5%"),
-    color: "#FF0000"
+    color: "#FF5E00"
   },
   question: {
       fontFamily: "Nunito_600SemiBold",
@@ -339,7 +339,8 @@ const styles = StyleSheet.create({
       fontSize: hp("2%"),
       marginBottom: hp("5%"),
       marginRight: wp("5%"),
-      textDecorationLine: "underline"
+      textDecorationLine: "underline",
+      color: "#115740"
   },
   text: {
       fontFamily: "Nunito_700Bold",
@@ -352,7 +353,7 @@ const styles = StyleSheet.create({
     padding: wp("2%"),
     marginHorizontal: wp("3%"),
     marginBottom: hp("3%"),
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderRadius: 10,
   },
   button: {
