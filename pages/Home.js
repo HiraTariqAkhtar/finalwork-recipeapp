@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
     marginLeft: wp("5%"),
-    marginTop: hp("3%"),
+    marginTop: hp("1%"),
     color: "#FF0000"
   },
   recipe: {
@@ -450,11 +450,11 @@ const styles = StyleSheet.create({
   backgroundImage: {
     width: wp("100%"),
     height: hp("30%"),
-    marginTop: hp("5%")
+    marginTop: hp("3%")
   },
   categoryImage: {
     width: wp("30%"),
-    height: hp("15%"),
+    height: hp("10%"),
     borderRadius: 10,
   },
 });
