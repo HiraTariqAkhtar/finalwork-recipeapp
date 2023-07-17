@@ -54,6 +54,8 @@ export default class Home extends React.Component {
       }], 
 
       didYouKnow: "",
+
+      categories: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"]
     };
 
   }
@@ -237,6 +239,24 @@ export default class Home extends React.Component {
     </TouchableOpacity>
     )
 
+    let categoryImg = {
+      'Bread': require('../assets/recipeApp/bread.jpeg'),
+      'Curry': require('../assets/recipeApp/curry.jpeg'),
+      'Dessert': require('../assets/recipeApp/dessert.jpeg'),
+      'Rice': require('../assets/recipeApp/rice.jpg'),
+      'Snack': require('../assets/recipeApp/snack.jpeg'),
+      'Sweets': require('../assets/recipeApp/sweets.jpeg'),
+    }
+
+    let categories = this.state.categories.map((category) =>
+    <TouchableOpacity style={styles.holidays} onPress={() => console.log(`${category} selected`)}>
+      <Image
+      source={categoryImg[category]}
+      style={styles.categoryImage}/>
+      <Text  style={styles.holidayName}>{category}</Text>
+    </TouchableOpacity>
+    )
+
   
     return (
       <ScrollView>
@@ -328,6 +348,13 @@ export default class Home extends React.Component {
           </View>
   
           <View>
+          <Text style={styles.sectionTitle}>Recipes per category</Text>
+          <ScrollView horizontal>
+           {categories}
+          </ScrollView>
+          </View>
+  
+          <View>
           <Text style={styles.sectionTitle}>Upcoming holidays</Text>
           <ScrollView horizontal>
            {holidays}
@@ -343,7 +370,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:"#FFFFFF",
-    height: hp("100%"),
   },
   sectionTitle: {
     fontSize: hp("3%"),
@@ -425,5 +451,10 @@ const styles = StyleSheet.create({
     width: wp("100%"),
     height: hp("30%"),
     marginTop: hp("5%")
-  }
+  },
+  categoryImage: {
+    width: wp("30%"),
+    height: hp("15%"),
+    borderRadius: 10,
+  },
 });
