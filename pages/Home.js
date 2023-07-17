@@ -54,12 +54,6 @@ export default class Home extends React.Component {
       }], 
 
       didYouKnow: "",
-
-      dateTime: {
-        date: "",
-        time: ""
-      },
-      weather: ""
     };
 
   }
@@ -68,30 +62,7 @@ export default class Home extends React.Component {
     //this.getRecipeOfTheDay()
     //this.getHolidays()
     this.getDidYouKnow()
-    this.getTimeDateAndWeather()
   }
-
-  async getTimeDateAndWeather() {
-    axios.get("https://api.open-meteo.com/v1/forecast?latitude=33.7215&longitude=73.0433&hourly=temperature_2m&current_weather=true")
-      .then((res) => {
-        let weatherInIslamabad = res.data.current_weather.temperature
-        this.setState({weather: `${weatherInIslamabad}°C`})
-      })
-    setInterval(()=>{
-      let date = new Date().toLocaleDateString("en-GB", {timeZone: "Asia/Karachi"})
-      let time = new Date().toLocaleTimeString("en-GB", {timeZone: "Asia/Karachi"})
-      let timeWithoutSeconds = time.slice(0, -3)
-      //console.log(timeWithoutSeconds)
-      
-      let dateAndTime = {
-        date: date,
-        time: timeWithoutSeconds
-      }
-      //console.log(dateAndTime)
-      this.setState({dateTime: dateAndTime})
-    }, 1000)
-  }
-
 
   async getRecipeOfTheDay() {
     let recipe;
@@ -270,17 +241,12 @@ export default class Home extends React.Component {
     return (
       <ScrollView>
         <View style={styles.container}>
-          <View style={styles.didYouKnow}>
-          <Text style={styles.dateTime}>{this.state.dateTime.date}</Text>
-          <Text style={styles.dateTime}>{this.state.dateTime.time}</Text>
-          <Text style={styles.dateTime}>{this.state.weather}</Text>
-          </View>
           <ImageBackground
-          source={require("../assets/recipeApp/food.jpg")}
+          source={require("../assets/recipeApp/bgHome.jpeg")}
           resizeMode="cover"
           style={styles.backgroundImage}>
+              <Text  style={styles.sectionTitle}>Did you know that ...</Text>
             <View style={styles.didYouKnow}>
-              <Text  style={styles.holidayName}>Did you know that ...</Text>
               <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
             </View>
           </ImageBackground>
@@ -378,24 +344,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor:"#FFFFFF",
     height: hp("100%"),
-    marginVertical: hp("5%"),
   },
   sectionTitle: {
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
-    marginLeft: wp("3%"),
+    marginLeft: wp("5%"),
     marginTop: hp("3%"),
     color: "#FF0000"
   },
   recipe: {
     backgroundColor: "white",
     padding: hp("1.5%"),
-    width: wp("95%"),
+    width: wp("90%"),
     borderRadius: 10,
     borderColor: "#FF5E00",
     borderWidth: 3,
-    marginTop: hp("3%"),
-    marginHorizontal: wp ("2.5%")
+    marginTop: hp("1%"),
+    marginHorizontal: wp ("5%")
   },
   foodImg: {
     width: wp("30%"),
@@ -427,8 +392,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: "#FF5E00",
     borderWidth: 3,
-    marginTop: hp("3%"),
-    marginLeft: wp ("2.5%")
+    marginTop: hp("1%"),
+    marginLeft: wp ("5%")
   },
   holidayName: {
     textAlign: "center",
@@ -449,22 +414,16 @@ const styles = StyleSheet.create({
   didYouKnow: {
     backgroundColor: "rgba(255, 255, 255, 0.8)",
     padding: hp("1.5%"),
-    width: wp("95%"),
+    width: wp("90%"),
     borderRadius: 10,
     borderColor: "#FF5E00",
     borderWidth: 3,
-    marginHorizontal: wp ("2.5%"),
+    marginHorizontal: wp ("5%"),
+    marginTop: hp("1%")
   },
   backgroundImage: {
-    justifyContent: "center",
-    alignItems: "center",
     width: wp("100%"),
     height: hp("30%"),
     marginTop: hp("5%")
-  },
-  dateTime: {
-    fontFamily: "Nunito_700Bold",
-    fontSize: hp("2.5%"),
-    textAlign: "center",
   }
 });
