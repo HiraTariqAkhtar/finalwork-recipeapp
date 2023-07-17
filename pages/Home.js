@@ -355,7 +355,7 @@ export default class Home extends React.Component {
           </View>
   
           <View>
-          <Text style={styles.sectionTitle}>Upcoming holidays</Text>
+          <Text style={styles.sectionTitle}>Upcoming holidays in Pakistan</Text>
           <ScrollView horizontal>
            {holidays}
           </ScrollView>
