@@ -77,35 +77,6 @@ export default class Login extends React.Component {
     }
   }
 
-  async fbSignIn() {
-    try {
-      await Facebook.initializeAsync({
-        appId: '673233724134296',
-      });
-
-  
-      const { type, token } = await Facebook.logInAsync({
-        permissions: ['public_profile', 'email'],
-      });
-  
-      if (type === 'success') {
-        // Authenticeer met Firebase met behulp van het Facebook-token
-        const credential = firebase.auth.FacebookAuthProvider.credential(token);
-        await firebase.auth().signInWithCredential(credential);
-  
-        // Voer de nodige stappen uit na succesvolle aanmelding
-        // ...
-  
-      } else {
-        console.log('Facebook sign-in canceled');
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
-  
-
-
   render() {
 
     return (
@@ -118,10 +89,6 @@ export default class Login extends React.Component {
               <Text style={styles.question}>Not a user yet?</Text>
               <Text style={styles.nav} onPress={() => this.register()}>Sign Up</Text>
           </View>
-
-          <TouchableOpacity style={styles.button} onPress={() => this.fbSignIn()}>
-            <Text style={styles.btnText}>Sign in with Facebook</Text>
-          </TouchableOpacity>
 
           <Text style={styles.text}>Email address:</Text>
           <TextInput
