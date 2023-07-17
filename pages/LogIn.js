@@ -16,6 +16,9 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, getDocs} from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
+import {AUTH} from "../firebaseConfig"
+import { signInWithEmailAndPassword } from "firebase/auth"; 
+
 
 import bcrypt from 'react-native-bcrypt';
 
@@ -35,66 +38,43 @@ export default class Login extends React.Component {
     this.props.navigation.navigate("Register")
   }
 
-  async checkEmail() {
-    let users = []
-    let userCollection = collection(DATABASE, "users")
-    let userData = await getDocs(userCollection)
-    if (userData.size > 0) {
-      userData.forEach((doc) => {
-        users.push(doc.data())
-      })
 
-      users.forEach((user) => {
-        if(user.email == this.state.email) {
-          this.checkPassword(user)
-        } else {
-          Alert.alert(
-            "User not found",
-            "Please re-enter your email address and password"
-          )
-          this.setState({email: ""})
-          this.setState({pw: ""})
-        }
-      })
-    } else {
-      Alert.alert(
-        "User doesn't exist",
-        "Please make sure to sign up before logging in"
-      )
-      this.setState({email: ""})
-      this.setState({pw: ""})
-    }
-  }
-
-  async checkPassword(user) {
+  async checkCredentials() {
     this.setState({ isLoading: true });
   
-    setTimeout(() => {
-    if (this.state.pw === "") {
-        Alert.alert(
-          "Password not filled in",
-          "Please fill in your password",
-          [{ text: "OK", onPress: () => this.setState({ isLoading: false }) }]
-        );
-      } else {
-        let compare = bcrypt.compareSync(this.state.pw, user.password);
-        if (compare) {
+    try {
+      await signInWithEmailAndPassword(AUTH, this.state.email, this.state.pw);
+      const users = await getDocs(collection(DATABASE, "users"));
+  
+      let userFound = false;
+  
+      users.forEach((doc) => {
+        const user = doc.data();
+        if (user.email === this.state.email) {
           AsyncStorage.setItem("userLoggedIn", "true");
           AsyncStorage.setItem("firstName", user.firstName);
           AsyncStorage.setItem("lastName", user.lastName);
           AsyncStorage.setItem("email", user.email);
+          userFound = true;
           this.props.navigation.goBack();
-        } else {
-            Alert.alert(
-              "Incorrect password",
-              "Please re-enter your password",
-              [{ text: "OK", onPress: () => this.setState({ isLoading: false }) }]
-              );
-            this.setState({ pw: "" });
-          }
         }
-      }, 100);
+      });
+  
+      if (!userFound) {
+        Alert.alert(
+          "User not found",
+          "Please re-enter your email address and password"
+        );
+        this.setState({ email: "", pw: "" });
+      }
+    } catch (error) {
+      const errorMsg = error.message;
+      console.log(`Error: ${errorMsg}`);
+    } finally {
+      this.setState({ isLoading: false });
+    }
   }
+  
 
 
   render() {
@@ -126,7 +106,7 @@ export default class Login extends React.Component {
           value={this.state.pw}
           onChangeText={(txt) => this.setState({pw: txt})}/>
 
-          <TouchableOpacity style={styles.button} onPress={() => this.checkEmail()}>
+          <TouchableOpacity style={styles.button} onPress={() => this.checkCredentials()}>
             <Text style={styles.btnText}>Sign in</Text>
           </TouchableOpacity>
       </View>
