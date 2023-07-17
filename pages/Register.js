@@ -192,7 +192,16 @@ export default class Register extends React.Component {
 
     return (
       <View style={styles.container}>
+        <View style={styles.header}>
+          <Ionicons
+              name={"arrow-back"}
+              size={hp("5%")}
+              color="#FF5E00"
+              marginRight={wp("20%")}
+              onPress={() => this.props.navigation.goBack()}
+            />
           <Text style={styles.title}>Sign Up</Text>
+        </View>
 
           <View style={{display:"flex", flexDirection:"row", justifyContent:"center"}}>
               <Text style={styles.question}>Already a user?</Text>
@@ -305,6 +314,11 @@ const styles = StyleSheet.create({
     paddingBottom: hp("5%"),
     paddingTop: hp("5%"),
     backgroundColor:"#FFFFFF" 
+  },
+  header: {
+    display:"flex",
+    flexDirection:"row",
+    marginHorizontal: wp("7.5%"),
   },
   title: {
     textAlign: 'center',

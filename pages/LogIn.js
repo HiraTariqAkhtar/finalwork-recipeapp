@@ -12,6 +12,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { Ionicons } from "@expo/vector-icons";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, getDocs} from "firebase/firestore"; 
@@ -81,7 +82,16 @@ export default class Login extends React.Component {
 
     return (
       <View style={styles.container}>
+         <View style={styles.header}>
+          <Ionicons
+              name={"arrow-back"}
+              size={hp("5%")}
+              color="#FF5E00"
+              marginRight={wp("20%")}
+              onPress={() => this.props.navigation.goBack()}
+            />
           <Text style={styles.title}>Sign In</Text>
+        </View>
 
           {this.state.isLoading && <ActivityIndicator size="large"/>}
         
@@ -120,6 +130,11 @@ const styles = StyleSheet.create({
     paddingBottom: hp("5%"),
     paddingTop: hp("5%"),
     backgroundColor:"#FFFFFF" 
+  },
+  header: {
+    display:"flex",
+    flexDirection:"row",
+    marginHorizontal: wp("7.5%"),
   },
   title: {
     textAlign: 'center',
