@@ -17,7 +17,6 @@ import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import CheckBox from 'react-native-check-box'
 
-import {RECIPES_API_KEY} from '@env'
 
 import { collection, getDocs, addDoc } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
@@ -62,7 +61,7 @@ export default class Recipes extends React.Component {
 
   async getRecipes() {
     let selectedCategoryFromHome = this.props.route.params?.category;
-    console.log(selectedCategoryFromHome)
+    //console.log(selectedCategoryFromHome)
 
     let recipes = []
     let recipeCollection = collection(DATABASE, "recipes")
@@ -199,29 +198,6 @@ export default class Recipes extends React.Component {
     let filterTags = this.state.filters.toString().toLowerCase()
     //console.log(filterTags)
 
-    axios.get(`https://api.spoonacular.com/recipes/random?number=3&tags=${filterTags}&apiKey=${RECIPES_API_KEY}`)
-    .then((res) => {
-      let filteredRecipes = []
-      res.data.recipes.forEach((rec) => {
-        if(rec.analyzedInstructions != null) {
-          filteredRecipes.push({
-            id: rec.id,
-            servings: rec.servings,
-            recipeName: rec.title,
-            ingredients: rec.extendedIngredients,
-            instructions: rec.analyzedInstructions[0].steps,
-            culture: rec.cuisines,
-            time: rec.readyInMinutes,
-            foodImg: rec.image,
-            dishTypes: rec.dishTypes,
-            period: rec.occasions
-          })
-        }
-      })
-      this.setState({randomRecipes: filteredRecipes})
-    })
-
-    this.getFilterData()
   }
 
   addFilter(checkedArray, i, item){

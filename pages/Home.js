@@ -15,7 +15,7 @@ import {
 import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-import {RECIPES_API_KEY, HOLIDAYS_API_KEY} from '@env'
+import {HOLIDAYS_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs } from "firebase/firestore"; 
 
