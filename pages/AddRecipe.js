@@ -145,9 +145,8 @@ export default class AddRecipe extends React.Component {
   addIngredient(ingredient, index, param) {
       let ingredients= [... this.state.ingredients]
       ingredients[index][param] = ingredient
-      ingredients[index].original = `${this.state.ingredients[index].quantity} ${this.state.ingredients[index].nameClean}`
 
-      //console.log(ingredients)
+      console.log(ingredients)
 
       this.setState({ingredients: ingredients})
   }
@@ -221,16 +220,14 @@ export default class AddRecipe extends React.Component {
   
     await addDoc((recipeCollection), {
      userId: this.state.userId,
-     recipe: {
-         id: uuid.v4(),
-         servings: this.state.servings,
-         recipeName: this.state.recipeName,
-         ingredients: this.state.ingredients,
-         instructions: this.state.instructions,
-         category: this.state.category,
-         timeNeeded: this.state.time,
-         img: ""
-     }
+     id: uuid.v4(),
+     servings: this.state.servings,
+     recipeName: this.state.recipeName,
+     ingredients: this.state.ingredients,
+     instructions: this.state.instructions,
+     category: this.state.category,
+     timeNeeded: this.state.time,
+     img: ""
    })
 
    this.goToRecipeDetails()
@@ -357,8 +354,8 @@ export default class AddRecipe extends React.Component {
                 <TextInput
                 style={[styles.placeholder, {width:wp("45%")}]}
                 placeholder="ingredient"
-                value={ingredient.nameClean}
-                onChangeText={(txt) => this.addIngredient(txt, index, "nameClean")}/>
+                value={ingredient.name}
+                onChangeText={(txt) => this.addIngredient(txt, index, "name")}/>
 
                 {index == this.state.ingredients.length-1 &&(
                 <Ionicons
