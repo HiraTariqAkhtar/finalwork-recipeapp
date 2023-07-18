@@ -60,7 +60,7 @@ export default class Cookbook extends React.Component {
         recipes.forEach((doc) => {
         if(doc.data().userId === this.state.userId) {
             this.setState({hasData: true})
-            myRecipes.push(doc.data().recipe)
+            myRecipes.push(doc.data())
         }
     })
     } else {
@@ -72,56 +72,43 @@ export default class Cookbook extends React.Component {
 
   goToRecipeDetails(rec) {
     this.props.navigation.navigate("RecipeDetail", {
-      id: rec.id,
       recipeName: rec.recipeName,
       servings: rec.servings,
       timeNeeded: rec.timeNeeded,
-      dishTypes: rec.dishTypes,
-      period: rec.period,
-      culture: rec.culture,
+      category: rec.category,
       ingredients: rec.ingredients,
-      instructions: rec.instructions
+      instructions: rec.instructions,
+      img: ""
     })
   }
 
 
   render() {
-    let cultures;
-    let dishTypes;
-    let periods;
+    // let dishTypes;
+    // let periods;
 
-    this.state.myRecipes.forEach((rec) => {
-      if(rec.culture.length > 1){
-        cultures = 
-        rec.culture.map((culture) => (
-          <Text style={styles.text}>{culture} |</Text>
-          ))
-      } else if(rec.culture.length == 1) {
-        cultures = 
-        <Text style={styles.text}>{rec.culture[0]}</Text>
-      }
+    // this.state.myRecipes.forEach((rec) => {
   
+    //   if(rec.dishTypes.length > 1) {
+    //     dishTypes =
+    //     rec.dishTypes.map((type) => (
+    //       <Text style={styles.text}>{type} |</Text>
+    //     ))
+    //   } else if(rec.dishTypes.length == 1){
+    //     dishTypes =
+    //     <Text style={styles.text}>{rec.dishTypes[0]}</Text>
+    //   }
   
-      if(rec.dishTypes.length > 1) {
-        dishTypes =
-        rec.dishTypes.map((type) => (
-          <Text style={styles.text}>{type} |</Text>
-        ))
-      } else if(rec.dishTypes.length == 1){
-        dishTypes =
-        <Text style={styles.text}>{rec.dishTypes[0]}</Text>
-      }
-  
-      if(rec.period.length > 1) {
-        periods =
-        rec.period.map((period) => (
-          <Text style={styles.text}>{period} |</Text>
-        ))
-      } else if(rec.period.length == 1){
-        periods =
-        <Text style={styles.text}>{rec.period[0]}</Text>
-      }
-    })
+    //   if(rec.period.length > 1) {
+    //     periods =
+    //     rec.period.map((period) => (
+    //       <Text style={styles.text}>{period} |</Text>
+    //     ))
+    //   } else if(rec.period.length == 1){
+    //     periods =
+    //     <Text style={styles.text}>{rec.period[0]}</Text>
+    //   }
+    // })
 
     let recipes;
     if(this.state.myRecipes.length > 0) {
@@ -165,17 +152,17 @@ export default class Cookbook extends React.Component {
                     </View>
                   </View>
     
-                  {rec.culture.length > 0 && (
+                  {rec.category.length > 0 && (
                 <View style={[styles.iconText, {width: wp("60%")}]}>
-                <Ionicons
-                  name={"flag"}
+                <FontAwesome
+                  name={"cutlery"}
                   size={hp("2.5%")}
                   color="#115740"
                 />
-                  {cultures}
+                  <Text style={styles.text}>{rec.category[0]}</Text>
                 </View>)}
     
-                {rec.dishTypes.length > 0 && (
+                {/* {rec.dishTypes.length > 0 && (
                 <View style={[styles.iconText, {width: wp("60%")}]}>
                 <FontAwesome
                   name={"cutlery"}
@@ -193,7 +180,7 @@ export default class Cookbook extends React.Component {
                       color="#115740"
                     />
                       {periods}
-                    </View>)}
+                    </View>)} */}
                 </View>
               </View>
         </TouchableOpacity>
