@@ -198,17 +198,8 @@ export default class EditProfile extends React.Component {
 
     return (
       <View style={styles.container}>
-          <View style={styles.header}>
-            <Ionicons
-                name={"close"}
-                size={hp("5%")}
-                color="#115740"
-                marginRight={wp("15%")}
-                onPress={() => this.closeEditScreen()}
-            />
             <Text style={styles.title}>Edit profile</Text>
-          </View>
-
+          
             <View style={styles.editScreen}>
             {this.state.isLoading && <ActivityIndicator size="large"/>}
 
