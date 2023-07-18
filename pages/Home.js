@@ -171,7 +171,7 @@ export default class Home extends React.Component {
 
   async getDidYouKnow() {
     let didYouKnows = []
-    let didYouKnowCollection = collection(DATABASE, "didyouknows")
+    let didYouKnowCollection = collection(DATABASE, "didYouKnows")
     let didYouKnowData = await getDocs(didYouKnowCollection)
     if (didYouKnowData.size > 0) {
       didYouKnowData.forEach((doc) => {
