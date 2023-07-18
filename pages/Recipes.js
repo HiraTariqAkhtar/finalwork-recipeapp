@@ -145,7 +145,7 @@ export default class Recipes extends React.Component {
       recipeName: rec.recipeName,
       foodImg: rec.foodImg,
       servings: rec.servings,
-      timeNeeded: rec.time,
+      timeNeeded: rec.timeNeeded,
       ingredients: rec.ingredients,
       instructions: rec.instructions,
       category: rec.category
