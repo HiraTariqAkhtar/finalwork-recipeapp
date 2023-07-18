@@ -33,30 +33,28 @@ export default class AddRecipe extends React.Component {
         servings: 0,
         recipeName: "",
         ingredients: [{
-            id: 0,
-            nameClean: "",
-            quantity: "",
-            original: ""
+            name: "",
+            quantity: ""
         }],
         instructions: [{
             number: 0, 
             step: "",
         }],
-        culture: [],
+        category: [],
         time: 0,
         dishTypes: [],
         period: [],
 
-        cultureSelection: [],
-        dishTypeSelection: [],
-        occasionSelection: [],
+        categorySelection: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
+        // dishTypeSelection: [],
+        // occasionSelection: [],
 
-        cultureCheckedInFilter: [],
-        dishTypeCheckedInFilter: [],
-        occasionCheckedInFilter: [],
+        categoryCheckedInFilter: [],
+        // dishTypeCheckedInFilter: [],
+        // occasionCheckedInFilter: [],
     }
     this.getUser()
-    this.getAllFilters()
+    //this.getAllFilters()
   }
 
 
@@ -154,13 +152,11 @@ export default class AddRecipe extends React.Component {
       this.setState({ingredients: ingredients})
   }
 
-  addNewIngredient(index){
+  addNewIngredient(){
       let ingredients= [... this.state.ingredients]
       ingredients.push({
-          id: index+1,
-          nameClean:"",
-          quantity:"",
-          original: ""
+          name:"",
+          quantity:""
         })
         
       this.setState({ingredients: ingredients})
@@ -231,10 +227,9 @@ export default class AddRecipe extends React.Component {
          recipeName: this.state.recipeName,
          ingredients: this.state.ingredients,
          instructions: this.state.instructions,
-         culture: this.state.culture,
+         category: this.state.category,
          timeNeeded: this.state.time,
-         dishTypes: this.state.dishTypes,
-         period: this.state.period
+         img: ""
      }
    })
 
@@ -248,22 +243,18 @@ export default class AddRecipe extends React.Component {
         recipeName: "",
         servings: "",
         time: "",
-        dishTypes: [],
-        period: [],
-        culture: [],
+        category: [],
         ingredients: [{
-            id: 0,
-            nameClean: "",
-            quantity: "",
-            original: ""
+            name: "",
+            quantity: ""
         }],
         instructions: [{
             number: 0, 
             step: "",
         }],
-        cultureCheckedInFilter: [],
-        dishTypeCheckedInFilter: [],
-        occasionCheckedInFilter: [],
+        categoryCheckedInFilter: [],
+        // dishTypeCheckedInFilter: [],
+        // occasionCheckedInFilter: [],
     })
   }
 
@@ -319,19 +310,19 @@ export default class AddRecipe extends React.Component {
 
             <Text style={styles.text}>Select all possible filters</Text>
             
-                <Text style={styles.category}>Culture:</Text>
+                <Text style={styles.category}>Category:</Text>
                 <ScrollView style={styles.filterChoice} nestedScrollEnabled>
-                {this.state.cultureSelection.map((culture, index) => 
+                {this.state.categorySelection.map((category, index) => 
                 <View style={styles.iconText}>
                   <CheckBox
                   style={{marginLeft: wp("3%")}}
-                  isChecked = {this.state.cultureCheckedInFilter[index]}
-                  onClick= {() => this.addFilter(this.state.cultureCheckedInFilter, index, culture, this.state.culture)}/>
-                  <Text style={styles.text}>{culture}</Text>
+                  isChecked = {this.state.categoryCheckedInFilter[index]}
+                  onClick= {() => this.addFilter(this.state.categoryCheckedInFilter, index, category, this.state.category)}/>
+                  <Text style={styles.text}>{category}</Text>
                 </View>)}
               </ScrollView>
   
-                <Text style={styles.category}>Dish Type:</Text>
+                {/* <Text style={styles.category}>Dish Type:</Text>
                 <ScrollView style={styles.filterChoice} nestedScrollEnabled>
                   {this.state.dishTypeSelection.map((type, index) => 
                     <View style={styles.iconText}>
@@ -353,7 +344,7 @@ export default class AddRecipe extends React.Component {
                     onClick= {() => this.addFilter(this.state.occasionCheckedInFilter, index, occasion, this.state.period)}/>
                     <Text style={styles.text}>{occasion}</Text>
                   </View>)}
-                </ScrollView>
+                </ScrollView> */}
 
             <Text style={styles.text}>Ingredients*</Text>
             {this.state.ingredients.map((ingredient, index) => (
