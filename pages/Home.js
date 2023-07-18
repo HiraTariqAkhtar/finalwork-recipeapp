@@ -206,6 +206,10 @@ export default class Home extends React.Component {
     this.setState({didYouKnow: randomFact})
   }
 
+  async goToRecipePage(category) {
+    this.props.navigation.navigate("Recipes", {category})
+  }
+
 
   render() {
     let rec = this.state.recipeOfTheDay
@@ -249,7 +253,7 @@ export default class Home extends React.Component {
           styles.holidays,
           index === this.state.categories.length - 1 ? styles.lastHoliday : null,
         ]}
-        onPress={() => console.log(`${category} selected`)}
+        onPress={() => this.goToRecipePage(category)}
       >
         <Image source={categoryImg[category]} style={styles.categoryImage} />
         <Text style={styles.holidayName}>{category}</Text>
