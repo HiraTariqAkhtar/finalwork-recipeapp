@@ -43,7 +43,6 @@ export default class Recipes extends React.Component {
           img: "",
         },
       ],
-      categorieSelectedFromHome: ""
 
       // allCultures:[],
       // allDishTypes:[],
