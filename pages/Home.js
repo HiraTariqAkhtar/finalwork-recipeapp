@@ -223,8 +223,15 @@ export default class Home extends React.Component {
     }
 
 
-    let holidays = this.state.holidays.map((holiday) =>
-    <TouchableOpacity style={styles.holidays} onPress={() => this.goToHolidaysPage(holiday.name, holiday.description, holiday.locations, holiday.datetime.day, holiday.datetime.month, holiday.datetime.year, holiday.holidayType)}>
+    let holidays = this.state.holidays.map((holiday, index) =>
+    <TouchableOpacity
+      key = {index}
+      style={[
+        styles.holidays,
+        index === this.state.holidays.length - 1 ? styles.lastHoliday : null,
+      ]}
+      onPress={() => this.goToHolidaysPage(holiday.name, holiday.description, holiday.locations, holiday.datetime.day, holiday.datetime.month, holiday.datetime.year, holiday.holidayType)}
+      >
       <Text  style={styles.holidayName}>{holiday.name}</Text>
       <Text  style={styles.holidayDate}>{holiday.datetime.day} - {holiday.datetime.month} - {holiday.datetime.year}</Text>
       {holiday.holidayType &&
@@ -248,14 +255,20 @@ export default class Home extends React.Component {
       'Sweets': require('../assets/recipeApp/sweets.jpeg'),
     }
 
-    let categories = this.state.categories.map((category) =>
-    <TouchableOpacity style={styles.holidays} onPress={() => console.log(`${category} selected`)}>
-      <Image
-      source={categoryImg[category]}
-      style={styles.categoryImage}/>
-      <Text  style={styles.holidayName}>{category}</Text>
-    </TouchableOpacity>
-    )
+    let categories = this.state.categories.map((category, index) => 
+      <TouchableOpacity
+        key={index}
+        style={[
+          styles.holidays,
+          index === this.state.categories.length - 1 ? styles.lastHoliday : null,
+        ]}
+        onPress={() => console.log(`${category} selected`)}
+      >
+        <Image source={categoryImg[category]} style={styles.categoryImage} />
+        <Text style={styles.holidayName}>{category}</Text>
+      </TouchableOpacity>
+    );
+    
 
   
     return (
@@ -457,4 +470,7 @@ const styles = StyleSheet.create({
     height: hp("10%"),
     borderRadius: 10,
   },
+  lastHoliday: {
+    marginRight: wp("5%")
+  }
 });
