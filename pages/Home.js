@@ -26,19 +26,13 @@ export default class Home extends React.Component {
     this.state = {
       recipeOfTheDay: {
           id:0,
-          servings: 0,
           recipeName: "",
-          ingredients: [{
-            id: 0,
-            nameAndQuantity: "",
-            img: "",
-          }],
+          timeNeeded: 0,
+          servings: 0,
+          category: "",
+          ingredients: [],
           instructions: [],
-          culture: [],
-          time: 0,
-          foodImg: "",
-          dishTypes: [],
-          period: [],
+          img: "",
         },
 
       holidays: [{
@@ -61,36 +55,25 @@ export default class Home extends React.Component {
   }
   
   componentDidMount() {
-    //this.getRecipeOfTheDay()
+    this.getRecipeOfTheDay()
     //this.getHolidays()
     this.getDidYouKnow()
   }
 
   async getRecipeOfTheDay() {
-    let recipe;
-      axios.get(`https://api.spoonacular.com/recipes/random?number=1&apiKey=${RECIPES_API_KEY}`)
-      .then((res) => {
-        //console.log(res.data)
-        res.data.recipes.forEach((rec) => {
-          if(rec.analyzedInstructions != null) {
-            recipe = {
-              id: rec.id,
-              servings: rec.servings,
-              recipeName: rec.title,
-              ingredients: rec.extendedIngredients,
-              instructions: rec.analyzedInstructions[0].steps,
-              culture: rec.cuisines,
-              time: rec.readyInMinutes,
-              foodImg: rec.image,
-              dishTypes: rec.dishTypes,
-              period: rec.occasions,
-            }
-          }
-        })
-        
-        //console.log(recipe)
-        this.setState({recipeOfTheDay: recipe})
+    let recipes = []
+    let recipeCollection = collection(DATABASE, "recipes")
+    let recipeData = await getDocs(recipeCollection)
+    if (recipeData.size > 0) {
+      recipeData.forEach((doc) => {
+        recipes.push(doc.data())
       })
+    } 
+    //console.log(recipes)
+    let randomRecipe = recipes[Math.floor(Math.random() * recipes.length)]
+    //console.log(randomRecipe)
+    
+    this.setState({recipeOfTheDay: randomRecipe})
   }
 
   goToRecipeDetails(rec) {
@@ -100,11 +83,9 @@ export default class Home extends React.Component {
       foodImg: rec.foodImg,
       servings: rec.servings,
       timeNeeded: rec.time,
-      dishTypes: rec.dishTypes,
-      period: rec.period,
-      culture: rec.culture,
       ingredients: rec.ingredients,
       instructions: rec.instructions,
+      category: rec.category
     })
   }
 
@@ -188,41 +169,6 @@ export default class Home extends React.Component {
   render() {
     let rec = this.state.recipeOfTheDay
 
-    let cultures;
-    if(rec.culture.length > 1){
-      cultures = 
-      rec.culture.map((culture) => (
-        <Text style={styles.text}>{culture} |</Text>
-        ))
-    } else if(rec.culture.length == 1) {
-      cultures = 
-      <Text style={styles.text}>{rec.culture[0]}</Text>
-    }
-
-
-    let dishTypes;
-    if(rec.dishTypes.length > 1) {
-      dishTypes =
-      rec.dishTypes.map((type) => (
-        <Text style={styles.text}>{type} |</Text>
-      ))
-    } else if(rec.dishTypes.length == 1){
-      dishTypes =
-      <Text style={styles.text}>{rec.dishTypes[0]}</Text>
-    }
-
-    let periods;
-    if(rec.period.length > 1) {
-      periods =
-      rec.period.map((period) => (
-        <Text style={styles.text}>{period} |</Text>
-      ))
-    } else if(rec.period.length == 1){
-      periods =
-      <Text style={styles.text}>{rec.period[0]}</Text>
-    }
-
-
     let holidays = this.state.holidays.map((holiday, index) =>
     <TouchableOpacity
       key = {index}
@@ -287,9 +233,9 @@ export default class Home extends React.Component {
             <Text style={styles.sectionTitle}>Recipe of the day</Text>
             <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
               <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-              {rec.foodImg != "" ?(
+              {rec.img != "" ?(
               <Image
-              source={{uri: rec.foodImg}}
+              source={{uri: rec.img}}
               style={styles.foodImg}
               />)
               : 
@@ -322,39 +268,18 @@ export default class Home extends React.Component {
                         size={hp("2.5%")}
                         color="#115740"
                       />
-                        <Text style={styles.text}>{rec.time} minutes</Text>
+                        <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
                     </View>
                   </View>
-  
-                  {rec.culture.length > 0 && (
-                <View style={[styles.iconText, {width: wp("60%")}]}>
-                <Ionicons
-                  name={"flag"}
-                  size={hp("2.5%")}
-                  color="#115740"
-                />
-                  {cultures}
-                </View>)}
-    
-                {rec.dishTypes.length > 0 && (
+                  {rec.category && (
                 <View style={[styles.iconText, {width: wp("60%")}]}>
                 <FontAwesome
                   name={"cutlery"}
                   size={hp("2.5%")}
                   color="#115740"
                 />
-                  {dishTypes}
+                  <Text style={styles.text}>{rec.category}</Text>
                 </View>)}
-    
-                    {rec.period.length > 0 && (
-                  <View style={[styles.iconText, {width: wp("60%")}]}>
-                    <Ionicons
-                      name={"calendar"}
-                      size={hp("2.5%")}
-                      color="#115740"
-                    />
-                      {periods}
-                    </View>)}
                 </View>
               </View>
             </TouchableOpacity>

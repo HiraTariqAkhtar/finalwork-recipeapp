@@ -28,67 +28,48 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default class Recipes extends React.Component {
   constructor(props) {
     super(props);
-    //this.getRecipes()
+    this.getRecipes()
 
 
     this.state = {
-      randomRecipes: [
+      recipes: [
         {
           id:0,
-          servings: 0,
           recipeName: "",
-          ingredients: [{
-            id: 0,
-            nameAndQuantity: "",
-            img: "",
-          }],
+          timeNeeded: 0,
+          servings: 0,
+          category: "",
+          ingredients: [],
           instructions: [],
-          culture: [],
-          time: 0,
-          foodImg: "",
-          dishTypes: [],
-          period: [],
+          img: "",
         },
       ],
 
-      allCultures:[],
-      allDishTypes:[],
-      allOccasions:[],
+      // allCultures:[],
+      // allDishTypes:[],
+      // allOccasions:[],
 
-      filterScreenVisible: false,
-      filters: [],
+      // filterScreenVisible: false,
+      // filters: [],
 
-      cultureCheckedInFilter:[],
-      dishTypeCheckedInFilter:[],
-      occasionCheckedInFilter:[],
+      // cultureCheckedInFilter:[],
+      // dishTypeCheckedInFilter:[],
+      // occasionCheckedInFilter:[],
     };
   }
 
 
   async getRecipes() {
-    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${RECIPES_API_KEY}`)
-    .then((res) => {
-      let recipes = []
-      res.data.recipes.forEach((rec) => {
-        if(rec.analyzedInstructions !== null) {
-          recipes.push({
-            id: rec.id,
-            servings: rec.servings,
-            recipeName: rec.title,
-            ingredients: rec.extendedIngredients,
-            instructions: rec.analyzedInstructions[0].steps,
-            culture: rec.cuisines,
-            time: rec.readyInMinutes,
-            foodImg: rec.image,
-            dishTypes: rec.dishTypes,
-            period: rec.occasions
-          })
-        }
+    let recipes = []
+    let recipeCollection = collection(DATABASE, "recipes")
+    let recipeData = await getDocs(recipeCollection)
+    if (recipeData.size > 0) {
+      recipeData.forEach((doc) => {
+        recipes.push(doc.data())
       })
-      
-      this.setState({randomRecipes: recipes})
-    })
-    this.getFilterData()
+    }
+    console.log(recipes)
+    this.setState({recipes: recipes})
   }
 
   async getFilterData() {
@@ -165,11 +146,9 @@ export default class Recipes extends React.Component {
       foodImg: rec.foodImg,
       servings: rec.servings,
       timeNeeded: rec.time,
-      dishTypes: rec.dishTypes,
-      period: rec.period,
-      culture: rec.culture,
       ingredients: rec.ingredients,
-      instructions: rec.instructions
+      instructions: rec.instructions,
+      category: rec.category
     })
   }
 
@@ -273,55 +252,18 @@ export default class Recipes extends React.Component {
   }
 
   render() {
-    let cultures;
-    let dishTypes;
-    let periods;
-    this.state.randomRecipes.forEach((rec) => {
-      if(rec.culture.length > 1){
-        cultures = 
-        rec.culture.map((culture) => (
-          <Text style={styles.text}>{culture} |</Text>
-          ))
-      } else if(rec.culture.length == 1) {
-        cultures = 
-        <Text style={styles.text}>{rec.culture[0]}</Text>
-      }
-  
-  
-      if(rec.dishTypes.length > 1) {
-        dishTypes =
-        rec.dishTypes.map((type) => (
-          <Text style={styles.text}>{type} |</Text>
-        ))
-      } else if(rec.dishTypes.length == 1){
-        dishTypes =
-        <Text style={styles.text}>{rec.dishTypes[0]}</Text>
-      }
-  
-      if(rec.period.length > 1) {
-        periods =
-        rec.period.map((period) => (
-          <Text style={styles.text}>{period} |</Text>
-        ))
-      } else if(rec.period.length == 1){
-        periods =
-        <Text style={styles.text}>{rec.period[0]}</Text>
-      }
-    })
-
-
     let recipes;
 
-    if(this.state.randomRecipes.length > 0) {
-    recipes = this.state.randomRecipes.map((rec) => (
+    if(this.state.recipes.length > 0) {
+    recipes = this.state.recipes.map((rec) => (
       <TouchableOpacity
       key={rec.id}
       style={styles.recipe}
       onPress={() => this.goToRecipeDetails(rec)}>
         <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-            {rec.foodImg != "" ?(
+            {rec.img != "" ?(
             <Image
-            source={{uri: rec.foodImg}}
+            source={{uri: rec.img}}
             style={styles.foodImg}
             />)
             : 
@@ -354,39 +296,19 @@ export default class Recipes extends React.Component {
                       size={hp("2.5%")}
                       color="#115740"
                     />
-                      <Text style={styles.text}>{rec.time} minutes</Text>
+                      <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
                   </View>
                 </View>
   
-                {rec.culture.length > 0 && (
-              <View style={[styles.iconText, {width: wp("60%")}]}>
-              <Ionicons
-                name={"flag"}
-                size={hp("2.5%")}
-                color="#115740"
-              />
-                {cultures}
-              </View>)}
-  
-              {rec.dishTypes.length > 0 && (
+              {rec.category && (
               <View style={[styles.iconText, {width: wp("60%")}]}>
               <FontAwesome
                 name={"cutlery"}
                 size={hp("2.5%")}
                 color="#115740"
               />
-                {dishTypes}
+                <Text style={styles.text}>{rec.category}</Text>
               </View>)}
-  
-                  {rec.period.length > 0 && (
-                <View style={[styles.iconText, {width: wp("60%")}]}>
-                  <Ionicons
-                    name={"calendar"}
-                    size={hp("2.5%")}
-                    color="#115740"
-                  />
-                    {periods}
-                  </View>)}
               </View>
             </View>
       </TouchableOpacity>
@@ -395,17 +317,17 @@ export default class Recipes extends React.Component {
     recipes = <Text style={styles.noRecipes}>No recipes found</Text>
   }
 
-    let filters = this.state.filters.map((filter) => (
-      <View style={[styles.iconText, styles.filteredItems]}>
-        <Text style={styles.text}>{filter}</Text>
-        <Ionicons
-              name={"close"}
-              size={hp("3%")}
-              color="#115740"
-              onPress={() => this.removeFilter(filter)}
-            />
-      </View>
-    ))
+    // let filters = this.state.filters.map((filter) => (
+    //   <View style={[styles.iconText, styles.filteredItems]}>
+    //     <Text style={styles.text}>{filter}</Text>
+    //     <Ionicons
+    //           name={"close"}
+    //           size={hp("3%")}
+    //           color="#115740"
+    //           onPress={() => this.removeFilter(filter)}
+    //         />
+    //   </View>
+    // ))
 
 
     return (
@@ -425,24 +347,24 @@ export default class Recipes extends React.Component {
               onPress={() => this.openFilterScreen()}
             />
         </View>
-        {this.state.filters.length > 0 && 
+        {/* {this.state.filters.length > 0 && 
         <ScrollView 
         horizontal={true}
         style={{marginLeft: wp("5%"), marginVertical: hp("1%")}}>
           {filters}
-        </ScrollView>}
+        </ScrollView>} */}
         <ScrollView ref='_scrollView'>
           {recipes}
         </ScrollView>
 
-        {this.state.randomRecipes.length > 0 &&
+        {this.state.recipes.length > 0 &&
           <TouchableOpacity style={styles.button}
           onPress={() => this.removeFilter()}>
               <Text style={styles.btnText}>Show more recipes</Text>
         </TouchableOpacity>}
 
         {/* filterscreen */}
-        <Modal
+        {/* <Modal
         visible={this.state.filterScreenVisible}>
           <Ionicons
               name={"close"}
@@ -497,7 +419,7 @@ export default class Recipes extends React.Component {
               <Text style={styles.btnText}>Apply filter(s)</Text>
             </TouchableOpacity>
             
-        </Modal>
+        </Modal> */}
       </View>
     );
   }
