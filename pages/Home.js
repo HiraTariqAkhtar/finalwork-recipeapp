@@ -80,7 +80,7 @@ export default class Home extends React.Component {
     this.props.navigation.navigate("RecipeDetail", {
       id: rec.id,
       recipeName: rec.recipeName,
-      foodImg: rec.foodImg,
+      img: rec.img,
       servings: rec.servings,
       timeNeeded: rec.timeNeeded,
       ingredients: rec.ingredients,
