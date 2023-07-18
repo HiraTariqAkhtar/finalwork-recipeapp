@@ -44,6 +44,7 @@ export default class Recipes extends React.Component {
           img: "",
         },
       ],
+      categorieSelectedFromHome: ""
 
       // allCultures:[],
       // allDishTypes:[],
@@ -60,15 +61,27 @@ export default class Recipes extends React.Component {
 
 
   async getRecipes() {
+    let selectedCategoryFromHome = this.props.route.params?.category;
+    console.log(selectedCategoryFromHome)
+
     let recipes = []
     let recipeCollection = collection(DATABASE, "recipes")
     let recipeData = await getDocs(recipeCollection)
     if (recipeData.size > 0) {
-      recipeData.forEach((doc) => {
-        recipes.push(doc.data())
-      })
+      if(selectedCategoryFromHome !== undefined) {
+        recipeData.forEach((doc) => {
+          if(doc.data().category === selectedCategoryFromHome) {
+            recipes.push(doc.data())
+          }
+        })
+      } else {
+        recipeData.forEach((doc) => {
+          recipes.push(doc.data())
+        })
+      }
     }
-    console.log(recipes)
+
+    //console.log(recipes)
     this.setState({recipes: recipes})
   }
 
