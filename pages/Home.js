@@ -19,6 +19,9 @@ import {RECIPES_API_KEY, HOLIDAYS_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs } from "firebase/firestore"; 
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -69,9 +72,47 @@ export default class Home extends React.Component {
         recipes.push(doc.data())
       })
     } 
-    //console.log(recipes)
-    let randomRecipe = recipes[Math.floor(Math.random() * recipes.length)]
-    //console.log(randomRecipe)
+
+    let today = new Date().toDateString()
+    let recipeOfTheDayIndex;
+
+    let dateSavedInStorage = await AsyncStorage.getItem('today');
+    let recipeIndexInStorage = await AsyncStorage.getItem('recipeOfTheDayIndex');
+
+  /* 
+    If both the date and index are not yet saved in AsyncStorage:
+    - Set a random index for the recipe of the day
+    - Save the current date and index in AsyncStorage
+  */
+    if(dateSavedInStorage === null && recipeIndexInStorage === null) {
+      AsyncStorage.setItem('today', today)
+      recipeOfTheDayIndex = Math.floor(Math.random() * recipes.length)
+      AsyncStorage.setItem('recipeOfTheDayIndex', recipeOfTheDayIndex.toString())
+    } 
+    /* If only the date or index is not yet saved in AsyncStorage => save the missing value in AsyncStorage*/
+     else if(dateSavedInStorage === null && recipeIndexInStorage !== null) {
+      AsyncStorage.setItem('today', today)
+    } else if(dateSavedInStorage !== null && recipeIndexInStorage === null) {
+      recipeOfTheDayIndex = Math.floor(Math.random() * recipes.length)
+      AsyncStorage.setItem('recipeOfTheDayIndex', recipeOfTheDayIndex.toString())
+    }
+    /*
+      If both the date and index are saved in AsyncStorage:
+      - Check if the saved date matches the current date
+      - If the dates match, set the index stored in AsyncStorage
+      - If the dates don't match, generate a new random index for the recipe of the day and edit the date value in AsyncStorage
+    */
+    else {
+      if(today === dateSavedInStorage) {
+        recipeOfTheDayIndex = JSON.parse(recipeIndexInStorage)
+      } else {
+        AsyncStorage.setItem('today', today)
+        recipeOfTheDayIndex = Math.floor(Math.random() * recipes.length)
+        AsyncStorage.setItem('recipeOfTheDayIndex', recipeOfTheDayIndex.toString())
+      }
+    }
+
+    let randomRecipe = recipes[recipeOfTheDayIndex]
     
     this.setState({recipeOfTheDay: randomRecipe})
   }
