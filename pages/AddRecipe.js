@@ -225,7 +225,7 @@ export default class AddRecipe extends React.Component {
      recipeName: this.state.recipeName,
      ingredients: this.state.ingredients,
      instructions: this.state.instructions,
-     category: this.state.category,
+     category: this.state.category[0],
      timeNeeded: this.state.time,
      img: ""
    })
