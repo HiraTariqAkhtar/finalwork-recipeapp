@@ -132,14 +132,106 @@ export default class Recipes extends React.Component {
     let recipes = this.state.recipes
     let filteredRecipes = []
 
+    // Filter per category
     if(this.state.selectedCategory != "") {
       recipes.forEach((rec) => {
         if(rec.category === this.state.selectedCategory) {
-          filteredRecipes.push(rec)
+          if(!filteredRecipes.includes(rec)) {
+            filteredRecipes.push(rec)
+          }
         }
       })
     }
-    this.setState({filterScreenVisible: false, recipes: filteredRecipes})
+
+    // Filter per serving
+    if(this.state.selectedServings != "") {
+      if(this.state.selectedServings === "<5 ppl") {
+        recipes.forEach((rec) => {
+          if(rec.servings < 5) {
+            if(!filteredRecipes.includes(rec)) {
+              filteredRecipes.push(rec)
+            }
+          } 
+        })
+      } else if (this.state.selectedServings === "5-10 ppl") {
+        recipes.forEach((rec) => {
+          if(rec.servings >= 5 && rec.servings <= 10) {
+            if(!filteredRecipes.includes(rec)) {
+              filteredRecipes.push(rec)
+            }
+          } 
+        })
+      } else if (this.state.selectedServings === ">10 ppl") {
+        recipes.forEach((rec) => {
+          if(rec.servings > 10) {
+            if(!filteredRecipes.includes(rec)) {
+              filteredRecipes.push(rec)
+            }
+          } 
+        })
+      }
+    }
+
+    // Filter per prep time
+    if(this.state.selectedPrepTime != "") {
+      if(this.state.selectedPrepTime === "<10 minutes") {
+        recipes.forEach((rec) => {
+          if(rec.timeNeeded < 10) {
+            if(!filteredRecipes.includes(rec)) {
+              filteredRecipes.push(rec)
+            }
+          } 
+        })
+      } else if (this.state.selectedPrepTime === "10-30 minutes") {
+        recipes.forEach((rec) => {
+          if(rec.servings >= 10 && rec.servings <= 30) {
+            if(!filteredRecipes.includes(rec)) {
+              filteredRecipes.push(rec)
+            }
+          } 
+        })
+      } else if (this.state.selectedPrepTime === ">30 minutes") {
+        recipes.forEach((rec) => {
+          if(rec.servings > 30) {
+            if(!filteredRecipes.includes(rec)) {
+              filteredRecipes.push(rec)
+            }
+          } 
+        })
+      }
+    }
+
+    // Filter per number of ingredients
+    if(this.state.selectedIngredientAmount != "") {
+      if(this.state.selectedIngredientAmount === "<5 ingredients") {
+        recipes.forEach((rec) => {
+          if(rec.ingredients.length < 5) {
+            if(!filteredRecipes.includes(rec)) {
+              filteredRecipes.push(rec)
+            }
+          } 
+        })
+      } else if (this.state.selectedIngredientAmount === "5-10 ingredients") {
+        recipes.forEach((rec) => {
+          if(rec.ingredients.length >= 5 && rec.servings <= 10) {
+            if(!filteredRecipes.includes(rec)) {
+              filteredRecipes.push(rec)
+            }
+          } 
+        })
+      } else if (this.state.selectedIngredientAmount === ">10 ingredients") {
+        recipes.forEach((rec) => {
+          if(rec.ingredients.length > 10) {
+            if(!filteredRecipes.includes(rec)) {
+              filteredRecipes.push(rec)
+            }
+          } 
+        })
+      }
+    }
+
+    this.setState({recipes: filteredRecipes})
+    this.closeFilterScreen()
   }
 
   selectRadioBtn(checkedArray, i) {
