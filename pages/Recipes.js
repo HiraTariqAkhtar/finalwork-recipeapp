@@ -56,6 +56,11 @@ export default class Recipes extends React.Component {
       servingsCheckedInFilter: [],
       prepTimeCheckedInFilter: [],
       ingredientAmountCheckedInFilter: [],
+
+      selectedCategory: "",
+      selectedServings: "",
+      selectedPrepTime: "",
+      selectedIngredientAmount: ""
     };
   }
 
@@ -69,7 +74,8 @@ export default class Recipes extends React.Component {
     let recipeData = await getDocs(recipeCollection)
     if (recipeData.size > 0) {
       if(selectedCategoryFromHome !== undefined) {
-        this.state.filters.push(selectedCategoryFromHome)
+        this.setState({selectedCategory: selectedCategoryFromHome})
+        this.addFilter()
         recipeData.forEach((doc) => {
           if(doc.data().category === selectedCategoryFromHome) {
             recipes.push(doc.data())
@@ -85,37 +91,6 @@ export default class Recipes extends React.Component {
 
     //console.log(recipes)
     this.setState({recipes: recipes})
-    this.setState({filters: this.state.filters})
-  }
-
-  async getFilterData() {
-    categoryChecked = []
-    servingsChecked = []
-    prepTimeChecked = []
-    ingredientAmountChecked = []
-
-    this.state.allCategories.forEach(() => {
-      categoryChecked.push(false)
-    })
-
-    this.state.allServings.forEach(() => {
-      servingsChecked.push(false)
-    })
-
-    this.state.allPrepTime.forEach(() => {
-      prepTimeChecked.push(false)
-    })
-
-    this.state.allIngredientAmount.forEach(() => {
-      ingredientAmountChecked.push(false)
-    })
-
-
-    this.setState({categoryCheckedInFilter: categoryChecked})
-    this.setState({servingsCheckedInFilter: servingsChecked})
-    this.setState({prepTimeCheckedInFilter: prepTimeChecked})
-    this.setState({ingredientAmountCheckedInFilter: ingredientAmountChecked})
-
   }
 
   goToRecipeDetails(rec) {
@@ -137,32 +112,19 @@ export default class Recipes extends React.Component {
 
   closeFilterScreen() { 
     // uncheck all filters
-    let uncheckCategoryFilters = []
-    let uncheckServingsFilters = []
-    let uncheckPrepTimeFilters = []
-    let uncheckIngredientAmountFilters = []
+    this.state.categoryCheckedInFilter.fill(false)
     
-    this.state.categoryCheckedInFilter.forEach(() => {
-      uncheckCategoryFilters.push(false)
-    })
+    this.state.servingsCheckedInFilter.fill(false)
     
-    this.state.servingsCheckedInFilter.forEach(() => {
-      uncheckServingsFilters.push(false)
-    })
+    this.state.prepTimeCheckedInFilter.fill(false)
     
-    this.state.prepTimeCheckedInFilter.forEach(() => {
-      uncheckPrepTimeFilters.push(false)
-    })
-    
-    this.state.ingredientAmountCheckedInFilter.forEach(() => {
-      uncheckIngredientAmountFilters.push(false)
-    })
+    this.state.ingredientAmountCheckedInFilter.fill(false)
     
     this.setState({filterScreenVisible: false})
-    this.setState({categoryCheckedInFilter: uncheckCategoryFilters})
-    this.setState({servingsCheckedInFilter: uncheckServingsFilters})
-    this.setState({prepTimeCheckedInFilter: uncheckPrepTimeFilters})
-    this.setState({ingredientAmountCheckedInFilter: uncheckIngredientAmountFilters})
+    this.setState({categoryCheckedInFilter: this.state.categoryCheckedInFilter})
+    this.setState({servingsCheckedInFilter: this.state.servingsCheckedInFilter})
+    this.setState({prepTimeCheckedInFilter: this.state.prepTimeCheckedInFilter})
+    this.setState({ingredientAmountCheckedInFilter: this.state.ingredientAmountCheckedInFilter})
 
   }
 
@@ -170,22 +132,65 @@ export default class Recipes extends React.Component {
     this.setState({filterScreenVisible: false})
   }
 
-  addFilter(checkedArray, i, item){
-    checkedArray[i] = !checkedArray[i]
-    if(!this.state.filters.includes(item)){
-      this.state.filters.push(item)
-    } else {
-      this.state.filters = this.state.filters.filter(remove => remove != item)
+  selectRadioBtn(checkedArray, i) {
+    // Check if an item is already selected
+    const hasSelectedElement = checkedArray.some((element) => element === true);
+  
+    // Set all radio buttons as not selected when selecting another
+    if (hasSelectedElement && !checkedArray[i]) {
+      checkedArray.fill(false);
     }
-    //console.log(this.state.filters)
-    this.setState({checkedArray: checkedArray})
-    this.setState({filters: this.state.filters})
+    checkedArray[i] = !checkedArray[i];
+
+    this.setState({ checkedArray: checkedArray }, () => this.addFilter());
+    
   }
+
+  addFilter() {
+    //console.log(this.state.selectedCategory, this.state.selectedServings, this.state.selectedPrepTime, this.state.selectedIngredientAmount)
+    let filters = []
+
+    if(this.state.selectedCategory != "") {
+      filters.push(this.state.selectedCategory)
+    }
+    if(this.state.selectedServings != "") {
+      filters.push(this.state.selectedServings)
+    }
+    if(this.state.selectedPrepTime != "") {
+      filters.push(this.state.selectedPrepTime)
+    }
+    if(this.state.selectedIngredientAmount != "") {
+      filters.push(this.state.selectedIngredientAmount)
+    }
+  
+    this.setState({ filters: filters })
+
+  }
+  
 
   removeFilter(filter) {
     this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true});
     //console.log(`${filter} clicked`)
     this.state.filters = this.state.filters.filter(remove => remove != filter)
+
+    // Check which filter removed --> uncheck radio btn + state: ""
+    if (filter === this.state.selectedCategory) {
+      this.state.categoryCheckedInFilter.fill(false)
+      this.setState({ selectedCategory: "" , categoryCheckedInFilter: this.state.categoryCheckedInFilter});
+
+    } else if (filter === this.state.selectedServings) {
+      this.state.servingsCheckedInFilter.fill(false)
+      this.setState({ selectedServings: "" , servingsCheckedInFilter: this.state.servingsCheckedInFilter});
+
+    } else if (filter === this.state.selectedPrepTime) {
+      this.state.servingsCheckedInFilter.fill(false)
+      this.setState({ selectedPrepTime: "" , prepTimeCheckedInFilter: this.state.prepTimeCheckedInFilter});
+
+    } else if (filter === this.state.selectedIngredientAmount) {
+      this.state.servingsCheckedInFilter.fill(false)
+      this.setState({ selectedIngredientAmount: "" , ingredientAmountCheckedInFilter: this.state.ingredientAmountCheckedInFilter});
+    }
+
     if(this.state.filters.length == 0) {
       this.getRecipes()
     } else {
@@ -211,6 +216,67 @@ export default class Recipes extends React.Component {
   }
 
   render() {
+    let filterSelectionCategory = this.state.allCategories.map((category, index) => (
+      <View style={styles.iconText} key={index}>
+        <Ionicons
+          name={this.state.categoryCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          onPress={() => {
+            this.setState({selectedCategory: category})
+            this.selectRadioBtn(this.state.categoryCheckedInFilter, index)
+          }}
+        />
+        <Text style={styles.text}>{category}</Text>
+      </View>
+    ));
+
+    let filterSelectionServings = this.state.allServings.map((serving, index) => (
+      <View style={styles.iconText} key={index}>
+        <Ionicons
+          name={this.state.servingsCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          onPress={() => {
+            this.setState({selectedServings: serving})
+            this.selectRadioBtn(this.state.servingsCheckedInFilter, index)
+          }}
+        />
+        <Text style={styles.text}>{serving}</Text>
+      </View>
+    ));
+
+    let filterSelectionPrepTime = this.state.allPrepTime.map((time, index) => (
+      <View style={styles.iconText} key={index}>
+        <Ionicons
+          name={this.state.prepTimeCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          onPress={() => {
+            this.setState({selectedPrepTime: time})
+            this.selectRadioBtn(this.state.prepTimeCheckedInFilter, index)
+          }}
+        />
+        <Text style={styles.text}>{time}</Text>
+      </View>
+    ));
+
+    let filterSelectionIngredients = this.state.allIngredientAmount.map((ingredients, index) => (
+      <View style={styles.iconText} key={index}>
+        <Ionicons
+          name={this.state.ingredientAmountCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          onPress={() => {
+            this.setState({selectedIngredientAmount: ingredients})
+            this.selectRadioBtn(this.state.ingredientAmountCheckedInFilter, index)
+          }}
+        />
+        <Text style={styles.text}>{ingredients}</Text>
+      </View>
+    ));
+    
+
     let recipes;
 
     if(this.state.recipes.length > 0) {
@@ -335,57 +401,29 @@ export default class Recipes extends React.Component {
             />
               <View>
                 <Text style={styles.category}>Category</Text>
-            <View style={styles.filterChoice}>
-                {this.state.allCategories.map((category, index) => 
-                <View style={styles.iconText}>
-                  <CheckBox
-                  style={{marginLeft: wp("3%")}}
-                  isChecked = {this.state.categoryCheckedInFilter[index]}
-                  onClick= {() => this.addFilter(this.state.categoryCheckedInFilter, index, category)}/>
-                  <Text style={styles.text}>{category}</Text>
-                </View>)}
-              </View>
+                <View style={styles.filterChoice}>
+                  {filterSelectionCategory}
+                </View>
               </View>
   
               <View>
                 <Text style={styles.category}>Servings</Text>
                 <View style={styles.filterChoice}>
-                  {this.state.allServings.map((serving, index) => 
-                    <View style={styles.iconText}>
-                      <CheckBox
-                      style={{marginLeft: wp("3%")}}
-                      isChecked = {this.state.servingsCheckedInFilter[index]}
-                      onClick= {() => this.addFilter(this.state.servingsCheckedInFilter, index, serving)}/>
-                      <Text style={styles.text}>{serving}</Text>
-                    </View>)}
+                  {filterSelectionServings}
                 </View>
               </View>
   
               <View>
                 <Text style={styles.category}>Prep time</Text>
                 <View style={styles.filterChoice}>
-                  {this.state.allPrepTime.map((prepTime, index) => 
-                  <View style={styles.iconText}>
-                    <CheckBox
-                    style={{marginLeft: wp("3%")}}
-                    isChecked = {this.state.prepTimeCheckedInFilter[index]}
-                    onClick= {() => this.addFilter(this.state.prepTimeCheckedInFilter, index, prepTime)}/>
-                    <Text style={styles.text}>{prepTime}</Text>
-                  </View>)}
+                 {filterSelectionPrepTime}
                 </View>
               </View>
   
               <View>
                 <Text style={styles.category}>Number of ingredients</Text>
                 <View style={styles.filterChoice}>
-                  {this.state.allIngredientAmount.map((ingredients, index) => 
-                  <View style={styles.iconText}>
-                    <CheckBox
-                    style={{marginLeft: wp("3%")}}
-                    isChecked = {this.state.ingredientAmountCheckedInFilter[index]}
-                    onClick= {() => this.addFilter(this.state.ingredientAmountCheckedInFilter, index, ingredients)}/>
-                    <Text style={styles.text}>{ingredients}</Text>
-                  </View>)}
+                  {filterSelectionIngredients}
                 </View>
               </View>
 
