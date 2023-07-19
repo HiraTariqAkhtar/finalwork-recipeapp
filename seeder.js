@@ -61,6 +61,95 @@ const recipes = [
     }
 ]
 
+// Pakistani supermarkets
+const supermarkets = [
+    {
+        id: 1,
+        title: "Iqbal Traders sprl",
+        description: "Otletstraat 63, 1070 Brussel", 
+        coordinate:{
+            latitude: 50.841720,
+            longitude: 4.336440
+        },
+    },
+    {
+        id: 2,
+        title: "Ideal Cash & Carry", 
+        description: "Steenweg op Gent 33, 1080 Sint-Jans-Molenbeek", 
+        coordinate:{
+            latitude: 50.856710, 
+            longitude: 4.336840
+        },
+    },
+    {
+        id: 3,
+        title: "Express Afro-Indian", 
+        description: "Zuidlaan 98, 1000 Brussel", 
+        coordinate:{
+            latitude: 50.8370456, 
+            longitude: 4.3423893
+        },
+    },
+]
+
+// Pakistani restaurants
+const restaurants = [
+    {
+        id: 1,
+        title: "Tandoori village",
+        description: "Charleroise Steenweg 248, 1060 Sint-Gillis", 
+        coordinate:{
+            latitude: 50.823140, 
+            longitude: 4.354060
+        }
+    },
+    {
+        id: 2,
+        title: "Maharaja Tandoori", 
+        description: "Beursstraat 12, 1000 Brussel", 
+        coordinate:{
+        latitude: 50.848390, 
+        longitude: 4.350570
+        }
+    },
+    {
+        id: 3,
+        title: "Maharaja Tandoori Restaurant", 
+        description: "Rue de Fiennesstraat 48, 1070 Anderlecht", 
+        coordinate:{
+        latitude: 50.838910, 
+        longitude: 4.332180
+        }
+    },
+        {
+        id: 4,
+        title: "Chanab Tandoori", 
+        description: "Rue de Fiennes 19, 1070 Anderlecht", 
+        coordinate:{
+        latitude: 50.838910, 
+        longitude: 4.332180
+        }
+    },
+        {
+        id: 5,
+        title: "Shezan", 
+        description: "Waverse Steenweg 120,1050 Ixelles", 
+        coordinate:{
+        latitude: 50.8364988, 
+        longitude: 4.3674027
+        }
+    },
+        {
+        id: 6,
+        title: "Zam Zam", 
+        description: "Rue Brogniez 78, 1070 Anderlecht", 
+        coordinate:{
+        latitude: 50.8404409, 
+        longitude: 4.3355466
+        }
+    },
+]
+
 export async function addDataInDatabase() {
     // did you know
     let didYouKnowCollection = collection(DATABASE, "didYouKnows")
@@ -96,4 +185,40 @@ export async function addDataInDatabase() {
             addDoc(recipeCollection, rec)
         }
     })
+
+
+    // supermarkets
+    let supermarketCollection = collection(DATABASE, "supermarkets")
+    let supermarketData = await getDocs(supermarketCollection)
+    let existingSupermarkets = []
+
+    if(supermarketData.size > 0) {
+        supermarketData.forEach((doc) => {
+            existingSupermarkets.push(doc.data().id)
+        })
+    }
+    supermarkets.forEach((store) => {
+        if(!existingSupermarkets.includes(store.id)) {
+            addDoc(supermarketCollection, store)
+        }
+    })
+
+
+    // restaurants
+    let restaurantCollection = collection(DATABASE, "restaurants")
+    let restaurantData = await getDocs(restaurantCollection)
+    let existingRestaurants = []
+
+    if(restaurantData.size > 0) {
+        restaurantData.forEach((doc) => {
+            existingRestaurants.push(doc.data().id)
+        })
+    }
+    restaurants.forEach((resto) => {
+        if(!existingRestaurants.includes(resto.id)) {
+            addDoc(restaurantCollection, resto)
+        }
+    })
+
+
 }
