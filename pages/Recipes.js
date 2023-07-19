@@ -129,7 +129,17 @@ export default class Recipes extends React.Component {
   }
 
   async applyFilter() {
-    this.setState({filterScreenVisible: false})
+    let recipes = this.state.recipes
+    let filteredRecipes = []
+
+    if(this.state.selectedCategory != "") {
+      recipes.forEach((rec) => {
+        if(rec.category === this.state.selectedCategory) {
+          filteredRecipes.push(rec)
+        }
+      })
+    }
+    this.setState({filterScreenVisible: false, recipes: filteredRecipes})
   }
 
   selectRadioBtn(checkedArray, i) {
