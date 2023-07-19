@@ -335,7 +335,7 @@ export default class Recipes extends React.Component {
             />
               <View>
                 <Text style={styles.category}>Category</Text>
-            <ScrollView style={styles.filterChoice}>
+            <View style={styles.filterChoice}>
                 {this.state.allCategories.map((category, index) => 
                 <View style={styles.iconText}>
                   <CheckBox
@@ -344,12 +344,12 @@ export default class Recipes extends React.Component {
                   onClick= {() => this.addFilter(this.state.categoryCheckedInFilter, index, category)}/>
                   <Text style={styles.text}>{category}</Text>
                 </View>)}
-              </ScrollView>
+              </View>
               </View>
   
               <View>
                 <Text style={styles.category}>Servings</Text>
-                <ScrollView style={styles.filterChoice}>
+                <View style={styles.filterChoice}>
                   {this.state.allServings.map((serving, index) => 
                     <View style={styles.iconText}>
                       <CheckBox
@@ -358,12 +358,12 @@ export default class Recipes extends React.Component {
                       onClick= {() => this.addFilter(this.state.servingsCheckedInFilter, index, serving)}/>
                       <Text style={styles.text}>{serving}</Text>
                     </View>)}
-                </ScrollView>
+                </View>
               </View>
   
               <View>
                 <Text style={styles.category}>Prep time</Text>
-                <ScrollView style={styles.filterChoice}>
+                <View style={styles.filterChoice}>
                   {this.state.allPrepTime.map((prepTime, index) => 
                   <View style={styles.iconText}>
                     <CheckBox
@@ -372,12 +372,12 @@ export default class Recipes extends React.Component {
                     onClick= {() => this.addFilter(this.state.prepTimeCheckedInFilter, index, prepTime)}/>
                     <Text style={styles.text}>{prepTime}</Text>
                   </View>)}
-                </ScrollView>
+                </View>
               </View>
   
               <View>
                 <Text style={styles.category}>Number of ingredients</Text>
-                <ScrollView style={styles.filterChoice}>
+                <View style={styles.filterChoice}>
                   {this.state.allIngredientAmount.map((ingredients, index) => 
                   <View style={styles.iconText}>
                     <CheckBox
@@ -386,7 +386,7 @@ export default class Recipes extends React.Component {
                     onClick= {() => this.addFilter(this.state.ingredientAmountCheckedInFilter, index, ingredients)}/>
                     <Text style={styles.text}>{ingredients}</Text>
                   </View>)}
-                </ScrollView>
+                </View>
               </View>
 
             <TouchableOpacity style={styles.filterBtn} onPress={() => this.applyFilter()}>
@@ -495,12 +495,15 @@ btnText:{
     textAlign: "center"
 },
   filterChoice: {
+    display:"flex", 
+    flexDirection:"row", 
+    flexWrap:"wrap",
     marginBottom:hp("3%"),
-    height: hp("10%"),
     borderRadius: 10,
     borderColor: "#115740",
     borderWidth: 3,
     width: wp("90%"),
     marginHorizontal: wp("5%"),
+    paddingVertical: hp("2%")
   }
 });
