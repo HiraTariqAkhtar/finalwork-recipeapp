@@ -75,6 +75,7 @@ export default class Recipes extends React.Component {
             recipes.push(doc.data())
           }
         })
+        this.props.navigation.setParams({ category: undefined });
       } else {
         recipeData.forEach((doc) => {
           recipes.push(doc.data())
