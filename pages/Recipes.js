@@ -52,10 +52,10 @@ export default class Recipes extends React.Component {
       filterScreenVisible: false,
       filters: [],
 
-      categoryCheckedInFilter: "",
-      servingsCheckedInFilter: 0,
-      prepTimeCheckedInFilter: 0,
-      ingredientAmountCheckedInFilter: 0,
+      categoryCheckedInFilter: [],
+      servingsCheckedInFilter: [],
+      prepTimeCheckedInFilter: [],
+      ingredientAmountCheckedInFilter: [],
     };
   }
 
@@ -141,30 +141,22 @@ export default class Recipes extends React.Component {
     let uncheckServingsFilters = []
     let uncheckPrepTimeFilters = []
     let uncheckIngredientAmountFilters = []
-
-    if(this.state.categoryCheckedInFilter.length > 0) {
-      this.state.categoryCheckedInFilter.forEach(() => {
-        uncheckCategoryFilters.push(false)
-      })
-    }
-
-    if(this.state.servingsCheckedInFilter.length > 0) {
-      this.state.servingsCheckedInFilter.forEach(() => {
-        uncheckServingsFilters.push(false)
-      })
-    }
-
-    if(this.state.prepTimeCheckedInFilter.length > 0) {
-      this.state.prepTimeCheckedInFilter.forEach(() => {
-        uncheckPrepTimeFilters.push(false)
-      })
-    }
     
-    if(this.state.ingredientAmountCheckedInFilter.length > 0) {
-      this.state.ingredientAmountCheckedInFilter.forEach(() => {
-        uncheckIngredientAmountFilters.push(false)
-      })
-    }
+    this.state.categoryCheckedInFilter.forEach(() => {
+      uncheckCategoryFilters.push(false)
+    })
+    
+    this.state.servingsCheckedInFilter.forEach(() => {
+      uncheckServingsFilters.push(false)
+    })
+    
+    this.state.prepTimeCheckedInFilter.forEach(() => {
+      uncheckPrepTimeFilters.push(false)
+    })
+    
+    this.state.ingredientAmountCheckedInFilter.forEach(() => {
+      uncheckIngredientAmountFilters.push(false)
+    })
     
     this.setState({filterScreenVisible: false})
     this.setState({categoryCheckedInFilter: uncheckCategoryFilters})
