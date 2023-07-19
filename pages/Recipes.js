@@ -45,9 +45,9 @@ export default class Recipes extends React.Component {
       ],
 
       allCategories:["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
-      allServings:["<5", "5-10", ">10"],
-      allPrepTime:["<10", "10-30", ">30"],
-      allIngredientAmount:["<5", "5-10", ">10"],
+      allServings:["<5 ppl", "5-10 ppl", ">10 ppl"],
+      allPrepTime:["<10 minutes", "10-30 minutes", ">30 minutes"],
+      allIngredientAmount:["<5 ingredients", "5-10 ingredients", ">10 ingredients"],
 
       filterScreenVisible: false,
       filters: [],
@@ -141,19 +141,30 @@ export default class Recipes extends React.Component {
     let uncheckPrepTimeFilters = []
     let uncheckIngredientAmountFilters = []
 
-    this.state.categoryCheckedInFilter.forEach(() => {
-      uncheckCultureFilters.push(false)
-    })
-    this.state.servingsCheckedInFilter.forEach(() => {
-      uncheckDishTypeFilters.push(false)
-    })
-    this.state.prepTimeCheckedInFilter.forEach(() => {
-      uncheckOccasionFilters.push(false)
-    })
-    this.state.ingredientAmountCheckedInFilter.forEach(() => {
-      uncheckOccasionFilters.push(false)
-    })
+    if(this.state.categoryCheckedInFilter.length > 0) {
+      this.state.categoryCheckedInFilter.forEach(() => {
+        uncheckCategoryFilters.push(false)
+      })
+    }
 
+    if(this.state.servingsCheckedInFilter.length > 0) {
+      this.state.servingsCheckedInFilter.forEach(() => {
+        uncheckServingsFilters.push(false)
+      })
+    }
+
+    if(this.state.prepTimeCheckedInFilter.length > 0) {
+      this.state.prepTimeCheckedInFilter.forEach(() => {
+        uncheckPrepTimeFilters.push(false)
+      })
+    }
+    
+    if(this.state.ingredientAmountCheckedInFilter.length > 0) {
+      this.state.ingredientAmountCheckedInFilter.forEach(() => {
+        uncheckIngredientAmountFilters.push(false)
+      })
+    }
+    
     this.setState({filterScreenVisible: false})
     this.setState({categoryCheckedInFilter: uncheckCategoryFilters})
     this.setState({servingsCheckedInFilter: uncheckServingsFilters})
@@ -305,7 +316,7 @@ export default class Recipes extends React.Component {
         {this.state.filters.length > 0 && 
         <ScrollView 
         horizontal={true}
-        style={{marginLeft: wp("5%"), marginVertical: hp("1%")}}>
+        style={{marginLeft: wp("5%")}}>
           {filters}
         </ScrollView>}
         <ScrollView ref='_scrollView'>
