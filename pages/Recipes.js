@@ -44,16 +44,18 @@ export default class Recipes extends React.Component {
         },
       ],
 
-      // allCultures:[],
-      // allDishTypes:[],
-      // allOccasions:[],
+      allCategories:["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
+      allServings:["<5", "5-10", ">10"],
+      allPrepTime:["<10", "10-30", ">30"],
+      allIngredientAmount:["<5", "5-10", ">10"],
 
-      // filterScreenVisible: false,
-      // filters: [],
+      filterScreenVisible: false,
+      filters: [],
 
-      // cultureCheckedInFilter:[],
-      // dishTypeCheckedInFilter:[],
-      // occasionCheckedInFilter:[],
+      categoryCheckedInFilter: "",
+      servingsCheckedInFilter: 0,
+      prepTimeCheckedInFilter: 0,
+      ingredientAmountCheckedInFilter: 0,
     };
   }
 
@@ -67,6 +69,7 @@ export default class Recipes extends React.Component {
     let recipeData = await getDocs(recipeCollection)
     if (recipeData.size > 0) {
       if(selectedCategoryFromHome !== undefined) {
+        this.state.filters.push(selectedCategoryFromHome)
         recipeData.forEach((doc) => {
           if(doc.data().category === selectedCategoryFromHome) {
             recipes.push(doc.data())
@@ -81,73 +84,37 @@ export default class Recipes extends React.Component {
 
     //console.log(recipes)
     this.setState({recipes: recipes})
+    this.setState({filters: this.state.filters})
   }
 
   async getFilterData() {
-    let cultures = []
-    let dishTypes = []
-    let occasions = []
+    categoryChecked = []
+    servingsChecked = []
+    prepTimeChecked = []
+    ingredientAmountChecked = []
 
-    cultureChecked = []
-    dishTypeChecked = []
-    occasionChecked = []
+    this.state.allCategories.forEach(() => {
+      categoryChecked.push(false)
+    })
 
-    // Push culture and dish type values from database into arrays + set checkbox to unchecked
-    let cultureCollection = collection(DATABASE, "cultures")
-    let cultureData = await getDocs(cultureCollection)
-    if (cultureData.size > 0) {
-      cultureData.forEach((doc) => {
-        cultures.push(doc.data().culture)
-        cultureChecked.push(false)
-      })
-    } 
+    this.state.allServings.forEach(() => {
+      servingsChecked.push(false)
+    })
 
-    let dishTypeCollection = collection(DATABASE, "dishTypes")
-    let dishTypeData = await getDocs(dishTypeCollection)
-    if (dishTypeData.size > 0) {
-      dishTypeData.forEach((doc) => {
-        dishTypes.push(doc.data().dishType)
-        dishTypeChecked.push(false)
-      })
-    } 
+    this.state.allPrepTime.forEach(() => {
+      prepTimeChecked.push(false)
+    })
 
-    // Check if already data available in database --> occasions
-    let occasionCollection = collection(DATABASE, "occasions")
-    let occasionData = await getDocs(occasionCollection)
-    if (occasionData.size > 0) {
-      occasionData.forEach((doc) => {
-        occasions.push(doc.data().occasion)
-        occasionChecked.push(false)
-      })
-    } 
+    this.state.allIngredientAmount.forEach(() => {
+      ingredientAmountChecked.push(false)
+    })
 
-    // add occasions in db if not already
-    for(let rec of this.state.randomRecipes) {
-      for(let occasion of rec.period) {
-        if(!occasions.includes(occasion)) {
-          occasions.push(occasion)
-          occasionChecked.push(false)
-          await addDoc((occasionCollection), {occasion: occasion})
-        }
-      }
 
-    }
+    this.setState({categoryCheckedInFilter: categoryChecked})
+    this.setState({servingsCheckedInFilter: servingsChecked})
+    this.setState({prepTimeCheckedInFilter: prepTimeChecked})
+    this.setState({ingredientAmountCheckedInFilter: ingredientAmountChecked})
 
-    // order arrays alphabetically
-    cultures.sort()
-    dishTypes.sort()
-    occasions.sort()
-
-    // save data arrays in state
-    this.setState({allCultures: cultures})
-    this.setState({allDishTypes: dishTypes})
-    this.setState({allOccasions: occasions})
-
-    this.setState({cultureCheckedInFilter: cultureChecked})
-    this.setState({dishTypeCheckedInFilter: dishTypeChecked})
-    this.setState({occasionCheckedInFilter: occasionChecked})
-
-    //console.log(this.state.occasionCheckedInFilter)
   }
 
   goToRecipeDetails(rec) {
@@ -169,34 +136,34 @@ export default class Recipes extends React.Component {
 
   closeFilterScreen() { 
     // uncheck all filters
-    let uncheckCultureFilters = []
-    let uncheckDishTypeFilters = []
-    let uncheckOccasionFilters = []
+    let uncheckCategoryFilters = []
+    let uncheckServingsFilters = []
+    let uncheckPrepTimeFilters = []
+    let uncheckIngredientAmountFilters = []
 
-    this.state.cultureCheckedInFilter.forEach(() => {
+    this.state.categoryCheckedInFilter.forEach(() => {
       uncheckCultureFilters.push(false)
     })
-    this.state.dishTypeCheckedInFilter.forEach(() => {
+    this.state.servingsCheckedInFilter.forEach(() => {
       uncheckDishTypeFilters.push(false)
     })
-    this.state.occasionCheckedInFilter.forEach(() => {
+    this.state.prepTimeCheckedInFilter.forEach(() => {
+      uncheckOccasionFilters.push(false)
+    })
+    this.state.ingredientAmountCheckedInFilter.forEach(() => {
       uncheckOccasionFilters.push(false)
     })
 
     this.setState({filterScreenVisible: false})
-    this.setState({cultureCheckedInFilter: uncheckCultureFilters})
-    this.setState({dishTypeCheckedInFilter: uncheckDishTypeFilters})
-    this.setState({occasionCheckedInFilter: uncheckOccasionFilters})
+    this.setState({categoryCheckedInFilter: uncheckCategoryFilters})
+    this.setState({servingsCheckedInFilter: uncheckServingsFilters})
+    this.setState({prepTimeCheckedInFilter: uncheckPrepTimeFilters})
+    this.setState({ingredientAmountCheckedInFilter: uncheckIngredientAmountFilters})
 
   }
 
   async applyFilter() {
     this.setState({filterScreenVisible: false})
-
-    // set the filters to lower case => for api call
-    let filterTags = this.state.filters.toString().toLowerCase()
-    //console.log(filterTags)
-
   }
 
   addFilter(checkedArray, i, item){
@@ -305,17 +272,17 @@ export default class Recipes extends React.Component {
     recipes = <Text style={styles.noRecipes}>No recipes found</Text>
   }
 
-    // let filters = this.state.filters.map((filter) => (
-    //   <View style={[styles.iconText, styles.filteredItems]}>
-    //     <Text style={styles.text}>{filter}</Text>
-    //     <Ionicons
-    //           name={"close"}
-    //           size={hp("3%")}
-    //           color="#115740"
-    //           onPress={() => this.removeFilter(filter)}
-    //         />
-    //   </View>
-    // ))
+    let filters = this.state.filters.map((filter) => (
+      <View style={[styles.iconText, styles.filteredItems]}>
+        <Text style={styles.text}>{filter}</Text>
+        <Ionicons
+              name={"close"}
+              size={hp("3%")}
+              color="#115740"
+              onPress={() => this.removeFilter(filter)}
+            />
+      </View>
+    ))
 
 
     return (
@@ -335,12 +302,12 @@ export default class Recipes extends React.Component {
               onPress={() => this.openFilterScreen()}
             />
         </View>
-        {/* {this.state.filters.length > 0 && 
+        {this.state.filters.length > 0 && 
         <ScrollView 
         horizontal={true}
         style={{marginLeft: wp("5%"), marginVertical: hp("1%")}}>
           {filters}
-        </ScrollView>} */}
+        </ScrollView>}
         <ScrollView ref='_scrollView'>
           {recipes}
         </ScrollView>
@@ -352,7 +319,7 @@ export default class Recipes extends React.Component {
         </TouchableOpacity>}
 
         {/* filterscreen */}
-        {/* <Modal
+        <Modal
         visible={this.state.filterScreenVisible}>
           <Ionicons
               name={"close"}
@@ -363,51 +330,66 @@ export default class Recipes extends React.Component {
               onPress={() => this.closeFilterScreen()}
             />
               <View>
-                <Text style={styles.category}>Culture</Text>
+                <Text style={styles.category}>Category</Text>
             <ScrollView style={styles.filterChoice}>
-                {this.state.allCultures.map((culture, index) => 
+                {this.state.allCategories.map((category, index) => 
                 <View style={styles.iconText}>
                   <CheckBox
                   style={{marginLeft: wp("3%")}}
-                  isChecked = {this.state.cultureCheckedInFilter[index]}
-                  onClick= {() => this.addFilter(this.state.cultureCheckedInFilter, index, culture)}/>
-                  <Text style={styles.text}>{culture}</Text>
+                  isChecked = {this.state.categoryCheckedInFilter[index]}
+                  onClick= {() => this.addFilter(this.state.categoryCheckedInFilter, index, category)}/>
+                  <Text style={styles.text}>{category}</Text>
                 </View>)}
               </ScrollView>
               </View>
   
               <View>
-                <Text style={styles.category}>Dish Type</Text>
+                <Text style={styles.category}>Servings</Text>
                 <ScrollView style={styles.filterChoice}>
-                  {this.state.allDishTypes.map((type, index) => 
+                  {this.state.allServings.map((serving, index) => 
                     <View style={styles.iconText}>
                       <CheckBox
                       style={{marginLeft: wp("3%")}}
-                      isChecked = {this.state.dishTypeCheckedInFilter[index]}
-                      onClick= {() => this.addFilter(this.state.dishTypeCheckedInFilter, index, type)}/>
-                      <Text style={styles.text}>{type}</Text>
+                      isChecked = {this.state.servingsCheckedInFilter[index]}
+                      onClick= {() => this.addFilter(this.state.servingsCheckedInFilter, index, serving)}/>
+                      <Text style={styles.text}>{serving}</Text>
                     </View>)}
                 </ScrollView>
               </View>
   
               <View>
-                <Text style={styles.category}>Occasion</Text>
+                <Text style={styles.category}>Prep time</Text>
                 <ScrollView style={styles.filterChoice}>
-                  {this.state.allOccasions.map((occasion, index) => 
+                  {this.state.allPrepTime.map((prepTime, index) => 
                   <View style={styles.iconText}>
                     <CheckBox
                     style={{marginLeft: wp("3%")}}
-                    isChecked = {this.state.occasionCheckedInFilter[index]}
-                    onClick= {() => this.addFilter(this.state.occasionCheckedInFilter, index, occasion)}/>
-                    <Text style={styles.text}>{occasion}</Text>
+                    isChecked = {this.state.prepTimeCheckedInFilter[index]}
+                    onClick= {() => this.addFilter(this.state.prepTimeCheckedInFilter, index, prepTime)}/>
+                    <Text style={styles.text}>{prepTime}</Text>
                   </View>)}
                 </ScrollView>
               </View>
+  
+              <View>
+                <Text style={styles.category}>Number of ingredients</Text>
+                <ScrollView style={styles.filterChoice}>
+                  {this.state.allIngredientAmount.map((ingredients, index) => 
+                  <View style={styles.iconText}>
+                    <CheckBox
+                    style={{marginLeft: wp("3%")}}
+                    isChecked = {this.state.ingredientAmountCheckedInFilter[index]}
+                    onClick= {() => this.addFilter(this.state.ingredientAmountCheckedInFilter, index, ingredients)}/>
+                    <Text style={styles.text}>{ingredients}</Text>
+                  </View>)}
+                </ScrollView>
+              </View>
+
             <TouchableOpacity style={styles.filterBtn} onPress={() => this.applyFilter()}>
               <Text style={styles.btnText}>Apply filter(s)</Text>
             </TouchableOpacity>
             
-        </Modal> */}
+        </Modal>
       </View>
     );
   }
@@ -510,7 +492,7 @@ btnText:{
 },
   filterChoice: {
     marginBottom:hp("3%"),
-    height: hp("20%"),
+    height: hp("10%"),
     borderRadius: 10,
     borderColor: "#115740",
     borderWidth: 3,
