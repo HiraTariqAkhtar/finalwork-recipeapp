@@ -129,15 +129,17 @@ export default class Recipes extends React.Component {
   }
 
   async applyFilter() {
-    let recipes = this.state.recipes
     let filteredRecipes = []
+    let recipeCollection = collection(DATABASE, "recipes")
+    let recipeData = await getDocs(recipeCollection)
 
-    // Filter per category
+    if(recipeData.size > 0) {
+      // Filter per category
     if(this.state.selectedCategory != "") {
-      recipes.forEach((rec) => {
-        if(rec.category === this.state.selectedCategory) {
-          if(!filteredRecipes.includes(rec)) {
-            filteredRecipes.push(rec)
+      recipeData.forEach((doc) => {
+        if(doc.data().category === this.state.selectedCategory) {
+          if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+            filteredRecipes.push(doc.data())
           }
         }
       })
@@ -146,26 +148,26 @@ export default class Recipes extends React.Component {
     // Filter per serving
     if(this.state.selectedServings != "") {
       if(this.state.selectedServings === "<5 ppl") {
-        recipes.forEach((rec) => {
-          if(rec.servings < 5) {
-            if(!filteredRecipes.includes(rec)) {
-              filteredRecipes.push(rec)
+        recipeData.forEach((doc) => {
+          if(doc.data().servings < 5) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
             }
           } 
         })
       } else if (this.state.selectedServings === "5-10 ppl") {
-        recipes.forEach((rec) => {
-          if(rec.servings >= 5 && rec.servings <= 10) {
-            if(!filteredRecipes.includes(rec)) {
-              filteredRecipes.push(rec)
+        recipeData.forEach((doc) => {
+          if(doc.data().servings >= 5 && doc.data().servings <= 10) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
             }
           } 
         })
       } else if (this.state.selectedServings === ">10 ppl") {
-        recipes.forEach((rec) => {
-          if(rec.servings > 10) {
-            if(!filteredRecipes.includes(rec)) {
-              filteredRecipes.push(rec)
+        recipeData.forEach((doc) => {
+          if(doc.data().servings > 10) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
             }
           } 
         })
@@ -175,26 +177,26 @@ export default class Recipes extends React.Component {
     // Filter per prep time
     if(this.state.selectedPrepTime != "") {
       if(this.state.selectedPrepTime === "<10 minutes") {
-        recipes.forEach((rec) => {
-          if(rec.timeNeeded < 10) {
-            if(!filteredRecipes.includes(rec)) {
-              filteredRecipes.push(rec)
+        recipeData.forEach((doc) => {
+          if(doc.data().timeNeeded < 10) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
             }
           } 
         })
       } else if (this.state.selectedPrepTime === "10-30 minutes") {
-        recipes.forEach((rec) => {
-          if(rec.servings >= 10 && rec.servings <= 30) {
-            if(!filteredRecipes.includes(rec)) {
-              filteredRecipes.push(rec)
+        recipeData.forEach((doc) => {
+          if(doc.data().timeNeeded >= 10 && doc.data().timeNeeded <= 30) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
             }
           } 
         })
       } else if (this.state.selectedPrepTime === ">30 minutes") {
-        recipes.forEach((rec) => {
-          if(rec.servings > 30) {
-            if(!filteredRecipes.includes(rec)) {
-              filteredRecipes.push(rec)
+        recipeData.forEach((doc) => {
+          if(doc.data().timeNeeded > 30) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
             }
           } 
         })
@@ -204,30 +206,31 @@ export default class Recipes extends React.Component {
     // Filter per number of ingredients
     if(this.state.selectedIngredientAmount != "") {
       if(this.state.selectedIngredientAmount === "<5 ingredients") {
-        recipes.forEach((rec) => {
-          if(rec.ingredients.length < 5) {
-            if(!filteredRecipes.includes(rec)) {
-              filteredRecipes.push(rec)
+        recipeData.forEach((doc) => {
+          if(doc.data().ingredients.length < 5) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
             }
           } 
         })
       } else if (this.state.selectedIngredientAmount === "5-10 ingredients") {
-        recipes.forEach((rec) => {
-          if(rec.ingredients.length >= 5 && rec.servings <= 10) {
-            if(!filteredRecipes.includes(rec)) {
-              filteredRecipes.push(rec)
+        recipeData.forEach((doc) => {
+          if(doc.data().ingredients.length >= 5 && doc.data().servings <= 10) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
             }
           } 
         })
       } else if (this.state.selectedIngredientAmount === ">10 ingredients") {
-        recipes.forEach((rec) => {
-          if(rec.ingredients.length > 10) {
-            if(!filteredRecipes.includes(rec)) {
-              filteredRecipes.push(rec)
+        recipeData.forEach((doc) => {
+          if(doc.data().ingredients.length > 10) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
             }
           } 
         })
       }
+    }
     }
 
     this.setState({recipes: filteredRecipes})
@@ -273,32 +276,35 @@ export default class Recipes extends React.Component {
   removeFilter(filter) {
     this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true});
     //console.log(`${filter} clicked`)
-    this.state.filters = this.state.filters.filter(remove => remove != filter)
+    let filtersLeft = this.state.filters.filter(remove => remove != filter)
 
     // Check which filter removed --> uncheck radio btn + state: ""
     if (filter === this.state.selectedCategory) {
       this.state.categoryCheckedInFilter.fill(false)
-      this.setState({ selectedCategory: "" , categoryCheckedInFilter: this.state.categoryCheckedInFilter});
+      this.setState({ selectedCategory: "" , categoryCheckedInFilter: this.state.categoryCheckedInFilter})
+    }
 
-    } else if (filter === this.state.selectedServings) {
+    if (filter === this.state.selectedServings) {
       this.state.servingsCheckedInFilter.fill(false)
-      this.setState({ selectedServings: "" , servingsCheckedInFilter: this.state.servingsCheckedInFilter});
+      this.setState({ selectedServings: "" , servingsCheckedInFilter: this.state.servingsCheckedInFilter})
+    }
 
-    } else if (filter === this.state.selectedPrepTime) {
+    if (filter === this.state.selectedPrepTime) {
       this.state.servingsCheckedInFilter.fill(false)
-      this.setState({ selectedPrepTime: "" , prepTimeCheckedInFilter: this.state.prepTimeCheckedInFilter});
+      this.setState({ selectedPrepTime: "" , prepTimeCheckedInFilter: this.state.prepTimeCheckedInFilter})
+    }
 
-    } else if (filter === this.state.selectedIngredientAmount) {
+    if (filter === this.state.selectedIngredientAmount) {
       this.state.servingsCheckedInFilter.fill(false)
       this.setState({ selectedIngredientAmount: "" , ingredientAmountCheckedInFilter: this.state.ingredientAmountCheckedInFilter});
     }
 
-    if(this.state.filters.length == 0) {
+    if(filtersLeft.length == 0) {
       this.getRecipes()
     } else {
       this.applyFilter()
     }
-    this.setState({filters: this.state.filters})
+    this.setState({filters: filtersLeft})
   }
 
   async addRecipe() {
