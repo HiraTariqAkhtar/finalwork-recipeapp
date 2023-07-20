@@ -124,7 +124,11 @@ export default class Profile extends React.Component {
 
 
   async updateProfilePic() {
-    console.log("update pressed!!")
+    const imgRef = ref(STORAGE, `profilePicUser${this.state.userId}`)
+    await deleteObject(imgRef)
+    .then(() => {
+      this.addProfilePic()
+    })
   }
 
   async confirmDelete(){
@@ -139,7 +143,6 @@ export default class Profile extends React.Component {
   }
   
   async removeProfilePic() {
-    console.log("delete pressed!!")
     const imgRef = ref(STORAGE, `profilePicUser${this.state.userId}`)
     await deleteObject(imgRef)
     .then(() => {
