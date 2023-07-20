@@ -14,9 +14,10 @@ import {
 } from "react-native-responsive-screen";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
+import axios from "axios";
+import {LOCATION_API_KEY} from '@env'
 import { collection, getDocs, addDoc } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default class AddToMap extends React.Component {
@@ -30,7 +31,9 @@ export default class AddToMap extends React.Component {
         city: "",
         placeTypes: ["Restaurant", "Supermarket"],
         typeSelectedInRadioBtn: [],
-        selectedType: ""
+        selectedType: "",
+        latitude: 0,
+        longitude: 0
     }
 
   }
@@ -48,6 +51,32 @@ export default class AddToMap extends React.Component {
     this.setState({ typeSelectedInRadioBtn: this.state.typeSelectedInRadioBtn, selectedType: type });
 
   }
+
+  checkInputFields(){
+        if(this.state.placeName == "" || this.state.selectedType == "" || this.state.streetNum == "" || this.state.postalCode == 0 || this.state.city == "") {
+            Alert.alert(
+                "All fields required",
+                "Please fill in all fields"
+            )
+        } else {
+            this.getLatLng()
+        }
+  }
+
+  async getLatLng(){
+      axios.get(`https://geocode.search.hereapi.com/v1/geocode?q=${this.state.streetNum}, ${this.state.postalCode} ${this.state.city}&apiKey=${LOCATION_API_KEY}`)
+      .then((res) => {
+          //console.log(res.data.items[0].position)
+          let latLng = res.data.items[0].position
+          this.setState({latitude : latLng.lat, longitude : latLng.lng})
+          this.addToMap()
+      })
+  }
+
+  async addToMap() {
+      console.log("added!!!")
+  }
+
 
   render() {
     let select = this.state.placeTypes.map((type, index) => (
