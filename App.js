@@ -36,6 +36,7 @@ import AddRecipe from "./pages/AddRecipe"
 import Cookbook from "./pages/Cookbook"
 import Map from "./pages/Map"
 import EditProfile from "./pages/EditProfile"
+import AddToMap from "./pages/AddToMap"
 
 // Seeder import
 import { addDataInDatabase } from "./seeder"
