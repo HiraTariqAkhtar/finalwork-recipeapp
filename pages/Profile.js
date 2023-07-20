@@ -124,11 +124,11 @@ export default class Profile extends React.Component {
 
 
   async updateProfilePic() {
-
+    console.log("update pressed!!")
   }
-
+  
   async removeProfilePic() {
-
+    console.log("delete pressed!!")
   }
 
   async logIn() {
@@ -177,26 +177,60 @@ export default class Profile extends React.Component {
     }
 
     let profilePic;
+    let uploadPic;
+    let editPic;
+    let removePic;
     if(this.state.profilePic == null || this.state.profilePic == undefined) {
       profilePic = 
       <Ionicons
-            name={"person-circle"}
-            size={hp("25%")}
-            color="#878787"
-            marginTop={hp("5%")}
-            onPress={() => this.addProfilePic()}
-          />
+        name={"person-circle"}
+        size={hp("25%")}
+        color="#878787"
+        marginTop={hp("5%")}
+      />
+      uploadPic = 
+      <FontAwesome
+        name={"upload"}
+        size={hp("4%")}
+        color="#115740"
+        marginTop={hp("-25%")}
+        marginBottom={hp("25%")}
+        marginLeft={wp("50%")}
+        onPress={() => this.addProfilePic()}
+      />
     } else {
       profilePic = 
       <Image
       src= {this.state.profilePic}
       style={styles.profilePic}/>
+
+      editPic = 
+      <FontAwesome
+        name={"edit"}
+        size={hp("4%")}
+        color="#115740"
+        marginRight={wp("3%")}
+        onPress={() => this.updateProfilePic()}
+      />
+
+      removePic =
+      <Ionicons
+        name={"trash-outline"}
+        size={hp("4%")}
+        color="#ff0000"
+        onPress={() => this.removeProfilePic()}
+      />
     }
 
     return (
       <View style={styles.container}>
          <Text style={styles.title}>Profile</Text>
          {profilePic}
+           {uploadPic}
+         <View style={styles.managePic}>
+           {editPic}
+           {removePic}
+         </View>
           <Text style={styles.name}>{this.state.firstName} {this.state.lastName}</Text>
           <View style={{marginTop: hp("10%")}}>
             
@@ -243,5 +277,12 @@ profilePic: {
   marginTop: hp("5%"),
   marginBottom: hp("3%"),
   borderRadius: 10,
+},
+managePic: {
+  display:"flex",
+  flexDirection:"row",
+  marginLeft: wp("75%"),
+  marginTop: hp("-28%"),
+  marginBottom: hp("25%")
 }
 });
