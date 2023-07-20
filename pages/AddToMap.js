@@ -94,6 +94,21 @@ export default class AddToMap extends React.Component {
       this.props.navigation.navigate("Home")
   }
 
+  goBack() {
+      if(this.state.placeName !== "" || this.state.selectedType !== "" || this.state.streetNum !== "" || this.state.postalCode !== 0 || this.state.city !== "") {
+          Alert.alert(
+            "Leave page?",
+            "All unsaved changes will be lost",
+            [
+              { text: "No", style:"cancel" },
+              { text: "Yes", onPress: () => {this.props.navigation.goBack()} }
+            ]
+          )
+      } else {
+        this.props.navigation.goBack()
+      }
+}
+
 
   render() {
     let select = this.state.placeTypes.map((type, index) => (
@@ -119,7 +134,7 @@ export default class AddToMap extends React.Component {
                   size={hp("5%")}
                   color="#115740"
                   marginRight={wp("15%")}
-                  onPress={() => this.props.navigation.goBack()}
+                  onPress={() => this.goBack()}
                 />
               <Text style={styles.title}>Add to map</Text>
           </View>
