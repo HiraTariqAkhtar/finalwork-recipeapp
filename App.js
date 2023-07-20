@@ -92,6 +92,7 @@ const MapScreen = () => {
     <Stack.Navigator>
       <Stack.Screen name="Map" component={Map} options={{ headerShown: false }}/>
       <Stack.Screen name="AddToMap" component={AddToMap} options={{ headerShown: false }}/>
+      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
