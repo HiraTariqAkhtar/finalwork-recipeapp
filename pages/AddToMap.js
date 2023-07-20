@@ -6,7 +6,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Alert
+  Alert,
+  ToastAndroid
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -18,6 +19,7 @@ import axios from "axios";
 import {LOCATION_API_KEY} from '@env'
 import { collection, getDocs, addDoc } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
+import uuid from 'react-native-uuid';
 
 
 export default class AddToMap extends React.Component {
@@ -74,7 +76,22 @@ export default class AddToMap extends React.Component {
   }
 
   async addToMap() {
-      console.log("added!!!")
+      let collectionName = this.state.selectedType.toLowerCase() + "s"
+      //console.log(collectionName)
+      let mapCollection = collection(DATABASE, collectionName)
+
+      await addDoc((mapCollection), {
+          id: uuid.v4(),
+          title: this.state.placeName,
+          description: `${this.state.streetNum}, ${this.state.postalCode} ${this.state.city}`,
+          coordinate: {
+              latitude: this.state.latitude,
+              longitude: this.state.longitude
+          }
+      })
+
+      ToastAndroid.show(`${this.state.placeName} succesfully added`, ToastAndroid.SHORT)
+      this.props.navigation.navigate("Home")
   }
 
 
