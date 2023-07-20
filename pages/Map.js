@@ -3,7 +3,8 @@ import {
   StyleSheet,
   View,
   Text,
-  ToastAndroid
+  ToastAndroid,
+  Alert
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -17,6 +18,7 @@ import * as Location from 'expo-location';
 
 import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default class Map extends React.Component {
@@ -91,6 +93,21 @@ export default class Map extends React.Component {
     this.setState({supermarkets: supermarkets, restaurants:restaurants})
   }
 
+  async addToMap() {
+    let loggedIn = await AsyncStorage.getItem("userLoggedIn")
+    if(loggedIn !==  null) {
+      this.props.navigation.navigate("AddToMap")
+    } else {
+      Alert.alert(
+        "Not logged in",
+        "You need to log in to add a new recipe",
+        [
+          {text: "Cancel", style: "cancel"},
+          {text: "Log in", onPress: () => this.props.navigation.navigate("LogIn")}
+        ]
+      )
+    }
+  }
 
   render() {
     let restaurants =  this.state.restaurants.map((location) => (
@@ -140,7 +157,16 @@ export default class Map extends React.Component {
 
     return (
       <View style={styles.container}>
-          <Text style={styles.title}>Map</Text>
+        <View style={styles.header}>
+          <Ionicons
+                name={"add"}
+                size={hp("5%")}
+                color="#115740"
+                marginRight={wp("25%")}
+                onPress={() => this.addToMap()}
+              />
+            <Text style={styles.title}>Map</Text>
+        </View>
           <View style={{display: "flex", flexDirection: "row"}}>
             <SelectDropdown
             buttonStyle = {styles.dropDown}
@@ -217,11 +243,16 @@ const styles = StyleSheet.create({
         paddingTop: hp("5%"),
         backgroundColor:"#FFFFFF" 
       },
+      header: {
+        display:"flex",
+        flexDirection:"row",
+        marginHorizontal: wp("7.5%"),
+      },
       title: {
         textAlign: 'center',
         fontFamily: "Nunito_700Bold",
         fontSize: hp("3.5%"),
-        color: "#FF0000"
+        color: "#FF5E00"
       },
       dropDown: {
         width: wp("40%"),

@@ -87,6 +87,14 @@ const ProfileScreen = () => {
     </Stack.Navigator>
   );
 }
+const MapScreen = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Map" component={Map} options={{ headerShown: false }}/>
+      <Stack.Screen name="AddToMap" component={AddToMap} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  );
+}
 
 // Bottom nav
 const Tabs = () => {
@@ -109,7 +117,7 @@ const Tabs = () => {
       unmountOnBlur: true
     }}/>
 
-    <Tab.Screen name="MapScreen" component={Map}
+    <Tab.Screen name="MapScreen" component={MapScreen}
     options= {{
       tabBarIcon: ({focused}) => (
         <Ionicons
