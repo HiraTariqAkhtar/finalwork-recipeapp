@@ -4,7 +4,8 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Alert
+  Alert,
+  Image
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -14,6 +15,9 @@ import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import * as ImagePicker from 'expo-image-picker'
+import {STORAGE} from "../firebaseConfig"
+import { ref, uploadBytes } from 'firebase/storage';
 
 
 export default class Profile extends React.Component {
@@ -24,7 +28,8 @@ export default class Profile extends React.Component {
       firstName: "",
       lastName: "",
       profilePic: null,
-      isLoggedIn: false
+      isLoggedIn: false,
+      isUploading: false
     }
   }
 
@@ -60,8 +65,23 @@ export default class Profile extends React.Component {
   }
 
   async addProfilePic() {
-    
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4,3],
+      quality: 1
+    })
+
+    if(!result.canceled) {
+      const storageRef = ref(STORAGE, 'profilePic')
+
+      const img = await fetch(result.assets[0].uri)
+      const blobFile = await img.blob()
+
+      await uploadBytes(storageRef, blobFile)
+    }
   }
+
 
   async updateProfilePic() {
 
@@ -116,15 +136,31 @@ export default class Profile extends React.Component {
       </TouchableOpacity>
     }
 
-    return (
-      <View style={styles.container}>
-         <Text style={styles.title}>Profile</Text>
-         <Ionicons
+    let profilePic;
+    if(this.state.profilePic == null || this.state.profilePic == undefined) {
+      profilePic = 
+      <Ionicons
             name={"person-circle"}
             size={hp("25%")}
             color="#878787"
             marginTop={hp("5%")}
+            onPress={() => this.addProfilePic()}
           />
+    } else {
+      profilePic = 
+      <Ionicons
+            name={"person-circle"}
+            size={hp("25%")}
+            color="#FF5E00"
+            marginTop={hp("5%")}
+            onPress={() => this.addProfilePic()}
+          />
+    }
+
+    return (
+      <View style={styles.container}>
+         <Text style={styles.title}>Profile</Text>
+         {profilePic}
           <Text style={styles.name}>{this.state.firstName} {this.state.lastName}</Text>
           <View style={{marginTop: hp("10%")}}>
             
