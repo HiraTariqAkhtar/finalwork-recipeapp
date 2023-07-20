@@ -159,7 +159,7 @@ export default class Cookbook extends React.Component {
                   size={hp("2.5%")}
                   color="#115740"
                 />
-                  <Text style={styles.text}>{rec.category[0]}</Text>
+                  <Text style={styles.text}>{rec.category}</Text>
                 </View>)}
     
                 {/* {rec.dishTypes.length > 0 && (
