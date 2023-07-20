@@ -17,8 +17,9 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as ImagePicker from 'expo-image-picker'
-import {STORAGE} from "../firebaseConfig"
+import {STORAGE, DATABASE} from "../firebaseConfig"
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, getDocs, addDoc, doc } from "firebase/firestore"; 
 
 
 export default class Profile extends React.Component {
@@ -30,7 +31,7 @@ export default class Profile extends React.Component {
       lastName: "",
       profilePic: null,
       isLoggedIn: false,
-      isUploading: false
+      userId: ""
     }
   }
 
@@ -55,24 +56,39 @@ export default class Profile extends React.Component {
   }
 
   async getUserInfo(){
-    let userFirstName = await AsyncStorage.getItem("firstName")
-    let userLastName = await AsyncStorage.getItem("lastName")
+    let userEmail = await AsyncStorage.getItem("email")
+    let userId = 0
 
-   if(userFirstName !== null && userLastName !== null) {
-    this.setState({firstName: userFirstName})
-    this.setState({lastName: userLastName})
-   }
+    if(userEmail !== null) {
+      // Get user id and name from firebase
+      let userFirstName;
+      let userLastName;
 
-   // get profile pic
-   const imgRef = ref(STORAGE, `profilePic${this.state.firstName}${this.state.lastName}`)
-   try{
-     await getDownloadURL(imgRef)
-     .then((img) => {
-       this.setState({profilePic: img})
-     })
-   } catch(e) {
-    this.setState({profilePic: null})
-   }
+        let userCollection = collection(DATABASE, "users")
+        let userData = await getDocs(userCollection)
+    
+        if (userData.size > 0) {
+          userData.forEach((doc) => {
+            if(doc.data().email == userEmail) {
+                userId = doc.id
+                userFirstName = doc.data().firstName
+                userLastName = doc.data().lastName
+            }
+          })
+
+          // check if user has uploaded a profile pic --> get url
+        const userProfilePic = ref(STORAGE, `profilePicUser${userId}`)
+        try {
+          await getDownloadURL(userProfilePic)
+          .then((img) => {
+            this.setState({profilePic: img})
+          })
+        } catch {
+          this.setState({profilePic: null})
+        }
+        }
+        this.setState({userId: userId, firstName: userFirstName, lastName: userLastName})
+    }
 
   }
 
@@ -85,7 +101,7 @@ export default class Profile extends React.Component {
     })
 
     if(!result.canceled) {
-      const storageRef = ref(STORAGE, `profilePic${this.state.firstName}${this.state.lastName}`)  // The name you want to give to uploaded img
+      const storageRef = ref(STORAGE, `profilePicUser${this.state.userId}`)  // The name you want to give to uploaded img
 
       const img = await fetch(result.assets[0].uri)
       const blobFile = await img.blob()
@@ -99,7 +115,7 @@ export default class Profile extends React.Component {
   }
 
   async uploadPic() {
-    const imgRef = ref(STORAGE, `profilePic${this.state.firstName}${this.state.lastName}`)
+    const imgRef = ref(STORAGE, `profilePicUser${this.state.userId}`)
     await getDownloadURL(imgRef)
     .then((img) => {
       this.setState({profilePic: img})
