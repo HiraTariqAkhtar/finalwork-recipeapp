@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   Text,
   Alert,
-  Image
+  Image,
+  ToastAndroid
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -17,7 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as ImagePicker from 'expo-image-picker'
 import {STORAGE} from "../firebaseConfig"
-import { ref, uploadBytes } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 
 export default class Profile extends React.Component {
@@ -62,6 +63,17 @@ export default class Profile extends React.Component {
     this.setState({lastName: userLastName})
    }
 
+   // get profile pic
+   const imgRef = ref(STORAGE, `profilePic${this.state.firstName}${this.state.lastName}`)
+   try{
+     await getDownloadURL(imgRef)
+     .then((img) => {
+       this.setState({profilePic: img})
+     })
+   } catch(e) {
+    this.setState({profilePic: null})
+   }
+
   }
 
   async addProfilePic() {
@@ -73,13 +85,25 @@ export default class Profile extends React.Component {
     })
 
     if(!result.canceled) {
-      const storageRef = ref(STORAGE, 'profilePic')
+      const storageRef = ref(STORAGE, `profilePic${this.state.firstName}${this.state.lastName}`)  // The name you want to give to uploaded img
 
       const img = await fetch(result.assets[0].uri)
       const blobFile = await img.blob()
 
       await uploadBytes(storageRef, blobFile)
+
+      this.uploadPic()
+    } else {
+      ToastAndroid.show("No photo selected", ToastAndroid.SHORT)
     }
+  }
+
+  async uploadPic() {
+    const imgRef = ref(STORAGE, `profilePic${this.state.firstName}${this.state.lastName}`)
+    await getDownloadURL(imgRef)
+    .then((img) => {
+      this.setState({profilePic: img})
+    })
   }
 
 
@@ -148,13 +172,9 @@ export default class Profile extends React.Component {
           />
     } else {
       profilePic = 
-      <Ionicons
-            name={"person-circle"}
-            size={hp("25%")}
-            color="#FF5E00"
-            marginTop={hp("5%")}
-            onPress={() => this.addProfilePic()}
-          />
+      <Image
+      src= {this.state.profilePic}
+      style={styles.profilePic}/>
     }
 
     return (
@@ -201,4 +221,11 @@ btnText:{
     color: "#ffffff",
     textAlign: "center"
 },
+profilePic: {
+  width: hp("25%"),
+  height: hp("25%"),
+  marginTop: hp("5%"),
+  marginBottom: hp("3%"),
+  borderRadius: 10,
+}
 });
