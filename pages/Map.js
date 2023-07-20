@@ -43,6 +43,12 @@ export default class Map extends React.Component {
     this.askLocationPermission()
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.route.params?.refresh !== prevProps.route.params?.refresh) {
+      this.setMarkers();
+    }
+  }
+
   async askLocationPermission() {
     let status = await Location.requestForegroundPermissionsAsync();
     //console.log(status)

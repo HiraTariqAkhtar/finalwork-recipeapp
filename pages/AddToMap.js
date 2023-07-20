@@ -91,7 +91,7 @@ export default class AddToMap extends React.Component {
       })
 
       ToastAndroid.show(`${this.state.placeName} succesfully added`, ToastAndroid.SHORT)
-      this.props.navigation.navigate("Home")
+      this.props.navigation.navigate("Map", { refresh: Date.now() });
   }
 
   goBack() {
