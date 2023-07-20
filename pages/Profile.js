@@ -18,8 +18,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as ImagePicker from 'expo-image-picker'
 import {STORAGE, DATABASE} from "../firebaseConfig"
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, getDocs, addDoc, doc } from "firebase/firestore"; 
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { collection, getDocs } from "firebase/firestore"; 
 
 
 export default class Profile extends React.Component {
@@ -126,9 +126,26 @@ export default class Profile extends React.Component {
   async updateProfilePic() {
     console.log("update pressed!!")
   }
+
+  async confirmDelete(){
+    Alert.alert(
+      "Remove profile picture",
+      "Are you sure you want to remove your profile picture?",
+      [
+        {text: 'No', style: 'cancel'},
+        {text: 'Yes', onPress: () => this.removeProfilePic()}
+      ]
+    )
+  }
   
   async removeProfilePic() {
     console.log("delete pressed!!")
+    const imgRef = ref(STORAGE, `profilePicUser${this.state.userId}`)
+    await deleteObject(imgRef)
+    .then(() => {
+      this.setState({profilePic: null})
+      ToastAndroid.show("Profile picture succesfully removed", ToastAndroid.SHORT)
+    })
   }
 
   async logIn() {
@@ -218,7 +235,7 @@ export default class Profile extends React.Component {
         name={"trash-outline"}
         size={hp("4%")}
         color="#ff0000"
-        onPress={() => this.removeProfilePic()}
+        onPress={() => this.confirmDelete()}
       />
     }
 
