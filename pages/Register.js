@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     height: hp("5%"),
-    borderWidth: 1,
+    borderWidth: 3,
     padding: wp("2%"),
     marginHorizontal: wp("3%"),
     marginBottom: hp("3%"),
