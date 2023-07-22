@@ -14,7 +14,6 @@ import {
 } from "react-native-responsive-screen";
 
 import { Ionicons } from "@expo/vector-icons";
-import CheckBox from 'react-native-check-box'
 
 
 import { collection, getDocs, addDoc } from "firebase/firestore"; 
@@ -40,21 +39,19 @@ export default class AddRecipe extends React.Component {
             number: 0, 
             step: "",
         }],
-        category: [],
         time: 0,
-        dishTypes: [],
-        period: [],
 
         categorySelection: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
-        // dishTypeSelection: [],
-        // occasionSelection: [],
+        visibilitySelection: ["Public", "Private"],
 
         categoryCheckedInFilter: [],
-        // dishTypeCheckedInFilter: [],
-        // occasionCheckedInFilter: [],
+        visibilityCheckedInFilter: [],
+
+        selectedCategory: "",
+        selectedVisibility: false,
+        imgUrl: "",
     }
     this.getUser()
-    //this.getAllFilters()
   }
 
 
@@ -78,69 +75,33 @@ export default class AddRecipe extends React.Component {
 
 }
 
-  async getAllFilters() {
-    let cultures = []
-    let dishTypes = []
-    let occasions = []
+selectVisibility(i, visibility) {
+  // Check if an item is already selected
+  const hasSelectedElement = this.state.visibilityCheckedInFilter.some((element) => element === true);
 
-    cultureChecked = []
-    dishTypeChecked = []
-    occasionChecked = []
-
-    // Push values from database into arrays + set checkbox to unchecked
-    let cultureCollection = collection(DATABASE, "cultures")
-    let cultureData = await getDocs(cultureCollection)
-    if (cultureData.size > 0) {
-      cultureData.forEach((doc) => {
-        cultures.push(doc.data().culture)
-        cultureChecked.push(false)
-      })
-    } 
-
-    let dishTypeCollection = collection(DATABASE, "dishTypes")
-    let dishTypeData = await getDocs(dishTypeCollection)
-    if (dishTypeData.size > 0) {
-      dishTypeData.forEach((doc) => {
-        dishTypes.push(doc.data().dishType)
-        dishTypeChecked.push(false)
-      })
-    } 
-
-    let occasionCollection = collection(DATABASE, "occasions")
-    let occasionData = await getDocs(occasionCollection)
-    if (occasionData.size > 0) {
-      occasionData.forEach((doc) => {
-        occasions.push(doc.data().occasion)
-        occasionChecked.push(false)
-      })
-    } 
-
-    // order arrays alphabetically
-    cultures.sort()
-    dishTypes.sort()
-    occasions.sort()
-
-    // save data arrays in state
-    this.setState({cultureSelection: cultures})
-    this.setState({dishTypeSelection: dishTypes})
-    this.setState({occasionSelection: occasions})
-
-    this.setState({cultureCheckedInFilter: cultureChecked})
-    this.setState({dishTypeCheckedInFilter: dishTypeChecked})
-    this.setState({occasionCheckedInFilter: occasionChecked})
+  // Set all radio buttons as not selected when selecting another
+  if (hasSelectedElement && !this.state.visibilityCheckedInFilter[i]) {
+    this.state.visibilityCheckedInFilter.fill(false);
   }
+  this.state.visibilityCheckedInFilter[i] = !this.state.visibilityCheckedInFilter[i];
 
-  addFilter(checkedArray, i, item, arrayToAdd){
-    checkedArray[i] = !checkedArray[i]
-    if(!arrayToAdd.includes(item)){
-        arrayToAdd.push(item)
-    } else {
-        arrayToAdd = arrayToAdd.filter(remove => remove != item)
-    }
-    //console.log(arrayToAdd)
-    this.setState({checkedArray: checkedArray})
-    this.setState({arrayToAdd: arrayToAdd})
+  this.setState({ visibilityCheckedInFilter: this.state.visibilityCheckedInFilter, selectedVisibility: visibility});
+  
+}
+
+selectCategory(i, category) {
+  // Check if an item is already selected
+  const hasSelectedElement = this.state.categoryCheckedInFilter.some((element) => element === true);
+
+  // Set all radio buttons as not selected when selecting another
+  if (hasSelectedElement && !this.state.categoryCheckedInFilter[i]) {
+    this.state.categoryCheckedInFilter.fill(false);
   }
+  this.state.categoryCheckedInFilter[i] = !this.state.categoryCheckedInFilter[i];
+
+  this.setState({ categoryCheckedInFilter: this.state.categoryCheckedInFilter, selectedCategory: category});
+  
+}
 
   addIngredient(ingredient, index, param) {
       let ingredients= [... this.state.ingredients]
@@ -198,6 +159,16 @@ export default class AddRecipe extends React.Component {
               "Recipe name required",
               "Please enter a recipe name"
               )
+      } else if(this.state.selectedVisibility == "") {
+          Alert.alert(
+              "Visibility required",
+              "Please select visibility"
+              )
+      } else if(this.state.selectedCategory == "") {
+          Alert.alert(
+              "Category required",
+              "Please select visibility"
+              )
       } else if(this.state.ingredients.length == 1 && (this.state.ingredients[0].name == "" || this.state.ingredients[0].quantity == "")) {
           Alert.alert(
               "Ingredients required",
@@ -215,6 +186,12 @@ export default class AddRecipe extends React.Component {
 
 
   async addRecipe() {
+    let visibleForOtherUsers;
+  if(this.state.selectedVisibility === "Public") {
+    visibleForOtherUsers = true
+  } else if(visibility === "Private") {
+    this.state.selectedVisibility = false
+  }
 
     let recipeCollection = collection(DATABASE, "recipes")
   
@@ -225,9 +202,10 @@ export default class AddRecipe extends React.Component {
      recipeName: this.state.recipeName,
      ingredients: this.state.ingredients,
      instructions: this.state.instructions,
-     category: this.state.category[0],
+     category: this.state.selectedCategory,
      timeNeeded: this.state.time,
-     img: ""
+     img: this.state.imgUrl,
+     public: visibleForOtherUsers
    })
 
    this.goToRecipeDetails()
@@ -238,8 +216,8 @@ export default class AddRecipe extends React.Component {
 
     this.setState({
         recipeName: "",
-        servings: "",
-        time: "",
+        servings: 0,
+        time: 0,
         category: [],
         ingredients: [{
             name: "",
@@ -250,8 +228,10 @@ export default class AddRecipe extends React.Component {
             step: "",
         }],
         categoryCheckedInFilter: [],
-        // dishTypeCheckedInFilter: [],
-        // occasionCheckedInFilter: [],
+        visibilityCheckedInFilter: [],
+        selectedCategory: "",
+        selectedVisibility: false,
+        imgUrl: "",
     })
   }
 
@@ -268,6 +248,42 @@ export default class AddRecipe extends React.Component {
 
 
   render() {
+    let filterSelectionVisibility = this.state.visibilitySelection.map((visible, index) => (
+      <View style={styles.iconText} key={index}>
+        <Ionicons
+          name={this.state.visibilityCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          marginLeft={wp("3%")}
+          onPress={() => {
+            this.selectVisibility(index, visible)
+          }}
+        />
+        <Text style={styles.filterText}>{visible}</Text>
+      </View>
+       ));
+
+    let filterSelectionCategory = this.state.categorySelection.map((category, index) => (
+      <View style={styles.iconText} key={index}>
+        <Ionicons
+          name={this.state.categoryCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          marginLeft={wp("3%")}
+          onPress={() => {
+            this.selectCategory(index, category)
+          }}
+        />
+        <Text style={styles.filterText}>{category}</Text>
+      </View>
+    ));
+
+    let textVisibility;
+    if(this.state.selectedVisibility === "Public") {
+      textVisibility = <Text style={styles.info}>Added recipe will be visible for other users</Text>
+    } else if(this.state.selectedVisibility === "Private") {
+      textVisibility = <Text style={styles.info}>Added recipe will not be visible for other users</Text>
+    }
 
     return (
       <View style={styles.container}>
@@ -282,14 +298,21 @@ export default class AddRecipe extends React.Component {
         </View>
 
         <ScrollView style={{marginTop: hp("3%")}} nestedScrollEnabled>
-            <Text style={styles.text}>Recipe name*:</Text>
+            <Text style={styles.text}>Select visibility *</Text>
+            <View style={styles.visibilityChoice}>
+              <View style={{display:"flex", flexDirection:"row"}}>
+                {filterSelectionVisibility}
+              </View>
+              {textVisibility}
+            </View>
+            <Text style={styles.text}>Recipe name *</Text>
             <TextInput
             style={styles.placeholder}
             placeholder="Recipe Name"
             value={this.state.recipeName}
             onChangeText={(txt) => this.setState({recipeName: txt})}/>
             
-            <Text style={styles.text}>Servings:</Text>
+            <Text style={styles.text}>Servings</Text>
             <TextInput
             style={styles.placeholder}
             placeholder="0"
@@ -297,7 +320,7 @@ export default class AddRecipe extends React.Component {
             value={this.state.servings}
             onChangeText={(txt) => this.setState({servings: parseInt(txt)})}/>
             
-            <Text style={styles.text}>Time needed (in minutes):</Text>
+            <Text style={styles.text}>Time needed (in minutes)</Text>
             <TextInput
             style={styles.placeholder}
             placeholder="0 minutes"
@@ -305,45 +328,12 @@ export default class AddRecipe extends React.Component {
             value={this.state.time}
             onChangeText={(txt) => this.setState({time: parseInt(txt)})}/>
 
-            <Text style={styles.text}>Select all possible filters</Text>
-            
-                <Text style={styles.category}>Category:</Text>
-                <ScrollView style={styles.filterChoice} nestedScrollEnabled>
-                {this.state.categorySelection.map((category, index) => 
-                <View style={styles.iconText}>
-                  <CheckBox
-                  style={{marginLeft: wp("3%")}}
-                  isChecked = {this.state.categoryCheckedInFilter[index]}
-                  onClick= {() => this.addFilter(this.state.categoryCheckedInFilter, index, category, this.state.category)}/>
-                  <Text style={styles.text}>{category}</Text>
-                </View>)}
-              </ScrollView>
-  
-                {/* <Text style={styles.category}>Dish Type:</Text>
-                <ScrollView style={styles.filterChoice} nestedScrollEnabled>
-                  {this.state.dishTypeSelection.map((type, index) => 
-                    <View style={styles.iconText}>
-                      <CheckBox
-                      style={{marginLeft: wp("3%")}}
-                      isChecked = {this.state.dishTypeCheckedInFilter[index]}
-                      onClick= {() => this.addFilter(this.state.dishTypeCheckedInFilter, index, type, this.state.dishTypes)}/>
-                      <Text style={styles.text}>{type}</Text>
-                    </View>)}
-                </ScrollView>
-  
-                <Text style={styles.category}>Occasion:</Text>
-                <ScrollView style={styles.filterChoice} nestedScrollEnabled>
-                  {this.state.occasionSelection.map((occasion, index) => 
-                  <View style={styles.iconText}>
-                    <CheckBox
-                    style={{marginLeft: wp("3%")}}
-                    isChecked = {this.state.occasionCheckedInFilter[index]}
-                    onClick= {() => this.addFilter(this.state.occasionCheckedInFilter, index, occasion, this.state.period)}/>
-                    <Text style={styles.text}>{occasion}</Text>
-                  </View>)}
-                </ScrollView> */}
+            <Text style={styles.text}>Category *</Text>
+              <View style={[styles.filterChoice]}>
+                {filterSelectionCategory}
+              </View>
 
-            <Text style={styles.text}>Ingredients*</Text>
+            <Text style={styles.text}>Ingredients *</Text>
             {this.state.ingredients.map((ingredient, index) => (
                 <View style={{display:"flex", flexDirection:"row"}} key={index}>
                 <TextInput
@@ -374,10 +364,10 @@ export default class AddRecipe extends React.Component {
             </View>
             ))}
 
-            <Text style={styles.text}>Instructions*</Text>
+            <Text style={styles.text}>Instructions *</Text>
             {this.state.instructions.map((instruction, index) => (
                 <View style={[styles.iconText, {display:"flex", flexDirection:"row"}]} key={index}>
-                <Text style={styles.text}>{index + 1}</Text>
+                <Text style={[styles.text, {marginLeft: wp("7%")}]}>{index + 1}</Text>
                 <TextInput
                 style={[styles.placeholder, {width:wp("65%")}]}
                 placeholder="To do"
@@ -401,7 +391,7 @@ export default class AddRecipe extends React.Component {
             </View>
             ))}
 
-          <TouchableOpacity style={styles.button} onPress={() => this.checkInputFields()}>
+          <TouchableOpacity style={[styles.button, {marginTop: hp("5%")}]} onPress={() => this.checkInputFields()}>
             <Text style={styles.btnText}>Add recipe</Text>
           </TouchableOpacity> 
           </ScrollView>
@@ -436,26 +426,43 @@ const styles = StyleSheet.create({
     },
     placeholder: {
         height: hp("5%"),
-        borderWidth: 1,
+        borderWidth: 2,
         padding: wp("2%"),
-        marginHorizontal: wp("3%"),
+        marginHorizontal: wp("5%"),
         marginBottom: hp("2%"),
         borderColor: "#115740",
         borderRadius: 10,
     },
-    category: {
+    filterText: {
         fontFamily: "Nunito_400Regular",
-        marginLeft: wp("6%")
-
+        fontSize: hp("2%"),
     },
+    visibilityChoice: {
+      marginBottom:hp("3%"),
+      borderRadius: 10,
+      borderColor: "#115740",
+      borderWidth: 2,
+      width: wp("90%"),
+      marginHorizontal: wp("5%"),
+      paddingVertical: hp("2%")
+    },
+    info: {
+      fontFamily: "Nunito_300Light_Italic",
+      fontSize: hp("2%"),
+      marginLeft: wp("5%"),
+      color: "#115740"
+  },
     filterChoice: {
-        marginBottom:hp("2%"),
-        height: hp("15%"),
-        borderRadius: 10,
-        borderColor: "#115740",
-        borderWidth: 1,
-        width: wp("80%"),
-        marginHorizontal: wp("10%"),
+      display:"flex", 
+      flexDirection:"row", 
+      flexWrap:"wrap",
+      marginBottom:hp("3%"),
+      borderRadius: 10,
+      borderColor: "#115740",
+      borderWidth: 2,
+      width: wp("90%"),
+      marginHorizontal: wp("5%"),
+      paddingVertical: hp("2%")
     },
     iconText: {
         display: "flex",
@@ -469,7 +476,6 @@ const styles = StyleSheet.create({
         padding: hp("1%"),
         backgroundColor: "#115740",
         borderRadius: 10,
-        marginTop: hp("5%"),
         marginHorizontal: wp("10%")
       },
     btnText:{
