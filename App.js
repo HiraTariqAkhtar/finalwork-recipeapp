@@ -198,7 +198,7 @@ export default function App() {
   }, []);
 
   if (!fontsLoaded) {
-    return (<Image source={require("./assets/expo/splash.png")} />);
+    return (<Image source={require("./assets/recipeApp/splash.png")} />);
   } else {
     return (
       <NavigationContainer>
