@@ -4,7 +4,7 @@
     "slug": "DesiDelights",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/expo/icon.png",
+    "icon": "./assets/recipeApp/icon.png",
     "backgroundColor": "#ffffff",
     "userInterfaceStyle": "light",
     "splash": {
