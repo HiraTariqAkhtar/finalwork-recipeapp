@@ -330,12 +330,13 @@ export default class Recipes extends React.Component {
           name={this.state.categoryCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
           size={hp("3%")}
+          marginLeft={wp("3%")}
           onPress={() => {
             this.setState({selectedCategory: category})
             this.selectRadioBtn(this.state.categoryCheckedInFilter, index)
           }}
         />
-        <Text style={styles.text}>{category}</Text>
+        <Text style={styles.filterText}>{category}</Text>
       </View>
     ));
 
@@ -345,12 +346,13 @@ export default class Recipes extends React.Component {
           name={this.state.servingsCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
           size={hp("3%")}
+          marginLeft={wp("3%")}
           onPress={() => {
             this.setState({selectedServings: serving})
             this.selectRadioBtn(this.state.servingsCheckedInFilter, index)
           }}
         />
-        <Text style={styles.text}>{serving}</Text>
+        <Text style={styles.filterText}>{serving}</Text>
       </View>
     ));
 
@@ -360,12 +362,13 @@ export default class Recipes extends React.Component {
           name={this.state.prepTimeCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
           size={hp("3%")}
+          marginLeft={wp("3%")}
           onPress={() => {
             this.setState({selectedPrepTime: time})
             this.selectRadioBtn(this.state.prepTimeCheckedInFilter, index)
           }}
         />
-        <Text style={styles.text}>{time}</Text>
+        <Text style={styles.filterText}>{time}</Text>
       </View>
     ));
 
@@ -375,12 +378,13 @@ export default class Recipes extends React.Component {
           name={this.state.ingredientAmountCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
           size={hp("3%")}
+          marginLeft={wp("3%")}
           onPress={() => {
             this.setState({selectedIngredientAmount: ingredients})
             this.selectRadioBtn(this.state.ingredientAmountCheckedInFilter, index)
           }}
         />
-        <Text style={styles.text}>{ingredients}</Text>
+        <Text style={styles.filterText}>{ingredients}</Text>
       </View>
     ));
     
@@ -651,5 +655,9 @@ btnText:{
     width: wp("90%"),
     marginHorizontal: wp("5%"),
     paddingVertical: hp("2%")
+  },
+  filterText: {
+      fontFamily:"Nunito_400Regular",
+      fontSize: hp("2%"),
   }
 });
