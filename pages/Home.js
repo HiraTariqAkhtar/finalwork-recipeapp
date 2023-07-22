@@ -269,7 +269,7 @@ export default class Home extends React.Component {
           source={require("../assets/recipeApp/bgHome.jpeg")}
           resizeMode="cover"
           style={styles.backgroundImage}>
-              <Text  style={styles.sectionTitle}>Did you know that ...</Text>
+              <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Did you know that ...</Text>
             <View style={styles.didYouKnow}>
               <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
             </View>
