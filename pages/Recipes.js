@@ -77,14 +77,18 @@ export default class Recipes extends React.Component {
         this.setState({selectedCategory: selectedCategoryFromHome})
         this.addFilter()
         recipeData.forEach((doc) => {
-          if(doc.data().category === selectedCategoryFromHome) {
-            recipes.push(doc.data())
+          if(doc.data().public == true) {
+            if(doc.data().category === selectedCategoryFromHome) {
+              recipes.push(doc.data())
+            }
           }
         })
         this.props.navigation.setParams({ category: undefined });
       } else {
         recipeData.forEach((doc) => {
-          recipes.push(doc.data())
+          if(doc.data().public == true) {
+            recipes.push(doc.data())
+          }
         })
       }
     }
