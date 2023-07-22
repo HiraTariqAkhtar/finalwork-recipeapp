@@ -112,13 +112,13 @@ export default class Cart extends React.Component {
                 <FontAwesome
                   name={"circle"}
                   size={hp("1%")}
-                  color="#FF5E00"
+                  color="#115740"
                 />
                 <Text style={styles.cartItem}>{item}</Text>
                 <FontAwesome
                 name={"remove"}
                 size={hp("3%")}
-                color="#FF5E00"
+                color="#115740"
                 onPress={() => this.confirmDelete(item)}/>
               </View>
             )) 
