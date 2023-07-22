@@ -48,9 +48,7 @@ export default class Login extends React.Component {
     try {
       await signInWithEmailAndPassword(AUTH, this.state.email, this.state.pw);
       const users = await getDocs(collection(DATABASE, "users"));
-  
-      let userFound = false;
-  
+    
       users.forEach((doc) => {
         const user = doc.data();
         if (user.email === this.state.email) {
@@ -62,17 +60,15 @@ export default class Login extends React.Component {
           this.props.navigation.goBack();
         }
       });
-  
-      if (!userFound) {
-        Alert.alert(
-          "User not found",
-          "Please re-enter your email address and password"
-        );
-        this.setState({ email: "", pw: "" });
-      }
     } catch (error) {
       const errorMsg = error.message;
       console.log(`Error: ${errorMsg}`);
+      
+      Alert.alert(
+        "User not found",
+        "Please re-enter your email address and password"
+      );
+      this.setState({ email: "", pw: "" });
     } finally {
       this.setState({ isLoading: false });
     }
