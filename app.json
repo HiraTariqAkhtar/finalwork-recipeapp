@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/recipeApp/icon.png",
+        "foregroundImage": "./assets/recipeApp/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "icon": "./assets/recipeApp/icon.png",
