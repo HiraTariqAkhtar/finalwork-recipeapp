@@ -571,12 +571,12 @@ const styles = StyleSheet.create({
   recipe: {
     backgroundColor: "white",
     padding: hp("1.5%"),
-    width: wp("95%"),
+    width: wp("90%"),
     borderRadius: 10,
     borderColor: "#115740",
     borderWidth: 3,
     marginTop: hp("3%"),
-    marginHorizontal: wp ("2.5%")
+    marginHorizontal: wp ("5%")
   },
   foodImg: {
     width: wp("30%"),
