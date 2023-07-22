@@ -169,6 +169,11 @@ export default class Profile extends React.Component {
 
   render() {
     let login;
+    let profilePic;
+    let uploadPic;
+    let editPic;
+    let removePic;
+
     if(this.state.isLoggedIn) {
       login =
       <View>
@@ -188,19 +193,54 @@ export default class Profile extends React.Component {
         </TouchableOpacity>
       </View>
       
+      if(this.state.profilePic == null || this.state.profilePic == undefined) {
+        profilePic = 
+        <Ionicons
+          name={"person-circle"}
+          size={hp("25%")}
+          color="#878787"
+          marginTop={hp("5%")}
+        />
+        uploadPic = 
+        <FontAwesome
+          name={"upload"}
+          size={hp("4%")}
+          color="#115740"
+          marginTop={hp("-25%")}
+          marginBottom={hp("25%")}
+          marginLeft={wp("50%")}
+          onPress={() => this.addProfilePic()}
+        />
+      } else {
+        profilePic = 
+        <Image
+        src= {this.state.profilePic}
+        style={styles.profilePic}/>
+  
+        editPic = 
+        <FontAwesome
+          name={"edit"}
+          size={hp("4%")}
+          color="#115740"
+          marginRight={wp("3%")}
+          onPress={() => this.updateProfilePic()}
+        />
+  
+        removePic =
+        <Ionicons
+          name={"trash-outline"}
+          size={hp("4%")}
+          color="#ff0000"
+          onPress={() => this.confirmDelete()}
+        />
+      }
     } else {
       login = 
       <TouchableOpacity style={styles.button}
       onPress={() => this.logIn()}>
         <Text style={styles.btnText}>Log in</Text>
       </TouchableOpacity>
-    }
 
-    let profilePic;
-    let uploadPic;
-    let editPic;
-    let removePic;
-    if(this.state.profilePic == null || this.state.profilePic == undefined) {
       profilePic = 
       <Ionicons
         name={"person-circle"}
@@ -208,39 +248,9 @@ export default class Profile extends React.Component {
         color="#878787"
         marginTop={hp("5%")}
       />
-      uploadPic = 
-      <FontAwesome
-        name={"upload"}
-        size={hp("4%")}
-        color="#115740"
-        marginTop={hp("-25%")}
-        marginBottom={hp("25%")}
-        marginLeft={wp("50%")}
-        onPress={() => this.addProfilePic()}
-      />
-    } else {
-      profilePic = 
-      <Image
-      src= {this.state.profilePic}
-      style={styles.profilePic}/>
-
-      editPic = 
-      <FontAwesome
-        name={"edit"}
-        size={hp("4%")}
-        color="#115740"
-        marginRight={wp("3%")}
-        onPress={() => this.updateProfilePic()}
-      />
-
-      removePic =
-      <Ionicons
-        name={"trash-outline"}
-        size={hp("4%")}
-        color="#ff0000"
-        onPress={() => this.confirmDelete()}
-      />
     }
+
+    
 
     return (
       <View style={styles.container}>
