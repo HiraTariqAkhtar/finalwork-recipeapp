@@ -23,7 +23,7 @@
         "foregroundImage": "./assets/recipeApp/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "icon": "./assets/expo/icon.png",
+      "icon": "./assets/recipeApp/icon.png",
       "package": "com.hiratariqakhtar.RecipeApp"
     },
     "web": {
