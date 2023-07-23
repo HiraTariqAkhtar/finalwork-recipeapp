@@ -152,7 +152,10 @@ const restaurants = [
 ]
 
 // Recipe of the day
-const recipeOfTheDay = { today: new Date().toDateString() }
+const recipeOfTheDay = {
+    today: new Date().toDateString(),
+    recipeOfTheDayIndex: 0
+}
 
 
 export async function addDataInDatabase() {
