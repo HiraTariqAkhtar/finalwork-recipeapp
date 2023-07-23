@@ -6,7 +6,9 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  Alert
+  Alert,
+  Image,
+  ToastAndroid
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -17,8 +19,10 @@ import { Ionicons } from "@expo/vector-icons";
 
 
 import { collection, getDocs, addDoc } from "firebase/firestore"; 
-import {DATABASE} from "../firebaseConfig"
+import {DATABASE, STORAGE } from "../firebaseConfig"
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from 'expo-image-picker'
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 import uuid from 'react-native-uuid';
 
@@ -107,7 +111,7 @@ selectCategory(i, category) {
       let ingredients= [... this.state.ingredients]
       ingredients[index][param] = ingredient
 
-      console.log(ingredients)
+      //console.log(ingredients)
 
       this.setState({ingredients: ingredients})
   }
@@ -151,7 +155,65 @@ selectCategory(i, category) {
     this.state.instructions.splice(index, 1)
 
     this.setState({instructions: this.state.instructions})
-}
+  }
+
+  async selectPhoto() {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4,3],
+      quality: 1
+    })
+
+    if(!result.canceled) {
+      const storageRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)  // The name you want to give to uploaded img
+
+      const img = await fetch(result.assets[0].uri)
+      const blobFile = await img.blob()
+
+      await uploadBytes(storageRef, blobFile)
+
+      this.uploadPic()
+    } else {
+      ToastAndroid.show("No photo selected", ToastAndroid.SHORT)
+    }
+  }
+
+  async uploadPic() {
+    const imgRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)
+    await getDownloadURL(imgRef)
+    .then((img) => {
+      this.setState({imgUrl: img})
+    })
+  }
+
+  async editPhoto() {
+      const imgRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)
+      await deleteObject(imgRef)
+      .then(() => {
+        this.selectPhoto()
+      })
+  }
+
+  confirmDelete() {
+    Alert.alert(
+      "Remove picture",
+      "Are you sure you want to remove this picture?",
+      [
+        {text: 'No', style: 'cancel'},
+        {text: 'Yes', onPress: () => this.removePhoto()}
+      ]
+    )
+  }
+
+  async removePhoto() {
+    const imgRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)
+    await deleteObject(imgRef)
+    .then(() => {
+      this.setState({imgUrl: ""})
+      ToastAndroid.show("Picture removed", ToastAndroid.SHORT)
+    })
+  }
 
    checkInputFields() {
       if(this.state.recipeName == "") {
@@ -167,7 +229,7 @@ selectCategory(i, category) {
       } else if(this.state.selectedCategory == "") {
           Alert.alert(
               "Category required",
-              "Please select visibility"
+              "Please select a category"
               )
       } else if(this.state.ingredients.length == 1 && (this.state.ingredients[0].name == "" || this.state.ingredients[0].quantity == "")) {
           Alert.alert(
@@ -186,29 +248,25 @@ selectCategory(i, category) {
 
 
   async addRecipe() {
-    let visibleForOtherUsers;
-  if(this.state.selectedVisibility === "Public") {
-    visibleForOtherUsers = true
-  } else if(visibility === "Private") {
-    this.state.selectedVisibility = false
-  }
-
-    let recipeCollection = collection(DATABASE, "recipes")
   
-    await addDoc((recipeCollection), {
-     userId: this.state.userId,
-     id: uuid.v4(),
-     servings: this.state.servings,
-     recipeName: this.state.recipeName,
-     ingredients: this.state.ingredients,
-     instructions: this.state.instructions,
-     category: this.state.selectedCategory,
-     timeNeeded: this.state.time,
-     img: this.state.imgUrl,
-     public: visibleForOtherUsers
-   })
+  console.log(this.state.selectedVisibility)
 
-   this.goToRecipeDetails()
+  //   let recipeCollection = collection(DATABASE, "recipes")
+  
+  //   await addDoc((recipeCollection), {
+  //    userId: this.state.userId,
+  //    id: uuid.v4(),
+  //    servings: this.state.servings,
+  //    recipeName: this.state.recipeName,
+  //    ingredients: this.state.ingredients,
+  //    instructions: this.state.instructions,
+  //    category: this.state.selectedCategory,
+  //    timeNeeded: this.state.time,
+  //    img: this.state.imgUrl,
+  //    public: this.state.selectedVisibility
+  //  })
+
+  //  this.goToRecipeDetails()
   }
 
   goToRecipeDetails() {
@@ -283,6 +341,27 @@ selectCategory(i, category) {
       textVisibility = <Text style={styles.info}>Added recipe will be visible for other users</Text>
     } else if(this.state.selectedVisibility === "Private") {
       textVisibility = <Text style={styles.info}>Added recipe will not be visible for other users</Text>
+    }
+
+    let img;
+    if(this.state.imgUrl == "") {
+      img = 
+      <TouchableOpacity style={styles.button} onPress={() => this.selectPhoto()}>
+        <Text style={styles.btnText}>Select photo</Text>
+      </TouchableOpacity>
+    } else {
+      img = 
+        <View>
+        	<Image
+        	src= {this.state.imgUrl}
+        	style={styles.foodImg}/>
+          <TouchableOpacity style={[styles.photoOptions, {marginTop: hp("-13%"), backgroundColor: "#115740"}]} onPress={() => this.editPhoto()}>
+            <Text style={styles.btnText}>Select another photo</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.photoOptions, {marginTop: hp("1%"), backgroundColor: "#FF0000"}]} onPress={() => this.confirmDelete()}>
+            <Text style={styles.btnText}>Remove photo</Text>
+          </TouchableOpacity>
+        </View>
     }
 
     return (
@@ -391,6 +470,9 @@ selectCategory(i, category) {
             </View>
             ))}
 
+            <Text style={styles.text}>Add photo</Text>
+            {img}
+
           <TouchableOpacity style={[styles.button, {marginTop: hp("5%")}]} onPress={() => this.checkInputFields()}>
             <Text style={styles.btnText}>Add recipe</Text>
           </TouchableOpacity> 
@@ -472,11 +554,11 @@ const styles = StyleSheet.create({
         marginBottom: hp("1%"),
     },
     button: {
-        width: wp("80%"),
+        width: wp("90%"),
         padding: hp("1%"),
         backgroundColor: "#115740",
         borderRadius: 10,
-        marginHorizontal: wp("10%")
+        marginHorizontal: wp("5%")
       },
     btnText:{
         fontFamily:"Nunito_700Bold",
@@ -484,4 +566,17 @@ const styles = StyleSheet.create({
         color: "#ffffff",
         textAlign: "center"
     },
+    foodImg: {
+      width: wp("30%"),
+      height: hp("15%"),
+      marginLeft: wp("5%"),
+      borderRadius: 10,
+    },
+    photoOptions: {
+      width:wp("55%"),
+      marginLeft: wp("40%"),
+      padding: hp("1%"),
+      borderRadius: 10,
+      marginHorizontal: wp("5%")
+    }
 });
