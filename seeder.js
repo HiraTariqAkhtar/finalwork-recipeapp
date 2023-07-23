@@ -151,6 +151,10 @@ const restaurants = [
     },
 ]
 
+// Recipe of the day
+const recipeOfTheDay = { today: new Date().toDateString() }
+
+
 export async function addDataInDatabase() {
     // did you know
     let didYouKnowCollection = collection(DATABASE, "didYouKnows")
@@ -220,6 +224,15 @@ export async function addDataInDatabase() {
             addDoc(restaurantCollection, resto)
         }
     })
+
+
+    // today's date for recipe of the day
+    let todayCollection = collection(DATABASE, "recipeOfTheDay")
+    let todayData = await getDocs(todayCollection)
+
+    if(todayData.size == 0) {
+        addDoc(todayCollection, recipeOfTheDay)
+    }
 
 
 }
