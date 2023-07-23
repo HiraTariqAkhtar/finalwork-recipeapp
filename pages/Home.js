@@ -39,7 +39,7 @@ export default class Home extends React.Component {
         },
 
       holidays: [{
-        name: "Independence day",
+        name: "Independence Day",
         description: "Pakistan celebrates its Independence Day on August 14. This day marks Pakistan’s emergence as an independent state.",
         locations: "All",
         datetime: {
