@@ -52,7 +52,7 @@ export default class AddRecipe extends React.Component {
         visibilityCheckedInFilter: [],
 
         selectedCategory: "",
-        selectedVisibility: false,
+        selectedVisibility: "",
         imgUrl: "",
     }
     this.getUser()
@@ -248,25 +248,31 @@ selectCategory(i, category) {
 
 
   async addRecipe() {
-  
-  console.log(this.state.selectedVisibility)
+  let visible;
+  if(this.state.selectedVisibility === "Public") {
+    visible = true
+  } else if(this.state.selectedVisibility === "Private") {
+    visible = false
+  }
 
-  //   let recipeCollection = collection(DATABASE, "recipes")
-  
-  //   await addDoc((recipeCollection), {
-  //    userId: this.state.userId,
-  //    id: uuid.v4(),
-  //    servings: this.state.servings,
-  //    recipeName: this.state.recipeName,
-  //    ingredients: this.state.ingredients,
-  //    instructions: this.state.instructions,
-  //    category: this.state.selectedCategory,
-  //    timeNeeded: this.state.time,
-  //    img: this.state.imgUrl,
-  //    public: this.state.selectedVisibility
-  //  })
+  //console.log(visible)
 
-  //  this.goToRecipeDetails()
+    let recipeCollection = collection(DATABASE, "recipes")
+  
+    await addDoc((recipeCollection), {
+     userId: this.state.userId,
+     id: uuid.v4(),
+     servings: this.state.servings,
+     recipeName: this.state.recipeName,
+     ingredients: this.state.ingredients,
+     instructions: this.state.instructions,
+     category: this.state.selectedCategory,
+     timeNeeded: this.state.time,
+     img: this.state.imgUrl,
+     public: visible
+   })
+
+   this.goToRecipeDetails()
   }
 
   goToRecipeDetails() {
