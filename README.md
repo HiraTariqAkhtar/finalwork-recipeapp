@@ -1,18 +1,26 @@
-# Culinary Explorer
-This is a recipe app that aims to make cultural recipes and holidays accessible to users. The app provides a simple and user-friendly interface for discovering recipes from various cultures and staying informed about cultural holidays around the world. 
+# Desi Delights
+![Recipe App Logo](./assets/recipeApp/icon.png)
 
+This is a recipe app that aims to make Pakistani recipes, places and holidays accessible to users. The app provides a simple and user-friendly interface for discovering Pakistani recipes, restaurants and supermarkets and staying informed about Pakistani holidays. 
 
-## Getting Started
+**Note**: The app is primarily designed for Android smartphones. Some features may not work properly when running the app on an iPhone.
 
-To get started with the app, follow these steps:
+## Installation
+
+To get started with the app, run the following commands in your terminal:
 
 1. Clone the repository
-2. Open the terminal and navigate to the "finalwork-recipeapp" directory.
-3. Install the required npm packages by running the command: `npm install`.
-4. Register for the following APIs to obtain API keys:
-   - [Spoonacular Food API](https://spoonacular.com/food-api)
-   - [Calendarific API](https://calendarific.com/api-documentation)
-5. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/u/0/) and link a web app to it (click on '</>').
+   `git clone https://github.com/HiraTariqAkhtar/finalwork-recipeapp.git`
+2. Navigate to the "finalwork-recipeapp" directory.
+   `cd finalwork-recipeapp`
+3. Install the required npm packages
+   `npm install`.
+  
+## Retrieve data
+1. Register for the following APIs to obtain API keys:
+  - [Calendarific API](https://calendarific.com/api-documentation)
+  - [Location API](https://developer.here.com/documentation/geocoding-search-api/dev_guide/topics/quick-start.html)
+2. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/u/0/) and link a web app to it (click on '</>').
 - Copy the Firebase configuration code that looks like this:
      ```
      const firebaseConfig = {
@@ -25,9 +33,8 @@ To get started with the app, follow these steps:
        measurementId: "YOUR_MEASUREMENT_ID"
      };
      ```
-6. Create a `.env` file in the project root and add the following information:
+3. Create a `.env` file in the project root and add the following information:
 ```
-RECIPES_API_KEY={Spoonacular api key}
 FIREBASE_API_KEY={Firebase api key}
 FIREBASE_AUTH_DOMAIN={Firebase authDomain}
 FIREBASE_PROJECT_ID={Firebase projectId}
@@ -36,31 +43,28 @@ FIREBASE_MESSAGING_SENDER_ID={Firebase messagingSenderId}
 FIREBASE_APP_ID={Firebase appId}
 FIREBASE_MEASUREMENT_ID={Firebase measurementId}
 HOLIDAYS_API_KEY={Calendarific api key}
+LOCATION_API_KEY={HERE geocoding api key}
 ```
 
-7. Go back to Firebase and open Cloud Firestore. Create a database.
-8. Update the Firestore security rules by changing "false" to "true" in the "rules" section.
-9. Create the following collections in the "data" section:
-- **countries**: Add the countries from which you want to retrieve holidays.
-  - Each document should contain the fields "country" (name of the country) and "countryCode" (2-letter country code).
-  - Refer to the [list of supported countries](https://calendarific.com/supported-countries).
-- **cultures**: Define the filters for cultures.
-  - Each document should contain the field "culture".
-  - Refer to the [list of accepted cultures](https://spoonacular.com/food-api/docs#Cuisines).
-- **dishTypes**: Define the filters for dish types.
-  - Each document should contain the field "dishType".
-  - Refer to the [list of accepted dish types](https://spoonacular.com/food-api/docs#Meal-Types).
-- **didyouknows**: Store interesting facts about cultural eating habits.
-  - Each document should contain the field "didYouKnow".
-  - You can gather information from various sources, such as:
-    - [Kuali](https://www.kuali.com/kitchen-inspirations/7-interesting-eating-habits-from-different-cultures/)
-    - [ParentCircle](https://www.parentcircle.com/interesting-food-customs-around-the-world/article)
+## Running the application
+After completing all these steps, the app should be run-ready. All you need to do now is start the app on your smartphone or an emulator/simulator.
 
-10. Once all the steps are completed, the app should be ready to run. To start the app:
- - If using an Android emulator or a device connected to your computer, run the command: `npm run android`.
- - If using a device not connected to your computer, follow these steps:
-   - Download and open the [Expo Go App](https://play.google.com/store/apps/details?id=host.exp.exponent)
-   - Run the command: `npm start`.
-   - Scan the QR code using the camera in Expo Go.
+There are 2 ways to do this:
+- Start the app on an Android emulator / iOS simulator or on your smartphone connected to your computer:
+- Run the command `npm run android` / `npm run ios`
+
+- Start the app on a smartphone not connected to your computer:
+- Download the Expo Go app:
+ - [Expo Go for Android](https://play.google.com/store/apps/details?id=host.exp.exponent)
+ - [Expo Go for iOS](https://apps.apple.com/us/app/expo-go/id982107779)
+- Run the command `npm start`
+- Scan the QR code or manually enter the URL
+ - QR:
+   - Android: using the camera in Expo Go
+   - iOS: using the Camera app
+     - **Note**: If the QR code is not recognized, manually enter the URL.
+ - URL: 
+   - Click on "Enter URL manually" and enter the URL that appears just below the QR code.
+
 
 Feel free to explore the app and enjoy discovering cultural recipes and holidays!
