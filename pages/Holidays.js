@@ -36,7 +36,7 @@ export default class Holidays extends React.Component {
 
     let holidayName;
     if(this.props.route.params.name === "Independence Day"){
-      holidayName = "Independence Day Pakistan"
+      holidayName = "Independence_Day_(Pakistan)"
     }else if(this.props.route.params.name === "Christmas Day"){
       holidayName = "Christmas"
     } else {
@@ -53,14 +53,26 @@ export default class Holidays extends React.Component {
         const pageId = Object.keys(pages)[0];
         const pageData = pages[pageId];
 
-        //console.log(pageData)
+        //console.log(pageData.extract)
 
         if(pageId === "-1") {
           //console.log("No data found")
-          this.setState({info: this.props.route.params.description, src:""})
+          this.setState({info:this.props.route.params.description, src:""})
         } else {
           //console.log("Data found")
-          this.setState({info: "data", src:"Source: Wikipedia"})
+          const pageText = pageData.extract;
+          
+          const firstPIndex = pageText.indexOf("<p>");
+          const h2Index = pageText.indexOf("<h2>");
+          
+          // Remove text starting from the first <h2> tag.
+          const firstPart = pageText.slice(0, h2Index);
+          // Remove text before first <p> tag.
+          const removeTextBeforeFirstPtag = firstPart.slice(firstPIndex);
+          // Replace html-tags with empty string
+          const textWithoutHTML = removeTextBeforeFirstPtag.replace(/<\/?(?!<b>|<p>|<i>|<h2>|<h3>|<sup>|<blockquote>)[^>]*>/gi, '');;
+
+          this.setState({ info: textWithoutHTML, src: "Source: Wikipedia" });
         }
 
         // Get image url if available
@@ -122,18 +134,17 @@ export default class Holidays extends React.Component {
               <Text style={styles.text}>{this.props.route.params.locations}</Text>
              </View>}
 
-           {this.state.info !== "" && 
+           {this.state.info !== "" &&
             <View style={styles.iconText}>
               <Ionicons
                 name={"information-circle"}
                 size={hp("3.5%")}
                 color="#115740"
               />
-              <Text style={styles.text}>{this.state.info}</Text>
+              <Text style={[styles.text]}>{this.state.info}</Text>
               <Text style={styles.src}>{this.state.src}</Text>
              </View>}
 
-             
         </ScrollView>
       </View>
     );
@@ -180,9 +191,9 @@ const styles = StyleSheet.create({
   src: {
     fontFamily: "Nunito_300Light_Italic",
     fontSize: hp("1.5%"),
-    marginBottom: hp("5%"),
+    marginTop: hp("-10%"),
     marginRight: wp("5%"),
     textDecorationLine: "underline",
-    color: "#115740"
-},
+    color: "#115740",
+  },
 });
