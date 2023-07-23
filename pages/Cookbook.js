@@ -95,7 +95,7 @@ export default class Cookbook extends React.Component {
       recipes = 
       <View>
         <Text style={styles.section}>Public Recipes</Text>
-        <ScrollView style={{height: hp("40%")}}>
+        <ScrollView style={{height: hp("33%")}}>
          { this.state.myPublicRecipes.map((rec) => (
             <TouchableOpacity
             key={rec.id}
@@ -158,7 +158,7 @@ export default class Cookbook extends React.Component {
         </ScrollView>
 
         <Text style={styles.section}>Private Recipes</Text>
-        <ScrollView style={{height: hp("35%")}}>
+        <ScrollView style={{height: hp("33%")}}>
          { this.state.myPrivateRecipes.map((rec) => (
             <TouchableOpacity
             key={rec.id}
@@ -241,9 +241,9 @@ export default class Cookbook extends React.Component {
             />
           <Text style={styles.title}>My Cookbook</Text>
         </View>
-        <ScrollView>
+        <View>
             {recipes}
-        </ScrollView>
+        </View>
       </View>
     );
   }
