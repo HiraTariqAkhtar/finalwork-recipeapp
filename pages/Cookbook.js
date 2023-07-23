@@ -84,7 +84,7 @@ export default class Cookbook extends React.Component {
       category: rec.category,
       ingredients: rec.ingredients,
       instructions: rec.instructions,
-      img: ""
+      img: rec.img
     })
   }
 
