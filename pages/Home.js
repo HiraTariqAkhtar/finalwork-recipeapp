@@ -17,7 +17,7 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 import {HOLIDAYS_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
-import { collection, getDocs } from "firebase/firestore"; 
+import { collection, getDocs, doc, updateDoc } from "firebase/firestore"; 
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -65,56 +65,54 @@ export default class Home extends React.Component {
 
   async getRecipeOfTheDay() {
     let recipes = []
+
     let recipeCollection = collection(DATABASE, "recipes")
     let recipeData = await getDocs(recipeCollection)
     if (recipeData.size > 0) {
       recipeData.forEach((doc) => {
         recipes.push(doc.data())
       })
-    } 
-
+    }
+    
     let today = new Date().toDateString()
+    let recipeOfTheDay = {}
+    let docId;
+
+    let recipeOfTheDayCollection = collection(DATABASE, "recipeOfTheDay")
+    let recipeOfTheDayData = await getDocs(recipeOfTheDayCollection)
+    if (recipeOfTheDayData.size > 0) {
+      recipeOfTheDayData.forEach((doc) => {
+        docId = doc.id
+        recipeOfTheDay = doc.data()
+      })
+    }
+    // console.log(recipeOfTheDay)
+    // console.log(docId)
+
+     /*
+      - Check if the date saved in database matches the current date
+      - If the dates match, set the index stored in database
+      - If the dates don't match, get the next recipe in the list and edit the values in database
+      - If the index saved in database is the last recipe in the list, set index to 0
+    */
+
     let recipeOfTheDayIndex;
 
-    let dateSavedInStorage = await AsyncStorage.getItem('today');
-    let recipeIndexInStorage = await AsyncStorage.getItem('recipeOfTheDayIndex');
-
-  /* 
-    If both the date and index are not yet saved in AsyncStorage:
-    - Set a random index for the recipe of the day
-    - Save the current date and index in AsyncStorage
-  */
-    if(dateSavedInStorage === null && recipeIndexInStorage === null) {
-      AsyncStorage.setItem('today', today)
-      recipeOfTheDayIndex = Math.floor(Math.random() * recipes.length)
-      AsyncStorage.setItem('recipeOfTheDayIndex', recipeOfTheDayIndex.toString())
-    } 
-    /* If only the date or index is not yet saved in AsyncStorage => save the missing value in AsyncStorage*/
-     else if(dateSavedInStorage === null && recipeIndexInStorage !== null) {
-      AsyncStorage.setItem('today', today)
-    } else if(dateSavedInStorage !== null && recipeIndexInStorage === null) {
-      recipeOfTheDayIndex = Math.floor(Math.random() * recipes.length)
-      AsyncStorage.setItem('recipeOfTheDayIndex', recipeOfTheDayIndex.toString())
-    }
-    /*
-      If both the date and index are saved in AsyncStorage:
-      - Check if the saved date matches the current date
-      - If the dates match, set the index stored in AsyncStorage
-      - If the dates don't match, generate a new random index for the recipe of the day and edit the date value in AsyncStorage
-    */
-    else {
-      if(today === dateSavedInStorage) {
-        recipeOfTheDayIndex = JSON.parse(recipeIndexInStorage)
+    if(today === recipeOfTheDay.today) {
+      recipeOfTheDayIndex = recipeOfTheDay.recipeOfTheDayIndex
+    } else {
+      if(recipeOfTheDay.recipeOfTheDayIndex == recipes.length-1) {
+        recipeOfTheDayIndex = 0
       } else {
-        AsyncStorage.setItem('today', today)
-        recipeOfTheDayIndex = Math.floor(Math.random() * recipes.length)
-        AsyncStorage.setItem('recipeOfTheDayIndex', recipeOfTheDayIndex.toString())
+        recipeOfTheDayIndex = recipeOfTheDay.recipeOfTheDayIndex+1
       }
-    }
+      await updateDoc(doc(DATABASE, "recipeOfTheDay", docId), {
+        today: today,
+        recipeOfTheDayIndex: recipeOfTheDayIndex
+      })
 
-    let randomRecipe = recipes[recipeOfTheDayIndex]
-    
-    this.setState({recipeOfTheDay: randomRecipe})
+    }
+    this.setState({recipeOfTheDay: recipes[recipeOfTheDayIndex]})
   }
 
   goToRecipeDetails(rec) {
