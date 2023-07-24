@@ -56,6 +56,7 @@ export default class Login extends React.Component {
           AsyncStorage.setItem("firstName", user.firstName);
           AsyncStorage.setItem("lastName", user.lastName);
           AsyncStorage.setItem("email", user.email);
+          AsyncStorage.setItem("password", this.state.pw);
           userFound = true;
           this.props.navigation.goBack();
         }
