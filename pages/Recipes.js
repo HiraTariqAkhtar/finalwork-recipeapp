@@ -498,12 +498,6 @@ export default class Recipes extends React.Component {
           {recipes}
         </ScrollView>
 
-        {this.state.recipes.length > 0 &&
-          <TouchableOpacity style={styles.button}
-          onPress={() => this.removeFilter()}>
-              <Text style={styles.btnText}>Show more recipes</Text>
-        </TouchableOpacity>}
-
         {/* filterscreen */}
         <Modal
         visible={this.state.filterScreenVisible}>
@@ -543,7 +537,7 @@ export default class Recipes extends React.Component {
                 </View>
               </View>
 
-            <TouchableOpacity style={styles.filterBtn} onPress={() => this.applyFilter()}>
+            <TouchableOpacity style={styles.button} onPress={() => this.applyFilter()}>
               <Text style={styles.btnText}>Apply filter(s)</Text>
             </TouchableOpacity>
             
@@ -635,12 +629,11 @@ const styles = StyleSheet.create({
     marginTop: hp("20%")
   },
   button: {
-    width: wp("80%"),
+    width: wp("90%"),
     padding: hp("1%"),
     backgroundColor: "#115740",
     borderRadius: 10,
-    marginTop: hp("10%"),
-    marginHorizontal: wp("10%")
+    marginHorizontal: wp("5%")
   },
 btnText:{
     fontFamily:"Nunito_700Bold",
