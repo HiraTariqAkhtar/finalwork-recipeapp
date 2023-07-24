@@ -52,14 +52,14 @@ There are 2 ways to do this:
   - Run the command `npm run android` / `npm run ios`
 
 - Start the app on a smartphone not connected to your computer:
-- Download the Expo Go app:
-  - [Expo Go for Android](https://play.google.com/store/apps/details?id=host.exp.exponent)
-  - [Expo Go for iOS](https://apps.apple.com/us/app/expo-go/id982107779)
-- Run the command `npm start`
-- Scan the QR code or manually enter the URL
-   - QR:
-     - Android: using the camera in Expo Go
-     - iOS: using the Camera app
-       - **Note**: If the QR code is not recognized, manually enter the URL.
-   - URL: 
-     - Click on "Enter URL manually" and enter the URL that appears just below the QR code.
+  - Download the Expo Go app:
+    - [Expo Go for Android](https://play.google.com/store/apps/details?id=host.exp.exponent)
+    - [Expo Go for iOS](https://apps.apple.com/us/app/expo-go/id982107779)
+  - Run the command `npm start`
+  - Scan the QR code or manually enter the URL
+     - QR:
+       - Android: using the camera in Expo Go
+       - iOS: using the Camera app
+         - **Note**: If the QR code is not recognized, manually enter the URL.
+     - URL: 
+       - Click on "Enter URL manually" and enter the URL that appears just below the QR code.
