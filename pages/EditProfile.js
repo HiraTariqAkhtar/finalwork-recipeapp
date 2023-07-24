@@ -68,7 +68,6 @@ export default class EditProfile extends React.Component {
      }
   }
 
-
   closeEditScreen() {
     // warning before closing edit screen if changes available
     if(this.state.firstName !== this.state.firstNameEdited || this.state.lastName !== this.state.lastNameEdited || this.state.email !== this.state.emailEdited ||
@@ -151,8 +150,7 @@ export default class EditProfile extends React.Component {
       )
       this.setState({emailEdited:this.state.email})
     } else{
-    //this.setState({pwBeforeEdit: true})
-
+    this.setState({pwBeforeEdit: true})
     }
   }
   
@@ -176,6 +174,7 @@ export default class EditProfile extends React.Component {
           // Update password if changed
           if(this.state.currPw !== "" && this.state.newPw !== "" && this.state.confirmNewPw !== "") {
             await updatePassword(user, this.state.newPw)
+            AsyncStorage.setItem("password", this.state.newPw);
           }
 
           // Update user details in database
@@ -189,7 +188,7 @@ export default class EditProfile extends React.Component {
           AsyncStorage.setItem("firstName", this.state.firstNameEdited);
           AsyncStorage.setItem("lastName", this.state.lastNameEdited);
           AsyncStorage.setItem("email", this.state.emailEdited);
-          AsyncStorage.setItem("password", this.state.newPw);
+
           this.props.navigation.navigate("Profile");
         } else {
             Alert.alert(
