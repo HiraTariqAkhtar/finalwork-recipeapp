@@ -17,7 +17,7 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as ImagePicker from 'expo-image-picker'
-import {STORAGE, DATABASE} from "../firebaseConfig"
+import {STORAGE, DATABASE, AUTH} from "../firebaseConfig"
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { collection, getDocs } from "firebase/firestore"; 
 import { signOut } from "firebase/auth"; 
