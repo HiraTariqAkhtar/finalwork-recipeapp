@@ -1,5 +1,5 @@
 # Desi Delights
-![Recipe App Logo](./assets/recipeApp/icon.png)
+<img src="./assets/recipeApp/icon.png" alt="App Logo" width="200">
 
 This is a recipe app that aims to make Pakistani recipes, places and holidays accessible to users. The app provides a simple and user-friendly interface for discovering Pakistani recipes, restaurants and supermarkets and staying informed about Pakistani holidays. 
 
