@@ -148,8 +148,10 @@ export default class AddToMap extends React.Component {
             onChangeText={(txt) => this.setState({placeName: txt})}/>
 
             <Text style={styles.text}>Place type *</Text>
-            <View style={{display:"flex", flexDirection:"row"}}>
-                {select}
+            <View style={styles.placeTypeChoice}>
+              <View style={{display:"flex", flexDirection:"row"}}>
+                  {select}
+              </View>
             </View>
             
             <Text style={styles.text}>Street + number *</Text>
@@ -172,7 +174,7 @@ export default class AddToMap extends React.Component {
                 <View style={{display:"flex", flexDirection:"column"}}>
                     <Text style={styles.text}>City *</Text>
                         <TextInput
-                        style={[styles.placeholder, {width:wp("63%")}]}
+                        style={[styles.placeholder, {width:wp("55%")}]}
                         placeholder="City"
                         value={this.state.city}
                         onChangeText={(txt) => this.setState({city: txt})}/>
@@ -213,13 +215,13 @@ const styles = StyleSheet.create({
         marginLeft: wp("3%")
     },
     placeholder: {
-        height: hp("5%"),
-        borderWidth: 1,
-        padding: wp("2%"),
-        marginHorizontal: wp("3%"),
-        marginBottom: hp("2%"),
-        borderColor: "#115740",
-        borderRadius: 10,
+      height: hp("5%"),
+      borderWidth: 2,
+      padding: wp("2%"),
+      marginHorizontal: wp("5%"),
+      marginBottom: hp("2%"),
+      borderColor: "#115740",
+      borderRadius: 10,
     },
     button: {
         width: wp("80%"),
@@ -246,5 +248,14 @@ const styles = StyleSheet.create({
         fontFamily:"Nunito_400Regular",
         fontSize: hp("2%"),
         marginLeft: wp("2%")
+      },
+      placeTypeChoice: {
+        marginBottom:hp("3%"),
+        borderRadius: 10,
+        borderColor: "#115740",
+        borderWidth: 2,
+        width: wp("90%"),
+        marginHorizontal: wp("5%"),
+        paddingVertical: hp("2%")
       },
 });
