@@ -6,7 +6,8 @@ import {
   Text,
   Modal,
   TextInput,
-  Alert
+  Alert,
+  ActivityIndicator
 } from "react-native";
 import {
   widthPercentageToDP as wp,
