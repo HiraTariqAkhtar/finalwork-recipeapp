@@ -17,7 +17,7 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore"; 
-import {  signInWithEmailAndPassword } from "firebase/auth"; 
+import {  signInWithEmailAndPassword, updateEmail, updatePassword } from "firebase/auth"; 
 import {DATABASE, AUTH} from "../firebaseConfig"
 
 
@@ -157,40 +157,38 @@ export default class EditProfile extends React.Component {
   
   async confirmPw(password) {
     this.setState({ isLoading: true });
-
-    let userCollection = collection(DATABASE, "users")
-    let userData = await getDocs(userCollection)
-    
-    let userPw = ""
-
-    if (userData.size > 0) {
-      userData.forEach((doc) => {
-        if(doc.data().email == this.state.email) {
-          userPw = doc.data().password
-        }
-      })
+    let comparePasswords;
+    if(password === this.state.password) {
+      comparePasswords = true
+    } else {
+      comparePasswords = false
     }
-    let comparePasswords = bcrypt.compareSync(password, userPw);
+
+    let user = AUTH.currentUser
+    
         if (comparePasswords) {
-          if(this.state.currPw === "" && this.state.newPw === "" && this.state.confirmNewPw === "") {
-            updateDoc(doc(DATABASE, "users", this.props.route.params.userId), {
-              firstName: this.state.firstNameEdited,
-              lastName: this.state.lastNameEdited,
-              email: this.state.emailEdited,
-            })
-          } else{
-            let pwHash = bcrypt.hashSync(this.state.newPw, 8);
-            updateDoc(doc(DATABASE, "users", this.props.route.params.userId), {
-              firstName: this.state.firstNameEdited,
-              lastName: this.state.lastNameEdited,
-              email: this.state.emailEdited,
-              password: pwHash
-            })
+          // Update email if changed
+          if(this.state.email !== this.state.emailEdited) {
+            await updateEmail(user, this.state.emailEdited)
           }
           
+          // Update password if changed
+          if(this.state.currPw !== "" && this.state.newPw !== "" && this.state.confirmNewPw !== "") {
+            await updatePassword(user, this.state.newPw)
+          }
+
+          // Update user details in database
+          updateDoc(doc(DATABASE, "users", this.props.route.params.userId), {
+            firstName: this.state.firstNameEdited,
+            lastName: this.state.lastNameEdited,
+            email: this.state.emailEdited,
+          })
+          
+          // Set details in AsyncStorage
           AsyncStorage.setItem("firstName", this.state.firstNameEdited);
           AsyncStorage.setItem("lastName", this.state.lastNameEdited);
           AsyncStorage.setItem("email", this.state.emailEdited);
+          AsyncStorage.setItem("password", this.state.newPw);
           this.props.navigation.navigate("Profile");
         } else {
             Alert.alert(
