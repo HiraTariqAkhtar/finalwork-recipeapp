@@ -20,6 +20,8 @@ import * as ImagePicker from 'expo-image-picker'
 import {STORAGE, DATABASE} from "../firebaseConfig"
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { collection, getDocs } from "firebase/firestore"; 
+import { signOut } from "firebase/auth"; 
+
 
 
 export default class Profile extends React.Component {
@@ -160,6 +162,9 @@ export default class Profile extends React.Component {
     await AsyncStorage.removeItem("firstName")
     await AsyncStorage.removeItem("lastName")
     await AsyncStorage.removeItem("email")
+    
+    await signOut(AUTH)
+
     this.setState({firstName: ""})
     this.setState({lastName: ""})
     this.setState({profilePic: null})
