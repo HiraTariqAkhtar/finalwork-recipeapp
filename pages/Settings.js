@@ -111,7 +111,7 @@ export default class Settings extends React.Component {
         </View>
           <View style={{marginTop: hp("25%"), marginHorizontal: wp("10%")}}>
             <TouchableOpacity style={styles.button}
-            onPress={() => this.props.navigation.navigate("EditProfile")}>
+            onPress={() => this.props.navigation.navigate("EditProfile",{userId: this.state.userId})}>
             <View style={styles.iconText}>
                 <FontAwesome
                 name="pencil"
