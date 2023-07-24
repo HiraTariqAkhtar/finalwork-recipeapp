@@ -13,8 +13,6 @@ import {
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 import axios from "axios";
-import {HOLIDAYS_API_KEY} from '@env'
-
 
 
 export default class Holidays extends React.Component {

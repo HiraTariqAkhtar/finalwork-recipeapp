@@ -24,8 +24,6 @@ import {AUTH} from "../firebaseConfig"
 import { createUserWithEmailAndPassword } from "firebase/auth"; 
 
 
-import bcrypt from 'react-native-bcrypt';
-
 export default class Register extends React.Component {
   constructor(props) {
     super(props);

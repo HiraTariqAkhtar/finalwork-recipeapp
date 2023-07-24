@@ -19,11 +19,6 @@ import { collection, getDocs} from "firebase/firestore";
 import {DATABASE} from "../firebaseConfig"
 import {AUTH} from "../firebaseConfig"
 import { signInWithEmailAndPassword } from "firebase/auth"; 
-import * as Facebook from 'expo-facebook';
-
-
-
-import bcrypt from 'react-native-bcrypt';
 
 export default class Login extends React.Component {
   constructor(props) {

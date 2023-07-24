@@ -13,12 +13,9 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
-import CheckBox from 'react-native-check-box'
 
-
-import { collection, getDocs, addDoc } from "firebase/firestore"; 
+import { collection, getDocs } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
 
 import AsyncStorage from "@react-native-async-storage/async-storage";

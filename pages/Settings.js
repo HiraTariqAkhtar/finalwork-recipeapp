@@ -12,10 +12,9 @@ import {
 } from "react-native-responsive-screen";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-import { collection, getDocs, deleteDoc, updateDoc, doc } from "firebase/firestore"; 
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import bcrypt from 'react-native-bcrypt';
 
 export default class Settings extends React.Component {
   constructor(props) {

@@ -19,9 +19,6 @@ import {HOLIDAYS_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore"; 
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-
 export default class Home extends React.Component {
   constructor(props) {
     super(props);

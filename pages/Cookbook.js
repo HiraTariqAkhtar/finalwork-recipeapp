@@ -5,9 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Text,
-  Image,
-  Alert,
-  ToastAndroid
+  Image
 } from "react-native";
 import {
   widthPercentageToDP as wp,
