@@ -134,14 +134,15 @@ export default class Register extends React.Component {
           email: this.state.email,
         };
 
-        // Add gebruiker to database
+        // Add user to database
         const userCollection = collection(DATABASE, "users");
         addDoc(userCollection, user);
-
+        
         AsyncStorage.setItem("userLoggedIn", "true")
         AsyncStorage.setItem("firstName", this.state.firstName)
         AsyncStorage.setItem("lastName", this.state.lastName)
         AsyncStorage.setItem("email", this.state.email)
+
         this.props.navigation.navigate("Profile")
       })
       .catch((error) => {
@@ -186,8 +187,15 @@ export default class Register extends React.Component {
       } else {
       emailAvailable = <Text style={{marginLeft:wp("3%"), marginBottom:hp("3%"), color:"#FF0000"}}>Email-address is already in use. {"\n"}Please use another email address</Text>
       }
-    } else {
-      emailAvailable = <Text></Text>
+    }
+
+    let pwOK;
+    if(this.state.pw.length > 0) {
+      if(this.state.pw.length >= 6) {
+        pwOK = <Text style={{marginLeft:wp("3%"), marginTop:hp("-3%"), marginBottom:hp("3%"), color:"#00FF00"}}>Password can be used</Text>
+      } else {
+        pwOK = <Text style={{marginLeft:wp("3%"), marginTop:hp("-3%"), marginBottom:hp("3%"), color:"#FF0000"}}>Password should be at least 6 characters</Text>
+      }
     }
 
     return (
@@ -237,6 +245,7 @@ export default class Register extends React.Component {
             secureTextEntry
             value={this.state.pw}
             onChangeText={(txt) => this.setState({pw: txt})}/>
+            {pwOK}
   
             <Text style={styles.text}>Confirm Password:</Text>
             <TextInput
@@ -246,10 +255,10 @@ export default class Register extends React.Component {
             value={this.state.pwConfirm}
             onChangeText={(txt) => this.setState({pwConfirm: txt})}/>
 
-          </ScrollView>
           <TouchableOpacity style={[styles.button, {marginLeft: wp("50%")}]} onPress={() => this.checkInputData()}>
             <Text style={styles.btnText}>Next</Text>
           </TouchableOpacity>
+          </ScrollView>
 
 
           <Modal
