@@ -530,7 +530,7 @@ export default class Recipes extends React.Component {
               </View>
   
               <View>
-                <Text style={styles.category}>Prep time</Text>
+                <Text style={styles.category}>Preperation time</Text>
                 <View style={styles.filterChoice}>
                  {filterSelectionPrepTime}
                 </View>
