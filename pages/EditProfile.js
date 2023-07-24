@@ -16,6 +16,9 @@ import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { collection, getDocs, updateDoc, doc } from "firebase/firestore"; 
+import {  signInWithEmailAndPassword } from "firebase/auth"; 
+import {DATABASE, AUTH} from "../firebaseConfig"
 
 
 
@@ -24,41 +27,46 @@ export default class EditProfile extends React.Component {
     super(props);
 
     this.state = {
-        firstName: "",
-        lastName: "",
-        email:"",
+      userId: 0,
+      firstName: "",
+      lastName: "",
+      email:"",
+      password:"",
 
-        firstNameEdited:"",
-        lastNameEdited:"",
-        emailEdited:"",
-        currPw:"",
-        newPw:"",
-        confirmNewPw:"",
-
-        pwBeforeEdit: false,
-        pw:"",
-        isLoading: false,
+      firstNameEdited:"",
+      lastNameEdited:"",
+      emailEdited:"",
+      currPw:"",
+      newPw:"",
+      confirmNewPw:"",
+      pwBeforeEdit: false,
+      pw:"",
+      isLoading: false,
     }
 
     this.getUserDetails()
-
   }
 
   async getUserDetails(){
     let userFirstName = await AsyncStorage.getItem("firstName")
     let userLastName = await AsyncStorage.getItem("lastName")
     let userEmail = await AsyncStorage.getItem("email")
+    let userPw = await AsyncStorage.getItem("password")
   
-     if(userFirstName !== null && userLastName !== null && userEmail !== null) {
+     if(userFirstName !== null && userLastName !== null && userEmail !== null && userPw !== null) {
       this.setState({firstName: userFirstName})
       this.setState({lastName: userLastName})
       this.setState({email: userEmail})
+      this.setState({password: userPw})
       
       this.setState({firstNameEdited: userFirstName})
       this.setState({lastNameEdited: userLastName})
       this.setState({emailEdited: userEmail})
+
+      await signInWithEmailAndPassword(AUTH, userEmail, userPw)
      }
   }
+
 
   closeEditScreen() {
     // warning before closing edit screen if changes available
@@ -84,7 +92,7 @@ export default class EditProfile extends React.Component {
         ]
       )
     } else{
-      this.setState({editModalVisible: false})
+      this.props.navigation.goBack()
     }
   }
 
@@ -142,7 +150,8 @@ export default class EditProfile extends React.Component {
       )
       this.setState({emailEdited:this.state.email})
     } else{
-    this.setState({pwBeforeEdit: true})
+    //this.setState({pwBeforeEdit: true})
+
     }
   }
   
@@ -164,14 +173,14 @@ export default class EditProfile extends React.Component {
     let comparePasswords = bcrypt.compareSync(password, userPw);
         if (comparePasswords) {
           if(this.state.currPw === "" && this.state.newPw === "" && this.state.confirmNewPw === "") {
-            updateDoc(doc(DATABASE, "users", this.state.userId), {
+            updateDoc(doc(DATABASE, "users", this.props.route.params.userId), {
               firstName: this.state.firstNameEdited,
               lastName: this.state.lastNameEdited,
               email: this.state.emailEdited,
             })
           } else{
             let pwHash = bcrypt.hashSync(this.state.newPw, 8);
-            updateDoc(doc(DATABASE, "users", this.state.userId), {
+            updateDoc(doc(DATABASE, "users", this.props.route.params.userId), {
               firstName: this.state.firstNameEdited,
               lastName: this.state.lastNameEdited,
               email: this.state.emailEdited,
@@ -276,7 +285,7 @@ export default class EditProfile extends React.Component {
               </View>
 
               <View style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
-              <TouchableOpacity style={styles.buttonEdit} onPress={() => this.props.navigation.goBack()}>
+              <TouchableOpacity style={styles.buttonEdit} onPress={() => this.closeEditScreen()}>
                 <Text style={styles.btnText}>Back</Text>
               </TouchableOpacity>
 
