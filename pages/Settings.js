@@ -13,8 +13,9 @@ import {
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"; 
-import {DATABASE} from "../firebaseConfig"
+import {DATABASE, AUTH} from "../firebaseConfig"
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { deleteUser } from "firebase/auth"; 
 
 export default class Settings extends React.Component {
   constructor(props) {
@@ -85,6 +86,8 @@ export default class Settings extends React.Component {
       await deleteDoc(doc(DATABASE, "recipes", recipe.id))
     }
    }
+
+   await deleteUser(AUTH.currentUser)
 
     // Remove everything from storage --> navigate back to profile page
     await AsyncStorage.removeItem("userLoggedIn")
