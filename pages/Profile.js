@@ -19,7 +19,7 @@ import * as ImagePicker from 'expo-image-picker'
 import {STORAGE, DATABASE, AUTH} from "../firebaseConfig"
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { collection, getDocs } from "firebase/firestore"; 
-import { signInWithEmailAndPassword, signOut, deleteUser } from "firebase/auth"; 
+import { signInWithEmailAndPassword, signOut } from "firebase/auth"; 
 
 
 
