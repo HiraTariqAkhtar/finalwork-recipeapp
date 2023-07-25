@@ -186,6 +186,8 @@ export default class Register extends React.Component {
       } else {
       emailAvailable = <Text style={{marginLeft:wp("3%"), marginBottom:hp("3%"), color:"#FF0000"}}>Email-address is already in use. {"\n"}Please use another email address</Text>
       }
+    } else {
+      emailAvailable = <Text></Text>
     }
 
     let pwOK;
