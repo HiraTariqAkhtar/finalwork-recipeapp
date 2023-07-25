@@ -63,8 +63,8 @@ export default class EditProfile extends React.Component {
       this.setState({lastNameEdited: userLastName})
       this.setState({emailEdited: userEmail})
 
-      await signInWithEmailAndPassword(AUTH, userEmail, userPw)
      }
+
   }
 
   closeEditScreen() {

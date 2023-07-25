@@ -19,7 +19,7 @@ import * as ImagePicker from 'expo-image-picker'
 import {STORAGE, DATABASE, AUTH} from "../firebaseConfig"
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { collection, getDocs } from "firebase/firestore"; 
-import { signOut } from "firebase/auth"; 
+import { signInWithEmailAndPassword, signOut, deleteUser } from "firebase/auth"; 
 
 
 
@@ -58,9 +58,14 @@ export default class Profile extends React.Component {
 
   async getUserInfo(){
     let userEmail = await AsyncStorage.getItem("email")
+    let userPw = await AsyncStorage.getItem("password")
     let userId = 0
 
     if(userEmail !== null) {
+
+      // Login user again to get user from firebase auth
+      await signInWithEmailAndPassword(AUTH, userEmail, userPw)
+
       // Get user id and name from firebase
       let userFirstName;
       let userLastName;
