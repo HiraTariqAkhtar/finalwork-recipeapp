@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -34,6 +34,12 @@ import Settings from "./pages/Settings"
 import Holidays from "./pages/Holidays"
 import AddRecipe from "./pages/AddRecipe"
 import Cookbook from "./pages/Cookbook"
+import Map from "./pages/Map"
+import EditProfile from "./pages/EditProfile"
+import AddToMap from "./pages/AddToMap"
+
+// Seeder import
+import { addDataInDatabase } from "./seeder"
 
 
 // Navigators
@@ -47,6 +53,7 @@ const HomeScreen = () => {
       <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}/>
       <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ headerShown: false }}/>
       <Stack.Screen name="Holidays" component={Holidays} options={{ headerShown: false }}/>
+      <Stack.Screen name="Recipes" component={Recipes} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -76,6 +83,15 @@ const ProfileScreen = () => {
       <Stack.Screen name="Cookbook" component={Cookbook} options={{ headerShown: false }}/>
       <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ headerShown: false }}/>
       <Stack.Screen name="AddRecipe" component={AddRecipe} options={{ headerShown: false }}/>
+      <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  );
+}
+const MapScreen = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Map" component={Map} options={{ headerShown: false }}/>
+      <Stack.Screen name="AddToMap" component={AddToMap} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -94,6 +110,18 @@ const Tabs = () => {
       tabBarIcon: ({focused}) => (
         <Ionicons
         name={focused? 'home' : 'home-outline'}
+        size={hp("5%")}
+        color = "#ff0000"
+        />
+      ),
+      unmountOnBlur: true
+    }}/>
+
+    <Tab.Screen name="MapScreen" component={MapScreen}
+    options= {{
+      tabBarIcon: ({focused}) => (
+        <Ionicons
+        name={focused? 'map' : 'map-outline'}
         size={hp("5%")}
         color = "#ff0000"
         />
@@ -163,6 +191,11 @@ export default function App() {
     Nunito_600SemiBold,
     Nunito_700Bold,
   });
+
+  //Add data in database
+  useEffect(() => {
+    addDataInDatabase();
+  }, []);
 
   if (!fontsLoaded) {
     return (<Image source={require("./assets/recipeApp/splash.png")} />);

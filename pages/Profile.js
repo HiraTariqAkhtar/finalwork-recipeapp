@@ -4,15 +4,22 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Alert
+  Alert,
+  Image,
+  ToastAndroid
 } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import * as ImagePicker from 'expo-image-picker'
+import {STORAGE, DATABASE, AUTH} from "../firebaseConfig"
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { collection, getDocs } from "firebase/firestore"; 
+import { signInWithEmailAndPassword, signOut } from "firebase/auth"; 
 
 
 
@@ -24,7 +31,8 @@ export default class Profile extends React.Component {
       firstName: "",
       lastName: "",
       profilePic: null,
-      isLoggedIn: false
+      isLoggedIn: false,
+      userId: ""
     }
   }
 
@@ -49,26 +57,123 @@ export default class Profile extends React.Component {
   }
 
   async getUserInfo(){
-    let userFirstName = await AsyncStorage.getItem("firstName")
-    let userLastName = await AsyncStorage.getItem("lastName")
+    let userEmail = await AsyncStorage.getItem("email")
+    let userPw = await AsyncStorage.getItem("password")
+    let userId = 0
 
-   if(userFirstName !== null && userLastName !== null) {
-    this.setState({firstName: userFirstName})
-    this.setState({lastName: userLastName})
-   }
+    if(userEmail !== null) {
+
+      // Login user again to get user from firebase auth
+      await signInWithEmailAndPassword(AUTH, userEmail, userPw)
+
+      // Get user id and name from firebase
+      let userFirstName;
+      let userLastName;
+
+        let userCollection = collection(DATABASE, "users")
+        let userData = await getDocs(userCollection)
+    
+        if (userData.size > 0) {
+          userData.forEach((doc) => {
+            if(doc.data().email == userEmail) {
+                userId = doc.id
+                userFirstName = doc.data().firstName
+                userLastName = doc.data().lastName
+            }
+          })
+
+          // check if user has uploaded a profile pic --> get url
+        const userProfilePic = ref(STORAGE, `profilePicUser${userId}`)
+        try {
+          await getDownloadURL(userProfilePic)
+          .then((img) => {
+            this.setState({profilePic: img})
+          })
+        } catch {
+          this.setState({profilePic: null})
+        }
+        }
+        this.setState({userId: userId, firstName: userFirstName, lastName: userLastName})
+    }
 
   }
 
   async addProfilePic() {
-    
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4,3],
+      quality: 1
+    })
+
+    if(!result.canceled) {
+      const storageRef = ref(STORAGE, `profilePicUser${this.state.userId}`)  // The name you want to give to uploaded img
+
+      const uri = result.assets[0].uri
+      const blobFile = await this.uriToBlob(uri);
+      console.log(blobFile);
+
+      await uploadBytes(storageRef, blobFile)
+
+      this.uploadPic()
+    } else {
+      ToastAndroid.show("No photo selected", ToastAndroid.SHORT)
+    }
   }
+
+  uriToBlob(uri) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+
+      xhr.onerror = function () {
+        reject(console.log('uriToBlob failed'));
+      };
+
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    })
+  }
+
+  async uploadPic() {
+    const imgRef = ref(STORAGE, `profilePicUser${this.state.userId}`)
+    await getDownloadURL(imgRef)
+    .then((img) => {
+      this.setState({profilePic: img})
+    })
+  }
+
 
   async updateProfilePic() {
-
+    const imgRef = ref(STORAGE, `profilePicUser${this.state.userId}`)
+    await deleteObject(imgRef)
+    .then(() => {
+      this.addProfilePic()
+    })
   }
 
+  async confirmDelete(){
+    Alert.alert(
+      "Remove profile picture",
+      "Are you sure you want to remove your profile picture?",
+      [
+        {text: 'No', style: 'cancel'},
+        {text: 'Yes', onPress: () => this.removeProfilePic()}
+      ]
+    )
+  }
+  
   async removeProfilePic() {
-
+    const imgRef = ref(STORAGE, `profilePicUser${this.state.userId}`)
+    await deleteObject(imgRef)
+    .then(() => {
+      this.setState({profilePic: null})
+      ToastAndroid.show("Profile picture succesfully removed", ToastAndroid.SHORT)
+    })
   }
 
   async logIn() {
@@ -80,6 +185,9 @@ export default class Profile extends React.Component {
     await AsyncStorage.removeItem("firstName")
     await AsyncStorage.removeItem("lastName")
     await AsyncStorage.removeItem("email")
+    
+    await signOut(AUTH)
+
     this.setState({firstName: ""})
     this.setState({lastName: ""})
     this.setState({profilePic: null})
@@ -89,6 +197,11 @@ export default class Profile extends React.Component {
 
   render() {
     let login;
+    let profilePic;
+    let uploadPic;
+    let editPic;
+    let removePic;
+
     if(this.state.isLoggedIn) {
       login =
       <View>
@@ -108,23 +221,74 @@ export default class Profile extends React.Component {
         </TouchableOpacity>
       </View>
       
+      if(this.state.profilePic == null || this.state.profilePic == undefined) {
+        profilePic = 
+        <Ionicons
+          name={"person-circle"}
+          size={hp("25%")}
+          color="#878787"
+          marginTop={hp("5%")}
+        />
+        uploadPic = 
+        <FontAwesome
+          name={"upload"}
+          size={hp("4%")}
+          color="#115740"
+          marginTop={hp("-25%")}
+          marginBottom={hp("25%")}
+          marginLeft={wp("50%")}
+          onPress={() => this.addProfilePic()}
+        />
+      } else {
+        profilePic = 
+        <Image
+        src= {this.state.profilePic}
+        style={styles.profilePic}/>
+  
+        editPic = 
+        <FontAwesome
+          name={"edit"}
+          size={hp("4%")}
+          color="#115740"
+          marginRight={wp("3%")}
+          onPress={() => this.updateProfilePic()}
+        />
+  
+        removePic =
+        <Ionicons
+          name={"trash-outline"}
+          size={hp("4%")}
+          color="#ff0000"
+          onPress={() => this.confirmDelete()}
+        />
+      }
     } else {
       login = 
       <TouchableOpacity style={styles.button}
       onPress={() => this.logIn()}>
         <Text style={styles.btnText}>Log in</Text>
       </TouchableOpacity>
+
+      profilePic = 
+      <Ionicons
+        name={"person-circle"}
+        size={hp("25%")}
+        color="#878787"
+        marginTop={hp("5%")}
+      />
     }
+
+    
 
     return (
       <View style={styles.container}>
          <Text style={styles.title}>Profile</Text>
-         <Ionicons
-            name={"person-circle"}
-            size={hp("25%")}
-            color="#878787"
-            marginTop={hp("5%")}
-          />
+         {profilePic}
+           {uploadPic}
+         <View style={styles.managePic}>
+           {editPic}
+           {removePic}
+         </View>
           <Text style={styles.name}>{this.state.firstName} {this.state.lastName}</Text>
           <View style={{marginTop: hp("10%")}}>
             
@@ -146,23 +310,37 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
-    color: "#FF0000"
+    color: "#FF5E00"
   },
   name: {
     fontFamily: "Nunito_400Regular",
     fontSize: hp("3%")
   },
-  button: {
+   button: {
     width: wp("80%"),
     padding: hp("1%"),
-    backgroundColor: "#FF5E00",
+    backgroundColor: "#115740",
     borderRadius: 10,
     marginBottom: hp("3%")
   },
-  btnText:{
-    fontFamily:"Nunito_400Regular",
+btnText:{
+    fontFamily:"Nunito_700Bold",
     fontSize: hp("2.5%"),
     color: "#ffffff",
     textAlign: "center"
-  }
+},
+profilePic: {
+  width: hp("25%"),
+  height: hp("25%"),
+  marginTop: hp("5%"),
+  marginBottom: hp("3%"),
+  borderRadius: 10,
+},
+managePic: {
+  display:"flex",
+  flexDirection:"row",
+  marginLeft: wp("75%"),
+  marginTop: hp("-28%"),
+  marginBottom: hp("25%")
+}
 });

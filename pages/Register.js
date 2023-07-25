@@ -20,8 +20,9 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, getDocs, addDoc } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
+import {AUTH} from "../firebaseConfig"
+import { createUserWithEmailAndPassword } from "firebase/auth"; 
 
-import bcrypt from 'react-native-bcrypt';
 
 export default class Register extends React.Component {
   constructor(props) {
@@ -123,23 +124,32 @@ export default class Register extends React.Component {
     this.setState({isLoading: true})
     
     setTimeout(() => {
-      var pwHash = bcrypt.hashSync(this.state.pw, 8);
+      createUserWithEmailAndPassword(AUTH, this.state.email, this.state.pw)
+      .then(() => {
+        const user = {
+          firstName: this.state.firstName,
+          lastName: this.state.lastName,
+          email: this.state.email,
+        };
 
-      let userCollection = collection(DATABASE, "users")
-  
-       addDoc((userCollection), {
-        firstName: this.state.firstName,
-        lastName: this.state.lastName,
-        email: this.state.email,
-        password:pwHash
+        // Add user to database
+        const userCollection = collection(DATABASE, "users");
+        addDoc(userCollection, user);
+        
+        AsyncStorage.setItem("userLoggedIn", "true")
+        AsyncStorage.setItem("firstName", this.state.firstName)
+        AsyncStorage.setItem("lastName", this.state.lastName)
+        AsyncStorage.setItem("email", this.state.email)
+        AsyncStorage.setItem("password", this.state.pw)
+
+        this.props.navigation.navigate("Profile")
       })
-  
-      AsyncStorage.setItem("userLoggedIn", "true")
-      AsyncStorage.setItem("firstName", this.state.firstName)
-      AsyncStorage.setItem("lastName", this.state.lastName)
-      AsyncStorage.setItem("email", this.state.email)
-      this.props.navigation.navigate("Profile")
-    
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMsg = error.message;
+
+        console.log(`Error occured with code ${errorCode} : ${errorMsg}`)
+      })
     }, 100)
 
   }
@@ -156,7 +166,7 @@ export default class Register extends React.Component {
         name="eye-off"
         size={hp("2.5%")}
         marginLeft={wp("3%")}
-        color="#FF5E00"
+        color="#115740"
         onPress={() => this.setState({showPw: !this.state.showPw})}/>
     } else {
       pw = "**********"
@@ -165,7 +175,7 @@ export default class Register extends React.Component {
         name="eye"
         size={hp("2.5%")}
         marginLeft={wp("3%")}
-        color="#FF5E00"
+        color="#115740"
         onPress={() => this.setState({showPw: !this.state.showPw})}/>
     }
 
@@ -180,9 +190,27 @@ export default class Register extends React.Component {
       emailAvailable = <Text></Text>
     }
 
+    let pwOK;
+    if(this.state.pw.length > 0) {
+      if(this.state.pw.length >= 6) {
+        pwOK = <Text style={{marginLeft:wp("3%"), marginTop:hp("-3%"), marginBottom:hp("3%"), color:"#00FF00"}}>Password can be used</Text>
+      } else {
+        pwOK = <Text style={{marginLeft:wp("3%"), marginTop:hp("-3%"), marginBottom:hp("3%"), color:"#FF0000"}}>Password should be at least 6 characters</Text>
+      }
+    }
+
     return (
       <View style={styles.container}>
+        <View style={styles.header}>
+          <Ionicons
+              name={"arrow-back"}
+              size={hp("5%")}
+              color="#115740"
+              marginRight={wp("20%")}
+              onPress={() => this.props.navigation.goBack()}
+            />
           <Text style={styles.title}>Sign Up</Text>
+        </View>
 
           <View style={{display:"flex", flexDirection:"row", justifyContent:"center"}}>
               <Text style={styles.question}>Already a user?</Text>
@@ -218,6 +246,7 @@ export default class Register extends React.Component {
             secureTextEntry
             value={this.state.pw}
             onChangeText={(txt) => this.setState({pw: txt})}/>
+            {pwOK}
   
             <Text style={styles.text}>Confirm Password:</Text>
             <TextInput
@@ -227,10 +256,10 @@ export default class Register extends React.Component {
             value={this.state.pwConfirm}
             onChangeText={(txt) => this.setState({pwConfirm: txt})}/>
 
-          </ScrollView>
           <TouchableOpacity style={[styles.button, {marginLeft: wp("50%")}]} onPress={() => this.checkInputData()}>
             <Text style={styles.btnText}>Next</Text>
           </TouchableOpacity>
+          </ScrollView>
 
 
           <Modal
@@ -247,7 +276,7 @@ export default class Register extends React.Component {
                 name="pencil"
                 size={hp("2.5%")}
                 marginLeft={wp("3%")}
-                color="#FF5E00"
+                color="#115740"
                 onPress={() => this.setState({confirmDetails: false})}/>
 
               </View>
@@ -257,7 +286,7 @@ export default class Register extends React.Component {
                 name="pencil"
                 size={hp("2.5%")}
                 marginLeft={wp("3%")}
-                color="#FF5E00"
+                color="#115740"
                 onPress={() => this.setState({confirmDetails: false})}/>
 
               </View>
@@ -269,7 +298,7 @@ export default class Register extends React.Component {
                 name="pencil"
                 size={hp("2.5%")}
                 marginLeft={wp("3%")}
-                color="#FF5E00"
+                color="#115740"
                 onPress={() => this.setState({confirmDetails: false})}/>
 
               </View>
@@ -296,12 +325,17 @@ const styles = StyleSheet.create({
     paddingTop: hp("5%"),
     backgroundColor:"#FFFFFF" 
   },
+  header: {
+    display:"flex",
+    flexDirection:"row",
+    marginHorizontal: wp("7.5%"),
+  },
   title: {
     textAlign: 'center',
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
     marginBottom: hp("5%"),
-    color: "#FF0000"
+    color: "#FF5E00"
   },
   question: {
       fontFamily: "Nunito_600SemiBold",
@@ -315,7 +349,8 @@ const styles = StyleSheet.create({
       fontSize: hp("2%"),
       marginBottom: hp("5%"),
       marginRight: wp("5%"),
-      textDecorationLine: "underline"
+      textDecorationLine: "underline",
+      color: "#115740"
   },
   text: {
       fontFamily: "Nunito_700Bold",
@@ -324,26 +359,26 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     height: hp("5%"),
-    borderWidth: 1,
+    borderWidth: 3,
     padding: wp("2%"),
     marginHorizontal: wp("3%"),
     marginBottom: hp("3%"),
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderRadius: 10,
   },
   button: {
     width: wp("45%"),
     padding: hp("1%"),
-    backgroundColor: "#FF5E00",
+    backgroundColor: "#115740",
     borderRadius: 10,
     marginTop: hp("3%"),
   },
   btnText:{
-    fontFamily:"Nunito_400Regular",
+    fontFamily:"Nunito_700Bold",
     fontSize: hp("2.5%"),
     color: "#ffffff",
     textAlign: "center"
-  },
+},
   iconText: {
     display: "flex",
     flexDirection: "row",
@@ -351,4 +386,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: hp("1%"),
   },
+
 });

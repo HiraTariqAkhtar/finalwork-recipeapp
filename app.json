@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "RecipeApp",
-    "slug": "RecipeApp",
+    "name": "Desi Delights",
+    "slug": "desi-delights",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/recipeApp/logo.png",
+    "icon": "./assets/recipeApp/icon.png",
     "backgroundColor": "#ffffff",
     "userInterfaceStyle": "light",
     "splash": {
@@ -20,10 +20,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/recipeApp/logo.png",
+        "foregroundImage": "./assets/recipeApp/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "icon": "./assets/recipeApp/logo.png",
+      "icon": "./assets/recipeApp/icon.png",
       "package": "com.hiratariqakhtar.RecipeApp"
     },
     "web": {
@@ -31,7 +31,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "e88e5503-9ee4-483e-8fd3-fc00b263cd61"
+        "projectId": "45ffb7a6-85f9-4486-925e-4e3d854190df"
       }
     }
   }

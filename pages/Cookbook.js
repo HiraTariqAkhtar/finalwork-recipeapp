@@ -5,9 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Text,
-  Image,
-  Alert,
-  ToastAndroid
+  Image
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -28,7 +26,8 @@ export default class Cookbook extends React.Component {
     this.state = {
         userId: "",
         hasData: false,
-        myRecipes:[]
+        myPublicRecipes:[],
+        myPrivateRecipes:[]
       }
 
       this.getUser()
@@ -52,7 +51,8 @@ export default class Cookbook extends React.Component {
   }
 
   async getRecipeList() {
-    let myRecipes = []
+    let publicRecipes = []
+    let privateRecipes = []
 
     let recipeCollection = collection(DATABASE, "recipes")
     let recipes = await getDocs(recipeCollection)
@@ -60,144 +60,163 @@ export default class Cookbook extends React.Component {
         recipes.forEach((doc) => {
         if(doc.data().userId === this.state.userId) {
             this.setState({hasData: true})
-            myRecipes.push(doc.data().recipe)
+            if(doc.data().public == true) {
+              publicRecipes.push(doc.data())
+            } else if(doc.data().public == false) {
+              privateRecipes.push(doc.data())
+            }
         }
     })
     } else {
         this.setState({hasData: false})
     }
-    console.log(myRecipes)
-    this.setState({myRecipes: myRecipes})
+    //console.log(myRecipes)
+    this.setState({myPublicRecipes: publicRecipes, myPrivateRecipes: privateRecipes})
   }
 
   goToRecipeDetails(rec) {
     this.props.navigation.navigate("RecipeDetail", {
-      id: rec.id,
       recipeName: rec.recipeName,
       servings: rec.servings,
       timeNeeded: rec.timeNeeded,
-      dishTypes: rec.dishTypes,
-      period: rec.period,
-      culture: rec.culture,
+      category: rec.category,
       ingredients: rec.ingredients,
-      instructions: rec.instructions
+      instructions: rec.instructions,
+      img: rec.img
     })
   }
 
 
   render() {
-    let cultures;
-    let dishTypes;
-    let periods;
-
-    this.state.myRecipes.forEach((rec) => {
-      if(rec.culture.length > 1){
-        cultures = 
-        rec.culture.map((culture) => (
-          <Text style={styles.text}>{culture} |</Text>
-          ))
-      } else if(rec.culture.length == 1) {
-        cultures = 
-        <Text style={styles.text}>{rec.culture[0]}</Text>
-      }
-  
-  
-      if(rec.dishTypes.length > 1) {
-        dishTypes =
-        rec.dishTypes.map((type) => (
-          <Text style={styles.text}>{type} |</Text>
-        ))
-      } else if(rec.dishTypes.length == 1){
-        dishTypes =
-        <Text style={styles.text}>{rec.dishTypes[0]}</Text>
-      }
-  
-      if(rec.period.length > 1) {
-        periods =
-        rec.period.map((period) => (
-          <Text style={styles.text}>{period} |</Text>
-        ))
-      } else if(rec.period.length == 1){
-        periods =
-        <Text style={styles.text}>{rec.period[0]}</Text>
-      }
-    })
-
     let recipes;
-    if(this.state.myRecipes.length > 0) {
-      recipes = this.state.myRecipes.map((rec) => (
-        <TouchableOpacity
-        key={rec.id}
-        style={styles.recipe}
-        onPress={() => this.goToRecipeDetails(rec)}>
-          <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-             
-              <FontAwesome
-                  name={"image"}
-                  size={hp("15%")}
-                  color="#D3D3D3"
-                  marginRight={wp("3%")}
-                />
-    
-                <View>
-                  <Text style={styles.recipeName}>
-                    {rec.recipeName}
-                  </Text>
-                  
-                  <View style={{display:"flex", flexDirection:"row"}}>
-                    <View style={[styles.iconText, {marginRight: wp("5%")}]}>
-                      <Ionicons
-                        name={"people"}
-                        size={hp("2.5%")}
-                        color="#FF5E00"
-                      />
-                      <Text style={styles.text}>{rec.servings}</Text>
-  
-                    </View>
-  
-                    <View style={styles.iconText}>
-                      <Ionicons
-                        name={"stopwatch"}
-                        size={hp("2.5%")}
-                        color="#FF5E00"
-                      />
-                        <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+    if(this.state.myPublicRecipes.length > 0 || this.state.myPrivateRecipes.length > 0) {
+      recipes = 
+      <View>
+        <Text style={styles.section}>Public Recipes</Text>
+        <ScrollView style={{height: hp("33%")}}>
+         { this.state.myPublicRecipes.map((rec) => (
+            <TouchableOpacity
+            key={rec.id}
+            style={styles.recipe}
+            onPress={() => this.goToRecipeDetails(rec)}>
+              <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+                 
+              {rec.img != "" ?(
+            <Image
+            source={{uri: rec.img}}
+            style={styles.foodImg}
+            />)
+            : 
+            <FontAwesome
+                name={"image"}
+                size={hp("15%")}
+                color="#D3D3D3"
+                marginRight={wp("3%")}
+              />}
+        
+                    <View>
+                      <Text style={styles.recipeName}>
+                        {rec.recipeName}
+                      </Text>
+                      
+                      <View style={{display:"flex", flexDirection:"row"}}>
+                        <View style={[styles.iconText, {marginRight: wp("5%")}]}>
+                          <Ionicons
+                            name={"people"}
+                            size={hp("2.5%")}
+                            color="#115740"
+                          />
+                          <Text style={styles.text}>{rec.servings}</Text>
+      
+                        </View>
+      
+                        <View style={styles.iconText}>
+                          <Ionicons
+                            name={"stopwatch"}
+                            size={hp("2.5%")}
+                            color="#115740"
+                          />
+                            <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+                        </View>
+                      </View>
+        
+                      {rec.category.length > 0 && (
+                    <View style={[styles.iconText, {width: wp("60%")}]}>
+                    <FontAwesome
+                      name={"cutlery"}
+                      size={hp("2.5%")}
+                      color="#115740"
+                    />
+                      <Text style={styles.text}>{rec.category}</Text>
+                    </View>)}
                     </View>
                   </View>
-    
-                  {rec.culture.length > 0 && (
-                <View style={[styles.iconText, {width: wp("60%")}]}>
-                <Ionicons
-                  name={"flag"}
-                  size={hp("2.5%")}
-                  color="#FF5E00"
-                />
-                  {cultures}
-                </View>)}
-    
-                {rec.dishTypes.length > 0 && (
-                <View style={[styles.iconText, {width: wp("60%")}]}>
-                <FontAwesome
-                  name={"cutlery"}
-                  size={hp("2.5%")}
-                  color="#FF5E00"
-                />
-                  {dishTypes}
-                </View>)}
-    
-                    {rec.period.length > 0 && (
-                  <View style={[styles.iconText, {width: wp("60%")}]}>
-                    <Ionicons
-                      name={"calendar"}
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        <Text style={styles.section}>Private Recipes</Text>
+        <ScrollView style={{height: hp("33%")}}>
+         { this.state.myPrivateRecipes.map((rec) => (
+            <TouchableOpacity
+            key={rec.id}
+            style={styles.recipe}
+            onPress={() => this.goToRecipeDetails(rec)}>
+              <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+              {rec.img != "" ?(
+            <Image
+            source={{uri: rec.img}}
+            style={styles.foodImg}
+            />)
+            : 
+            <FontAwesome
+                name={"image"}
+                size={hp("15%")}
+                color="#D3D3D3"
+                marginRight={wp("3%")}
+              />}
+        
+                    <View>
+                      <Text style={styles.recipeName}>
+                        {rec.recipeName}
+                      </Text>
+                      
+                      <View style={{display:"flex", flexDirection:"row"}}>
+                        <View style={[styles.iconText, {marginRight: wp("5%")}]}>
+                          <Ionicons
+                            name={"people"}
+                            size={hp("2.5%")}
+                            color="#115740"
+                          />
+                          <Text style={styles.text}>{rec.servings}</Text>
+      
+                        </View>
+      
+                        <View style={styles.iconText}>
+                          <Ionicons
+                            name={"stopwatch"}
+                            size={hp("2.5%")}
+                            color="#115740"
+                          />
+                            <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+                        </View>
+                      </View>
+        
+                      {rec.category.length > 0 && (
+                    <View style={[styles.iconText, {width: wp("60%")}]}>
+                    <FontAwesome
+                      name={"cutlery"}
                       size={hp("2.5%")}
-                      color="#FF5E00"
+                      color="#115740"
                     />
-                      {periods}
+                      <Text style={styles.text}>{rec.category}</Text>
                     </View>)}
-                </View>
-              </View>
-        </TouchableOpacity>
-      ))
+                    </View>
+                  </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
     } else {
       recipes = 
       <View>
@@ -215,14 +234,14 @@ export default class Cookbook extends React.Component {
           <Ionicons
               name={"arrow-back"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.props.navigation.goBack()}
             />
           <Text style={styles.title}>My Cookbook</Text>
         </View>
-        <ScrollView>
+        <View>
             {recipes}
-        </ScrollView>
+        </View>
       </View>
     );
   }
@@ -244,19 +263,19 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: "Nunito_700Bold",
         fontSize: hp("3.5%"),
-        color:"#FF0000",
+        color:"#FF5E00",
         marginLeft: wp("10%")
     },
     recipe: {
-        backgroundColor: "white",
-        padding: hp("1.5%"),
-        width: wp("95%"),
-        borderRadius: 10,
-        borderColor: "#FF5E00",
-        borderWidth: 3,
-        marginTop: hp("3%"),
-        marginHorizontal: wp ("2.5%")
-      },
+      backgroundColor: "white",
+      padding: hp("1.5%"),
+      width: wp("90%"),
+      borderRadius: 10,
+      borderColor: "#115740",
+      borderWidth: 3,
+      marginTop: hp("1%"),
+      marginHorizontal: wp ("5%")
+    },
       recipeName: {
         fontSize: hp("2.5%"),
         fontFamily: "Nunito_700Bold",
@@ -300,6 +319,21 @@ const styles = StyleSheet.create({
         fontSize: hp("2%"),
         marginBottom: hp("5%"),
         marginRight: wp("5%"),
-        textDecorationLine: "underline"
+        textDecorationLine: "underline",
+        color: "#115740"
+    },
+    section: {
+      fontSize: hp("2.5%"),
+      fontFamily: "Nunito_700Bold",
+      marginLeft: hp("3%"),
+      width: wp("55%"),
+      color:"#FF5E00",
+      marginTop: hp("3%"),
+    },
+    foodImg: {
+      width: wp("30%"),
+      height: hp("15%"),
+      marginRight: wp("3%"),
+      borderRadius: 10,
     },
 });

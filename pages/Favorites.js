@@ -76,14 +76,11 @@ export default class Favorites extends React.Component {
 
   goToRecipeDetails(rec) {
     this.props.navigation.navigate("RecipeDetail", {
-      id: rec.id,
       recipeName: rec.recipeName,
-      foodImg: rec.foodImg,
+      img: rec.img,
       servings: rec.servings,
       timeNeeded: rec.timeNeeded,
-      dishTypes: rec.dishTypes,
-      period: rec.period,
-      culture: rec.culture,
+      category: rec.category,
       ingredients: rec.ingredients,
       instructions: rec.instructions
     })
@@ -99,41 +96,30 @@ export default class Favorites extends React.Component {
     size={hp("3%")}/>
 
 
-    let cultures;
-    let dishTypes;
-    let periods;
-    this.state.favRecipes.forEach((rec) => {
-      if(rec.culture.length > 1){
-        cultures = 
-        rec.culture.map((culture) => (
-          <Text style={styles.text}>{culture} |</Text>
-          ))
-      } else if(rec.culture.length == 1) {
-        cultures = 
-        <Text style={styles.text}>{rec.culture[0]}</Text>
-      }
+    // let dishTypes;
+    // let periods;
+    // this.state.favRecipes.forEach((rec) => {
   
+    //   if(rec.dishTypes.length > 1) {
+    //     dishTypes =
+    //     rec.dishTypes.map((type) => (
+    //       <Text style={styles.text}>{type} |</Text>
+    //     ))
+    //   } else if(rec.dishTypes.length == 1){
+    //     dishTypes =
+    //     <Text style={styles.text}>{rec.dishTypes[0]}</Text>
+    //   }
   
-      if(rec.dishTypes.length > 1) {
-        dishTypes =
-        rec.dishTypes.map((type) => (
-          <Text style={styles.text}>{type} |</Text>
-        ))
-      } else if(rec.dishTypes.length == 1){
-        dishTypes =
-        <Text style={styles.text}>{rec.dishTypes[0]}</Text>
-      }
-  
-      if(rec.period.length > 1) {
-        periods =
-        rec.period.map((period) => (
-          <Text style={styles.text}>{period} |</Text>
-        ))
-      } else if(rec.period.length == 1){
-        periods =
-        <Text style={styles.text}>{rec.period[0]}</Text>
-      }
-    })
+    //   if(rec.period.length > 1) {
+    //     periods =
+    //     rec.period.map((period) => (
+    //       <Text style={styles.text}>{period} |</Text>
+    //     ))
+    //   } else if(rec.period.length == 1){
+    //     periods =
+    //     <Text style={styles.text}>{rec.period[0]}</Text>
+    //   }
+    // })
 
     let recipes;
     if(this.state.favRecipes.length > 0) {
@@ -143,9 +129,9 @@ export default class Favorites extends React.Component {
         style={styles.recipe}
         onPress={() => this.goToRecipeDetails(rec)}>
           <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-              {rec.foodImg != "" && rec.foodImg !== undefined ?(
+              {rec.img != "" && rec.img !== undefined ?(
               <Image
-              source={{uri: rec.foodImg}}
+              source={{uri: rec.img}}
               style={styles.foodImg}
               />)
               : 
@@ -182,16 +168,16 @@ export default class Favorites extends React.Component {
                     </View>
                   </View>
     
-                  {rec.culture.length > 0 && (
+                  {rec.category && (
                 <View style={[styles.iconText, {width: wp("60%")}]}>
-                <Ionicons
-                  name={"flag"}
+                <FontAwesome
+                  name={"cutlery"}
                   size={hp("2.5%")}
                   color="#FF5E00"
                 />
-                  {cultures}
+                  <Text style={styles.text}>{rec.category}</Text>
                 </View>)}
-    
+{/*     
                 {rec.dishTypes.length > 0 && (
                 <View style={[styles.iconText, {width: wp("60%")}]}>
                 <FontAwesome
@@ -210,7 +196,7 @@ export default class Favorites extends React.Component {
                       color="#FF5E00"
                     />
                       {periods}
-                    </View>)}
+                    </View>)} */}
                 </View>
               </View>
         </TouchableOpacity>
@@ -246,7 +232,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
-    color: "#FF0000"
+    color: "#FF5E00"
   },
   iconText: {
     display: "flex",

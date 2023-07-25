@@ -13,13 +13,9 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
-import CheckBox from 'react-native-check-box'
 
-import {RECIPES_API_KEY} from '@env'
-
-import { collection, getDocs, addDoc } from "firebase/firestore"; 
+import { collection, getDocs } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -32,144 +28,82 @@ export default class Recipes extends React.Component {
 
 
     this.state = {
-      randomRecipes: [
+      recipes: [
         {
           id:0,
-          servings: 0,
           recipeName: "",
-          ingredients: [{
-            id: 0,
-            nameAndQuantity: "",
-            img: "",
-          }],
+          timeNeeded: 0,
+          servings: 0,
+          category: "",
+          ingredients: [],
           instructions: [],
-          culture: [],
-          time: 0,
-          foodImg: "",
-          dishTypes: [],
-          period: [],
+          img: "",
         },
       ],
 
-      allCultures:[],
-      allDishTypes:[],
-      allOccasions:[],
+      allCategories:["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
+      allServings:["<5 ppl", "5-10 ppl", ">10 ppl"],
+      allPrepTime:["<10 minutes", "10-30 minutes", ">30 minutes"],
+      allIngredientAmount:["<5 ingredients", "5-10 ingredients", ">10 ingredients"],
 
       filterScreenVisible: false,
       filters: [],
 
-      cultureCheckedInFilter:[],
-      dishTypeCheckedInFilter:[],
-      occasionCheckedInFilter:[],
+      categoryCheckedInFilter: [],
+      servingsCheckedInFilter: [],
+      prepTimeCheckedInFilter: [],
+      ingredientAmountCheckedInFilter: [],
+
+      selectedCategory: "",
+      selectedServings: "",
+      selectedPrepTime: "",
+      selectedIngredientAmount: ""
     };
   }
 
 
   async getRecipes() {
-    axios.get(`https://api.spoonacular.com/recipes/random?number=5&apiKey=${RECIPES_API_KEY}`)
-    .then((res) => {
-      let recipes = []
-      res.data.recipes.forEach((rec) => {
-        if(rec.analyzedInstructions !== null) {
-          recipes.push({
-            id: rec.id,
-            servings: rec.servings,
-            recipeName: rec.title,
-            ingredients: rec.extendedIngredients,
-            instructions: rec.analyzedInstructions[0].steps,
-            culture: rec.cuisines,
-            time: rec.readyInMinutes,
-            foodImg: rec.image,
-            dishTypes: rec.dishTypes,
-            period: rec.occasions
-          })
-        }
-      })
-      
-      this.setState({randomRecipes: recipes})
-    })
-    this.getFilterData()
-  }
+    let selectedCategoryFromHome = this.props.route.params?.category;
+    //console.log(selectedCategoryFromHome)
 
-  async getFilterData() {
-    let cultures = []
-    let dishTypes = []
-    let occasions = []
-
-    cultureChecked = []
-    dishTypeChecked = []
-    occasionChecked = []
-
-    // Push culture and dish type values from database into arrays + set checkbox to unchecked
-    let cultureCollection = collection(DATABASE, "cultures")
-    let cultureData = await getDocs(cultureCollection)
-    if (cultureData.size > 0) {
-      cultureData.forEach((doc) => {
-        cultures.push(doc.data().culture)
-        cultureChecked.push(false)
-      })
-    } 
-
-    let dishTypeCollection = collection(DATABASE, "dishTypes")
-    let dishTypeData = await getDocs(dishTypeCollection)
-    if (dishTypeData.size > 0) {
-      dishTypeData.forEach((doc) => {
-        dishTypes.push(doc.data().dishType)
-        dishTypeChecked.push(false)
-      })
-    } 
-
-    // Check if already data available in database --> occasions
-    let occasionCollection = collection(DATABASE, "occasions")
-    let occasionData = await getDocs(occasionCollection)
-    if (occasionData.size > 0) {
-      occasionData.forEach((doc) => {
-        occasions.push(doc.data().occasion)
-        occasionChecked.push(false)
-      })
-    } 
-
-    // add occasions in db if not already
-    for(let rec of this.state.randomRecipes) {
-      for(let occasion of rec.period) {
-        if(!occasions.includes(occasion)) {
-          occasions.push(occasion)
-          occasionChecked.push(false)
-          await addDoc((occasionCollection), {occasion: occasion})
-        }
+    let recipes = []
+    let recipeCollection = collection(DATABASE, "recipes")
+    let recipeData = await getDocs(recipeCollection)
+    if (recipeData.size > 0) {
+      if(selectedCategoryFromHome !== undefined) {
+        this.setState({selectedCategory: selectedCategoryFromHome})
+        this.addFilter()
+        recipeData.forEach((doc) => {
+          if(doc.data().public == true) {
+            if(doc.data().category === selectedCategoryFromHome) {
+              recipes.push(doc.data())
+            }
+          }
+        })
+        this.props.navigation.setParams({ category: undefined });
+      } else {
+        recipeData.forEach((doc) => {
+          if(doc.data().public == true) {
+            recipes.push(doc.data())
+          }
+        })
       }
-
     }
 
-    // order arrays alphabetically
-    cultures.sort()
-    dishTypes.sort()
-    occasions.sort()
-
-    // save data arrays in state
-    this.setState({allCultures: cultures})
-    this.setState({allDishTypes: dishTypes})
-    this.setState({allOccasions: occasions})
-
-    this.setState({cultureCheckedInFilter: cultureChecked})
-    this.setState({dishTypeCheckedInFilter: dishTypeChecked})
-    this.setState({occasionCheckedInFilter: occasionChecked})
-
-    //console.log(this.state.occasionCheckedInFilter)
+    //console.log(recipes)
+    this.setState({recipes: recipes})
   }
 
   goToRecipeDetails(rec) {
     this.props.navigation.navigate("RecipeDetail", {
       id: rec.id,
       recipeName: rec.recipeName,
-      foodImg: rec.foodImg,
+      img: rec.img,
       servings: rec.servings,
-      timeNeeded: rec.time,
-      dishTypes: rec.dishTypes,
-      period: rec.period,
-      culture: rec.culture,
+      timeNeeded: rec.timeNeeded,
       ingredients: rec.ingredients,
-      instructions: rec.instructions
+      instructions: rec.instructions,
+      category: rec.category
     })
   }
 
@@ -179,81 +113,199 @@ export default class Recipes extends React.Component {
 
   closeFilterScreen() { 
     // uncheck all filters
-    let uncheckCultureFilters = []
-    let uncheckDishTypeFilters = []
-    let uncheckOccasionFilters = []
-
-    this.state.cultureCheckedInFilter.forEach(() => {
-      uncheckCultureFilters.push(false)
-    })
-    this.state.dishTypeCheckedInFilter.forEach(() => {
-      uncheckDishTypeFilters.push(false)
-    })
-    this.state.occasionCheckedInFilter.forEach(() => {
-      uncheckOccasionFilters.push(false)
-    })
-
+    this.state.categoryCheckedInFilter.fill(false)
+    
+    this.state.servingsCheckedInFilter.fill(false)
+    
+    this.state.prepTimeCheckedInFilter.fill(false)
+    
+    this.state.ingredientAmountCheckedInFilter.fill(false)
+    
     this.setState({filterScreenVisible: false})
-    this.setState({cultureCheckedInFilter: uncheckCultureFilters})
-    this.setState({dishTypeCheckedInFilter: uncheckDishTypeFilters})
-    this.setState({occasionCheckedInFilter: uncheckOccasionFilters})
+    this.setState({categoryCheckedInFilter: this.state.categoryCheckedInFilter})
+    this.setState({servingsCheckedInFilter: this.state.servingsCheckedInFilter})
+    this.setState({prepTimeCheckedInFilter: this.state.prepTimeCheckedInFilter})
+    this.setState({ingredientAmountCheckedInFilter: this.state.ingredientAmountCheckedInFilter})
 
   }
 
   async applyFilter() {
-    this.setState({filterScreenVisible: false})
+    let filteredRecipes = []
+    let recipeCollection = collection(DATABASE, "recipes")
+    let recipeData = await getDocs(recipeCollection)
 
-    // set the filters to lower case => for api call
-    let filterTags = this.state.filters.toString().toLowerCase()
-    //console.log(filterTags)
-
-    axios.get(`https://api.spoonacular.com/recipes/random?number=3&tags=${filterTags}&apiKey=${RECIPES_API_KEY}`)
-    .then((res) => {
-      let filteredRecipes = []
-      res.data.recipes.forEach((rec) => {
-        if(rec.analyzedInstructions != null) {
-          filteredRecipes.push({
-            id: rec.id,
-            servings: rec.servings,
-            recipeName: rec.title,
-            ingredients: rec.extendedIngredients,
-            instructions: rec.analyzedInstructions[0].steps,
-            culture: rec.cuisines,
-            time: rec.readyInMinutes,
-            foodImg: rec.image,
-            dishTypes: rec.dishTypes,
-            period: rec.occasions
-          })
+    if(recipeData.size > 0) {
+      // Filter per category
+    if(this.state.selectedCategory != "") {
+      recipeData.forEach((doc) => {
+        if(doc.data().category === this.state.selectedCategory) {
+          if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+            filteredRecipes.push(doc.data())
+          }
         }
       })
-      this.setState({randomRecipes: filteredRecipes})
-    })
-
-    this.getFilterData()
-  }
-
-  addFilter(checkedArray, i, item){
-    checkedArray[i] = !checkedArray[i]
-    if(!this.state.filters.includes(item)){
-      this.state.filters.push(item)
-    } else {
-      this.state.filters = this.state.filters.filter(remove => remove != item)
     }
-    //console.log(this.state.filters)
-    this.setState({checkedArray: checkedArray})
-    this.setState({filters: this.state.filters})
+
+    // Filter per serving
+    if(this.state.selectedServings != "") {
+      if(this.state.selectedServings === "<5 ppl") {
+        recipeData.forEach((doc) => {
+          if(doc.data().servings < 5) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
+            }
+          } 
+        })
+      } else if (this.state.selectedServings === "5-10 ppl") {
+        recipeData.forEach((doc) => {
+          if(doc.data().servings >= 5 && doc.data().servings <= 10) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
+            }
+          } 
+        })
+      } else if (this.state.selectedServings === ">10 ppl") {
+        recipeData.forEach((doc) => {
+          if(doc.data().servings > 10) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
+            }
+          } 
+        })
+      }
+    }
+
+    // Filter per prep time
+    if(this.state.selectedPrepTime != "") {
+      if(this.state.selectedPrepTime === "<10 minutes") {
+        recipeData.forEach((doc) => {
+          if(doc.data().timeNeeded < 10) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
+            }
+          } 
+        })
+      } else if (this.state.selectedPrepTime === "10-30 minutes") {
+        recipeData.forEach((doc) => {
+          if(doc.data().timeNeeded >= 10 && doc.data().timeNeeded <= 30) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
+            }
+          } 
+        })
+      } else if (this.state.selectedPrepTime === ">30 minutes") {
+        recipeData.forEach((doc) => {
+          if(doc.data().timeNeeded > 30) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
+            }
+          } 
+        })
+      }
+    }
+
+    // Filter per number of ingredients
+    if(this.state.selectedIngredientAmount != "") {
+      if(this.state.selectedIngredientAmount === "<5 ingredients") {
+        recipeData.forEach((doc) => {
+          if(doc.data().ingredients.length < 5) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
+            }
+          } 
+        })
+      } else if (this.state.selectedIngredientAmount === "5-10 ingredients") {
+        recipeData.forEach((doc) => {
+          if(doc.data().ingredients.length >= 5 && doc.data().servings <= 10) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
+            }
+          } 
+        })
+      } else if (this.state.selectedIngredientAmount === ">10 ingredients") {
+        recipeData.forEach((doc) => {
+          if(doc.data().ingredients.length > 10) {
+            if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+              filteredRecipes.push(doc.data())
+            }
+          } 
+        })
+      }
+    }
+    }
+
+    this.setState({recipes: filteredRecipes})
+    this.closeFilterScreen()
   }
+
+  selectRadioBtn(checkedArray, i) {
+    // Check if an item is already selected
+    const hasSelectedElement = checkedArray.some((element) => element === true);
+  
+    // Set all radio buttons as not selected when selecting another
+    if (hasSelectedElement && !checkedArray[i]) {
+      checkedArray.fill(false);
+    }
+    checkedArray[i] = !checkedArray[i];
+
+    this.setState({ checkedArray: checkedArray }, () => this.addFilter());
+    
+  }
+
+  addFilter() {
+    //console.log(this.state.selectedCategory, this.state.selectedServings, this.state.selectedPrepTime, this.state.selectedIngredientAmount)
+    let filters = []
+
+    if(this.state.selectedCategory != "") {
+      filters.push(this.state.selectedCategory)
+    }
+    if(this.state.selectedServings != "") {
+      filters.push(this.state.selectedServings)
+    }
+    if(this.state.selectedPrepTime != "") {
+      filters.push(this.state.selectedPrepTime)
+    }
+    if(this.state.selectedIngredientAmount != "") {
+      filters.push(this.state.selectedIngredientAmount)
+    }
+  
+    this.setState({ filters: filters })
+
+  }
+  
 
   removeFilter(filter) {
     this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true});
     //console.log(`${filter} clicked`)
-    this.state.filters = this.state.filters.filter(remove => remove != filter)
-    if(this.state.filters.length == 0) {
+    let filtersLeft = this.state.filters.filter(remove => remove != filter)
+
+    // Check which filter removed --> uncheck radio btn + state: ""
+    if (filter === this.state.selectedCategory) {
+      this.state.categoryCheckedInFilter.fill(false)
+      this.setState({ selectedCategory: "" , categoryCheckedInFilter: this.state.categoryCheckedInFilter})
+    }
+
+    if (filter === this.state.selectedServings) {
+      this.state.servingsCheckedInFilter.fill(false)
+      this.setState({ selectedServings: "" , servingsCheckedInFilter: this.state.servingsCheckedInFilter})
+    }
+
+    if (filter === this.state.selectedPrepTime) {
+      this.state.servingsCheckedInFilter.fill(false)
+      this.setState({ selectedPrepTime: "" , prepTimeCheckedInFilter: this.state.prepTimeCheckedInFilter})
+    }
+
+    if (filter === this.state.selectedIngredientAmount) {
+      this.state.servingsCheckedInFilter.fill(false)
+      this.setState({ selectedIngredientAmount: "" , ingredientAmountCheckedInFilter: this.state.ingredientAmountCheckedInFilter});
+    }
+
+    if(filtersLeft.length == 0) {
       this.getRecipes()
     } else {
       this.applyFilter()
     }
-    this.setState({filters: this.state.filters})
+    this.setState({filters: filtersLeft})
   }
 
   async addRecipe() {
@@ -273,55 +325,83 @@ export default class Recipes extends React.Component {
   }
 
   render() {
-    let cultures;
-    let dishTypes;
-    let periods;
-    this.state.randomRecipes.forEach((rec) => {
-      if(rec.culture.length > 1){
-        cultures = 
-        rec.culture.map((culture) => (
-          <Text style={styles.text}>{culture} |</Text>
-          ))
-      } else if(rec.culture.length == 1) {
-        cultures = 
-        <Text style={styles.text}>{rec.culture[0]}</Text>
-      }
-  
-  
-      if(rec.dishTypes.length > 1) {
-        dishTypes =
-        rec.dishTypes.map((type) => (
-          <Text style={styles.text}>{type} |</Text>
-        ))
-      } else if(rec.dishTypes.length == 1){
-        dishTypes =
-        <Text style={styles.text}>{rec.dishTypes[0]}</Text>
-      }
-  
-      if(rec.period.length > 1) {
-        periods =
-        rec.period.map((period) => (
-          <Text style={styles.text}>{period} |</Text>
-        ))
-      } else if(rec.period.length == 1){
-        periods =
-        <Text style={styles.text}>{rec.period[0]}</Text>
-      }
-    })
+    let filterSelectionCategory = this.state.allCategories.map((category, index) => (
+      <View style={styles.iconText} key={index}>
+        <Ionicons
+          name={this.state.categoryCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          marginLeft={wp("3%")}
+          onPress={() => {
+            this.setState({selectedCategory: category})
+            this.selectRadioBtn(this.state.categoryCheckedInFilter, index)
+          }}
+        />
+        <Text style={styles.filterText}>{category}</Text>
+      </View>
+    ));
 
+    let filterSelectionServings = this.state.allServings.map((serving, index) => (
+      <View style={styles.iconText} key={index}>
+        <Ionicons
+          name={this.state.servingsCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          marginLeft={wp("3%")}
+          onPress={() => {
+            this.setState({selectedServings: serving})
+            this.selectRadioBtn(this.state.servingsCheckedInFilter, index)
+          }}
+        />
+        <Text style={styles.filterText}>{serving}</Text>
+      </View>
+    ));
+
+    let filterSelectionPrepTime = this.state.allPrepTime.map((time, index) => (
+      <View style={styles.iconText} key={index}>
+        <Ionicons
+          name={this.state.prepTimeCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          marginLeft={wp("3%")}
+          onPress={() => {
+            this.setState({selectedPrepTime: time})
+            this.selectRadioBtn(this.state.prepTimeCheckedInFilter, index)
+          }}
+        />
+        <Text style={styles.filterText}>{time}</Text>
+      </View>
+    ));
+
+    let filterSelectionIngredients = this.state.allIngredientAmount.map((ingredients, index) => (
+      <View style={styles.iconText} key={index}>
+        <Ionicons
+          name={this.state.ingredientAmountCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          marginLeft={wp("3%")}
+          onPress={() => {
+            this.setState({selectedIngredientAmount: ingredients})
+            this.selectRadioBtn(this.state.ingredientAmountCheckedInFilter, index)
+          }}
+        />
+        <Text style={styles.filterText}>{ingredients}</Text>
+      </View>
+    ));
+    
 
     let recipes;
 
-    if(this.state.randomRecipes.length > 0) {
-    recipes = this.state.randomRecipes.map((rec) => (
+    if(this.state.recipes.length > 0) {
+    recipes = this.state.recipes.map((rec) => (
       <TouchableOpacity
       key={rec.id}
       style={styles.recipe}
       onPress={() => this.goToRecipeDetails(rec)}>
         <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-            {rec.foodImg != "" ?(
+            {rec.img != "" ?(
             <Image
-            source={{uri: rec.foodImg}}
+            source={{uri: rec.img}}
             style={styles.foodImg}
             />)
             : 
@@ -342,7 +422,7 @@ export default class Recipes extends React.Component {
                     <Ionicons
                       name={"people"}
                       size={hp("2.5%")}
-                      color="#FF5E00"
+                      color="#115740"
                     />
                     <Text style={styles.text}>{rec.servings}</Text>
 
@@ -352,41 +432,21 @@ export default class Recipes extends React.Component {
                     <Ionicons
                       name={"stopwatch"}
                       size={hp("2.5%")}
-                      color="#FF5E00"
+                      color="#115740"
                     />
-                      <Text style={styles.text}>{rec.time} minutes</Text>
+                      <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
                   </View>
                 </View>
   
-                {rec.culture.length > 0 && (
-              <View style={[styles.iconText, {width: wp("60%")}]}>
-              <Ionicons
-                name={"flag"}
-                size={hp("2.5%")}
-                color="#FF5E00"
-              />
-                {cultures}
-              </View>)}
-  
-              {rec.dishTypes.length > 0 && (
+              {rec.category && (
               <View style={[styles.iconText, {width: wp("60%")}]}>
               <FontAwesome
                 name={"cutlery"}
                 size={hp("2.5%")}
-                color="#FF5E00"
+                color="#115740"
               />
-                {dishTypes}
+                <Text style={styles.text}>{rec.category}</Text>
               </View>)}
-  
-                  {rec.period.length > 0 && (
-                <View style={[styles.iconText, {width: wp("60%")}]}>
-                  <Ionicons
-                    name={"calendar"}
-                    size={hp("2.5%")}
-                    color="#FF5E00"
-                  />
-                    {periods}
-                  </View>)}
               </View>
             </View>
       </TouchableOpacity>
@@ -401,7 +461,7 @@ export default class Recipes extends React.Component {
         <Ionicons
               name={"close"}
               size={hp("3%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.removeFilter(filter)}
             />
       </View>
@@ -414,32 +474,26 @@ export default class Recipes extends React.Component {
           <Ionicons
               name={"add"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.addRecipe()}
             />
           <Text style={styles.pageTitle}>Recipes</Text>
           <Ionicons
               name={"filter"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               onPress={() => this.openFilterScreen()}
             />
         </View>
         {this.state.filters.length > 0 && 
         <ScrollView 
         horizontal={true}
-        style={{marginLeft: wp("5%"), marginVertical: hp("1%")}}>
+        style={{marginLeft: wp("5%")}}>
           {filters}
         </ScrollView>}
         <ScrollView ref='_scrollView'>
           {recipes}
         </ScrollView>
-
-        {this.state.randomRecipes.length > 0 &&
-          <TouchableOpacity style={styles.button}
-          onPress={() => this.removeFilter()}>
-              <Text style={styles.btnText}>Show more recipes</Text>
-        </TouchableOpacity>}
 
         {/* filterscreen */}
         <Modal
@@ -447,54 +501,41 @@ export default class Recipes extends React.Component {
           <Ionicons
               name={"close"}
               size={hp("5%")}
-              color="#FF5E00"
+              color="#115740"
               marginLeft={wp("85%")}
               marginTop={hp("3%")}
               onPress={() => this.closeFilterScreen()}
             />
               <View>
-                <Text style={styles.category}>Culture</Text>
-            <ScrollView style={styles.filterChoice}>
-                {this.state.allCultures.map((culture, index) => 
-                <View style={styles.iconText}>
-                  <CheckBox
-                  style={{marginLeft: wp("3%")}}
-                  isChecked = {this.state.cultureCheckedInFilter[index]}
-                  onClick= {() => this.addFilter(this.state.cultureCheckedInFilter, index, culture)}/>
-                  <Text style={styles.text}>{culture}</Text>
-                </View>)}
-              </ScrollView>
+                <Text style={styles.category}>Category</Text>
+                <View style={styles.filterChoice}>
+                  {filterSelectionCategory}
+                </View>
               </View>
   
               <View>
-                <Text style={styles.category}>Dish Type</Text>
-                <ScrollView style={styles.filterChoice}>
-                  {this.state.allDishTypes.map((type, index) => 
-                    <View style={styles.iconText}>
-                      <CheckBox
-                      style={{marginLeft: wp("3%")}}
-                      isChecked = {this.state.dishTypeCheckedInFilter[index]}
-                      onClick= {() => this.addFilter(this.state.dishTypeCheckedInFilter, index, type)}/>
-                      <Text style={styles.text}>{type}</Text>
-                    </View>)}
-                </ScrollView>
+                <Text style={styles.category}>Servings</Text>
+                <View style={styles.filterChoice}>
+                  {filterSelectionServings}
+                </View>
               </View>
   
               <View>
-                <Text style={styles.category}>Occasion</Text>
-                <ScrollView style={styles.filterChoice}>
-                  {this.state.allOccasions.map((occasion, index) => 
-                  <View style={styles.iconText}>
-                    <CheckBox
-                    style={{marginLeft: wp("3%")}}
-                    isChecked = {this.state.occasionCheckedInFilter[index]}
-                    onClick= {() => this.addFilter(this.state.occasionCheckedInFilter, index, occasion)}/>
-                    <Text style={styles.text}>{occasion}</Text>
-                  </View>)}
-                </ScrollView>
+                <Text style={styles.category}>Preperation time</Text>
+                <View style={styles.filterChoice}>
+                 {filterSelectionPrepTime}
+                </View>
               </View>
-            <TouchableOpacity style={styles.filterBtn} onPress={() => this.applyFilter()}>
-              <Text style={styles.filterText}>Apply filter(s)</Text>
+  
+              <View>
+                <Text style={styles.category}>Number of ingredients</Text>
+                <View style={styles.filterChoice}>
+                  {filterSelectionIngredients}
+                </View>
+              </View>
+
+            <TouchableOpacity style={styles.button} onPress={() => this.applyFilter()}>
+              <Text style={styles.btnText}>Apply filter(s)</Text>
             </TouchableOpacity>
             
         </Modal>
@@ -520,17 +561,17 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontFamily: "Nunito_700Bold",
     fontSize: hp("3.5%"),
-    color:"#FF0000"
+    color:"#FF5E00"
   },
   recipe: {
     backgroundColor: "white",
     padding: hp("1.5%"),
-    width: wp("95%"),
+    width: wp("90%"),
     borderRadius: 10,
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderWidth: 3,
     marginTop: hp("3%"),
-    marginHorizontal: wp ("2.5%")
+    marginHorizontal: wp ("5%")
   },
   foodImg: {
     width: wp("30%"),
@@ -556,16 +597,11 @@ const styles = StyleSheet.create({
     fontSize: hp("2%"),
     marginLeft: wp("2%")
   },
-  filterText: {
-    fontFamily:"Nunito_700Bold",
-    fontSize: hp("2.5%"),
-    color: "#ffffff",
-    textAlign: "center"
-  },
+
   filterBtn:{
     width: wp("50%"),
     padding: hp("1%"),
-    backgroundColor: "#FF5E00",
+    backgroundColor: "#115740",
     borderRadius: 10,
     marginHorizontal: wp("25%"),
     marginBottom: hp("3%"),
@@ -590,26 +626,32 @@ const styles = StyleSheet.create({
     marginTop: hp("20%")
   },
   button: {
-    width: wp("80%"),
+    width: wp("90%"),
     padding: hp("1%"),
-    backgroundColor: "#FF5E00",
+    backgroundColor: "#115740",
     borderRadius: 10,
-    marginTop: hp("10%"),
-    marginHorizontal: wp("10%")
+    marginHorizontal: wp("5%")
   },
-  btnText:{
-    fontFamily:"Nunito_400Regular",
+btnText:{
+    fontFamily:"Nunito_700Bold",
     fontSize: hp("2.5%"),
     color: "#ffffff",
     textAlign: "center"
-  },
+},
   filterChoice: {
+    display:"flex", 
+    flexDirection:"row", 
+    flexWrap:"wrap",
     marginBottom:hp("3%"),
-    height: hp("20%"),
     borderRadius: 10,
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderWidth: 3,
     width: wp("90%"),
     marginHorizontal: wp("5%"),
+    paddingVertical: hp("2%")
+  },
+  filterText: {
+      fontFamily:"Nunito_400Regular",
+      fontSize: hp("2%"),
   }
 });

@@ -14,11 +14,10 @@ import {
 } from "react-native-responsive-screen";
 import axios from "axios";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
-import { SvgUri } from 'react-native-svg';
 
-import {RECIPES_API_KEY} from '@env'
+import {HOLIDAYS_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
-import { collection, getDocs } from "firebase/firestore"; 
+import { collection, getDocs, doc, updateDoc } from "firebase/firestore"; 
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -27,103 +26,169 @@ export default class Home extends React.Component {
     this.state = {
       recipeOfTheDay: {
           id:0,
-          servings: 0,
           recipeName: "",
-          ingredients: [{
-            id: 0,
-            nameAndQuantity: "",
-            img: "",
-          }],
+          timeNeeded: 0,
+          servings: 0,
+          category: "",
+          ingredients: [],
           instructions: [],
-          culture: [],
-          time: 0,
-          foodImg: "",
-          dishTypes: [],
-          period: [],
+          img: "",
         },
 
-        countries:[{
-          country: "Pakistan",
-          countryCode: "pk"
-        }], 
+      holidays: [{
+        name: "Independence Day",
+        description: "Pakistan celebrates its Independence Day on August 14. This day marks Pakistan’s emergence as an independent state.",
+        locations: "All",
+        datetime: {
+            year: 2023,
+            month: 8,
+            day: 14
+        },
+        holidayType: "Public holiday"
+      }], 
 
-        didYouKnow: ""
+      didYouKnow: "",
+
+      categories: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"]
     };
 
+  }
+  
+  componentDidMount() {
     this.getRecipeOfTheDay()
-    this.getCountriesForHolidays()
+    //this.getHolidays()
     this.getDidYouKnow()
   }
 
-
   async getRecipeOfTheDay() {
-    let recipe;
-      axios.get(`https://api.spoonacular.com/recipes/random?number=1&apiKey=${RECIPES_API_KEY}`)
-      .then((res) => {
-        //console.log(res.data)
-        res.data.recipes.forEach((rec) => {
-          if(rec.analyzedInstructions != null) {
-            recipe = {
-              id: rec.id,
-              servings: rec.servings,
-              recipeName: rec.title,
-              ingredients: rec.extendedIngredients,
-              instructions: rec.analyzedInstructions[0].steps,
-              culture: rec.cuisines,
-              time: rec.readyInMinutes,
-              foodImg: rec.image,
-              dishTypes: rec.dishTypes,
-              period: rec.occasions,
-            }
-          }
-        })
-        
-        //console.log(recipe)
-        this.setState({recipeOfTheDay: recipe})
+    let recipes = []
+
+    let recipeCollection = collection(DATABASE, "recipes")
+    let recipeData = await getDocs(recipeCollection)
+    if (recipeData.size > 0) {
+      recipeData.forEach((doc) => {
+        recipes.push(doc.data())
       })
+    }
+    
+    let today = new Date().toDateString()
+    let recipeOfTheDay = {}
+    let docId;
+
+    let recipeOfTheDayCollection = collection(DATABASE, "recipeOfTheDay")
+    let recipeOfTheDayData = await getDocs(recipeOfTheDayCollection)
+    if (recipeOfTheDayData.size > 0) {
+      recipeOfTheDayData.forEach((doc) => {
+        docId = doc.id
+        recipeOfTheDay = doc.data()
+      })
+    }
+    // console.log(recipeOfTheDay)
+    // console.log(docId)
+
+     /*
+      - Check if the date saved in database matches the current date
+      - If the dates match, set the index stored in database
+      - If the dates don't match, get the next recipe in the list and edit the values in database
+      - If the index saved in database is the last recipe in the list, set index to 0
+    */
+
+    let recipeOfTheDayIndex;
+
+    if(today === recipeOfTheDay.today) {
+      recipeOfTheDayIndex = recipeOfTheDay.recipeOfTheDayIndex
+    } else {
+      if(recipeOfTheDay.recipeOfTheDayIndex == recipes.length-1) {
+        recipeOfTheDayIndex = 0
+      } else {
+        recipeOfTheDayIndex = recipeOfTheDay.recipeOfTheDayIndex+1
+      }
+      await updateDoc(doc(DATABASE, "recipeOfTheDay", docId), {
+        today: today,
+        recipeOfTheDayIndex: recipeOfTheDayIndex
+      })
+
+    }
+    this.setState({recipeOfTheDay: recipes[recipeOfTheDayIndex]})
   }
 
   goToRecipeDetails(rec) {
     this.props.navigation.navigate("RecipeDetail", {
       id: rec.id,
       recipeName: rec.recipeName,
-      foodImg: rec.foodImg,
+      img: rec.img,
       servings: rec.servings,
-      timeNeeded: rec.time,
-      dishTypes: rec.dishTypes,
-      period: rec.period,
-      culture: rec.culture,
+      timeNeeded: rec.timeNeeded,
       ingredients: rec.ingredients,
       instructions: rec.instructions,
+      category: rec.category
     })
   }
 
-  async getCountriesForHolidays() {
-    let countries = []
-    let countryCollection = collection(DATABASE, "countries")
-    let countryData = await getDocs(countryCollection)
-    if (countryData.size > 0) {
-      countryData.forEach((doc) => {
-        countries.push({
-          country: doc.data().country,
-          countryCode: doc.data().countryCode
-        })
-      })
-    } 
-    countries.sort((a, b) => a.country.localeCompare(b.country))
-    this.setState({countries: countries})
+  async getHolidays() {
+    let date = new Date()
+      let currentDay = date.getDate()
+      let currentMonth = date.getMonth()+1
+      let currentYear = date.getFullYear()
+
+      let holidaysThisMonth = []
+
+      axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${currentMonth}&year=${currentYear}`)
+          .then((res) => {
+              //console.log(res.data.response.holidays)
+              let holidays = res.data.response.holidays
+              holidays.forEach((holiday) => {
+                  if(holiday.date.datetime.day >= currentDay){
+                      holidaysThisMonth.push({
+                          name: holiday.name,
+                          description: holiday.description,
+                          locations: holiday.locations,
+                          datetime: holiday.date.datetime,
+                          holidayType: holiday.primary_type
+                      })
+                  }
+              });
+              holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
+              this.setState({holidays: holidaysThisMonth})
+            })
+
+      if(currentMonth != 12) {
+        for(let i = currentMonth+1; i <= 12; i++) {
+          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${i}&year=${currentYear}`)
+          .then((res) => {
+              //console.log(res.data.response.holidays)
+              let holidays = res.data.response.holidays
+              holidays.forEach((holiday) => {
+                      holidaysThisMonth.push({
+                          name: holiday.name,
+                          description: holiday.description,
+                          locations: holiday.locations,
+                          datetime: holiday.date.datetime,
+                          holidayType: holiday.primary_type
+                      })
+              });
+              holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
+              this.setState({holidays: holidaysThisMonth})
+            })
+      }
+      }
   }
 
-  async goToHolidaysPage(country) {
+  async goToHolidaysPage(name, description, locations, day, month, year, holidayType) {
     this.props.navigation.navigate("Holidays", {
-      country: country.country,
-      countryCode: country.countryCode
+      name: name,
+      description: description,
+      locations: locations,
+      day: day,
+      month: month,
+      year: year,
+      holidayType: holidayType
     })
   }
 
   async getDidYouKnow() {
     let didYouKnows = []
-    let didYouKnowCollection = collection(DATABASE, "didyouknows")
+    let didYouKnowCollection = collection(DATABASE, "didYouKnows")
     let didYouKnowData = await getDocs(didYouKnowCollection)
     if (didYouKnowData.size > 0) {
       didYouKnowData.forEach((doc) => {
@@ -131,71 +196,76 @@ export default class Home extends React.Component {
       })
     } 
     let randomFact = didYouKnows[Math.floor(Math.random() * didYouKnows.length)]
-    console.log(didYouKnows)
+    //console.log(didYouKnows)
 
     this.setState({didYouKnow: randomFact})
+  }
+
+  async goToRecipePage(category) {
+    this.props.navigation.navigate("Recipes", {category})
   }
 
 
   render() {
     let rec = this.state.recipeOfTheDay
 
-    let cultures;
-    if(rec.culture.length > 1){
-      cultures = 
-      rec.culture.map((culture) => (
-        <Text style={styles.text}>{culture} |</Text>
-        ))
-    } else if(rec.culture.length == 1) {
-      cultures = 
-      <Text style={styles.text}>{rec.culture[0]}</Text>
-    }
-
-
-    let dishTypes;
-    if(rec.dishTypes.length > 1) {
-      dishTypes =
-      rec.dishTypes.map((type) => (
-        <Text style={styles.text}>{type} |</Text>
-      ))
-    } else if(rec.dishTypes.length == 1){
-      dishTypes =
-      <Text style={styles.text}>{rec.dishTypes[0]}</Text>
-    }
-
-    let periods;
-    if(rec.period.length > 1) {
-      periods =
-      rec.period.map((period) => (
-        <Text style={styles.text}>{period} |</Text>
-      ))
-    } else if(rec.period.length == 1){
-      periods =
-      <Text style={styles.text}>{rec.period[0]}</Text>
-    }
-
-
-    let countries = this.state.countries.map((country) =>
-    <TouchableOpacity style={styles.country} onPress={() => this.goToHolidaysPage(country)}>
-        <SvgUri
-        uri={`https://flagcdn.com/${country.countryCode}.svg`}
-        width={wp("25%")}
-        height={hp("15%")}/>
-      <Text  style={styles.countryName}>{country.country}</Text>
+    let holidays = this.state.holidays.map((holiday, index) =>
+    <TouchableOpacity
+      key = {index}
+      style={[
+        styles.holidays,
+        index === this.state.holidays.length - 1 ? styles.lastHoliday : null,
+      ]}
+      onPress={() => this.goToHolidaysPage(holiday.name, holiday.description, holiday.locations, holiday.datetime.day, holiday.datetime.month, holiday.datetime.year, holiday.holidayType)}
+      >
+      <Text  style={styles.holidayName}>{holiday.name}</Text>
+      <Text  style={styles.holidayDate}>{holiday.datetime.day} - {holiday.datetime.month} - {holiday.datetime.year}</Text>
+      {holiday.holidayType &&
+                  <View style={styles.iconText}>
+                <Ionicons
+                    name={"information-circle"}
+                    size={hp("3%")}
+                    color="#115740"
+                />
+                <Text style={styles.text}>{holiday.holidayType}</Text>
+              </View>}
     </TouchableOpacity>
     )
+
+    let categoryImg = {
+      'Bread': require('../assets/recipeApp/bread.jpeg'),
+      'Curry': require('../assets/recipeApp/curry.jpeg'),
+      'Dessert': require('../assets/recipeApp/dessert.jpeg'),
+      'Rice': require('../assets/recipeApp/rice.jpg'),
+      'Snack': require('../assets/recipeApp/snack.jpeg'),
+      'Sweets': require('../assets/recipeApp/sweets.jpeg'),
+    }
+
+    let categories = this.state.categories.map((category, index) => 
+      <TouchableOpacity
+        key={index}
+        style={[
+          styles.holidays,
+          index === this.state.categories.length - 1 ? styles.lastHoliday : null,
+        ]}
+        onPress={() => this.goToRecipePage(category)}
+      >
+        <Image source={categoryImg[category]} style={styles.categoryImage} />
+        <Text style={styles.holidayName}>{category}</Text>
+      </TouchableOpacity>
+    );
     
 
-
+  
     return (
       <ScrollView>
         <View style={styles.container}>
           <ImageBackground
-          source={require("../assets/recipeApp/food.jpg")}
+          source={require("../assets/recipeApp/bgHome.jpeg")}
           resizeMode="cover"
           style={styles.backgroundImage}>
+              <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Did you know that ...</Text>
             <View style={styles.didYouKnow}>
-              <Text  style={styles.countryName}>Did you know that ...</Text>
               <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
             </View>
           </ImageBackground>
@@ -203,9 +273,9 @@ export default class Home extends React.Component {
             <Text style={styles.sectionTitle}>Recipe of the day</Text>
             <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
               <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-              {rec.foodImg != "" ?(
+              {rec.img != "" ?(
               <Image
-              source={{uri: rec.foodImg}}
+              source={{uri: rec.img}}
               style={styles.foodImg}
               />)
               : 
@@ -226,7 +296,7 @@ export default class Home extends React.Component {
                       <Ionicons
                         name={"people"}
                         size={hp("2.5%")}
-                        color="#FF5E00"
+                        color="#115740"
                       />
                       <Text style={styles.text}>{rec.servings}</Text>
   
@@ -236,50 +306,36 @@ export default class Home extends React.Component {
                       <Ionicons
                         name={"stopwatch"}
                         size={hp("2.5%")}
-                        color="#FF5E00"
+                        color="#115740"
                       />
-                        <Text style={styles.text}>{rec.time} minutes</Text>
+                        <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
                     </View>
                   </View>
-  
-                  {rec.culture.length > 0 && (
-                <View style={[styles.iconText, {width: wp("60%")}]}>
-                <Ionicons
-                  name={"flag"}
-                  size={hp("2.5%")}
-                  color="#FF5E00"
-                />
-                  {cultures}
-                </View>)}
-    
-                {rec.dishTypes.length > 0 && (
+                  {rec.category && (
                 <View style={[styles.iconText, {width: wp("60%")}]}>
                 <FontAwesome
                   name={"cutlery"}
                   size={hp("2.5%")}
-                  color="#FF5E00"
+                  color="#115740"
                 />
-                  {dishTypes}
+                  <Text style={styles.text}>{rec.category}</Text>
                 </View>)}
-    
-                    {rec.period.length > 0 && (
-                  <View style={[styles.iconText, {width: wp("60%")}]}>
-                    <Ionicons
-                      name={"calendar"}
-                      size={hp("2.5%")}
-                      color="#FF5E00"
-                    />
-                      {periods}
-                    </View>)}
                 </View>
               </View>
             </TouchableOpacity>
           </View>
   
           <View>
-          <Text style={styles.sectionTitle}>Upcoming holidays</Text>
+          <Text style={styles.sectionTitle}>Recipes per category</Text>
           <ScrollView horizontal>
-           {countries}
+           {categories}
+          </ScrollView>
+          </View>
+  
+          <View>
+          <Text style={styles.sectionTitle}>Upcoming holidays in Pakistan</Text>
+          <ScrollView horizontal>
+           {holidays}
           </ScrollView>
           </View>
       </View>
@@ -291,27 +347,24 @@ export default class Home extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: hp("3%"),
-    paddingTop: hp("3%"),
-    backgroundColor:"#FFFFFF" 
-    
+    backgroundColor:"#FFFFFF",
   },
   sectionTitle: {
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
-    marginLeft: wp("3%"),
-    marginTop: hp("3%"),
-    color: "#FF0000"
+    marginLeft: wp("5%"),
+    marginTop: hp("1%"),
+    color: "#FF5E00"
   },
   recipe: {
     backgroundColor: "white",
     padding: hp("1.5%"),
-    width: wp("95%"),
+    width: wp("90%"),
     borderRadius: 10,
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderWidth: 3,
-    marginTop: hp("3%"),
-    marginHorizontal: wp ("2.5%")
+    marginTop: hp("1%"),
+    marginHorizontal: wp ("5%")
   },
   foodImg: {
     width: wp("30%"),
@@ -337,20 +390,25 @@ const styles = StyleSheet.create({
     fontSize: hp("2%"),
     marginLeft: wp("2%")
   },
-  country: {
+  holidays: {
     backgroundColor: "white",
     padding: hp("1.5%"),
-    width: wp("35%"),
     borderRadius: 10,
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderWidth: 3,
-    marginTop: hp("3%"),
+    marginTop: hp("1%"),
     marginLeft: wp ("5%")
   },
-  countryName: {
+  holidayName: {
     textAlign: "center",
     fontFamily: "Nunito_700Bold",
     fontSize: hp("2.5%"),
+  },
+  holidayDate: {
+    fontFamily: "Nunito_700Bold",
+    fontSize: hp("2%"),
+    textAlign: "center",
+    marginVertical: hp("1.5%"),
   },
   fact:{
     fontFamily:"Nunito_400Regular",
@@ -358,18 +416,26 @@ const styles = StyleSheet.create({
     fontSize: hp("2%"),
   },
   didYouKnow: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     padding: hp("1.5%"),
-    width: wp("60%"),
+    width: wp("90%"),
     borderRadius: 10,
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderWidth: 3,
-    marginHorizontal: wp ("20%"),
+    marginHorizontal: wp ("5%"),
+    marginTop: hp("1%")
   },
   backgroundImage: {
-    justifyContent: "center",
-    alignItems: "center",
     width: wp("100%"),
     height: hp("30%"),
+    marginTop: hp("3%")
   },
+  categoryImage: {
+    width: wp("30%"),
+    height: hp("10%"),
+    borderRadius: 10,
+  },
+  lastHoliday: {
+    marginRight: wp("5%")
+  }
 });
