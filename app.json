@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Desi Delights",
-    "slug": "DesiDelights",
+    "slug": "desi-delights",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/recipeApp/icon.png",
@@ -31,7 +31,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "e88e5503-9ee4-483e-8fd3-fc00b263cd61"
+        "projectId": "45ffb7a6-85f9-4486-925e-4e3d854190df"
       }
     }
   }
