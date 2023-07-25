@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   Alert,
   Image,
-  ToastAndroid
+  ToastAndroid,
+  ActivityIndicator
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -54,6 +55,8 @@ export default class AddRecipe extends React.Component {
         selectedCategory: "",
         selectedVisibility: "",
         imgUrl: "",
+
+        isLoading: false
     }
     this.getUser()
   }
@@ -255,11 +258,11 @@ selectCategory(i, category) {
     visible = false
   }
 
-  //console.log(visible)
-
+  this.setState({isLoading: true})
+  setTimeout(() => {
     let recipeCollection = collection(DATABASE, "recipes")
   
-    await addDoc((recipeCollection), {
+     addDoc((recipeCollection), {
      userId: this.state.userId,
      id: uuid.v4(),
      servings: this.state.servings,
@@ -273,6 +276,7 @@ selectCategory(i, category) {
    })
 
    this.goToRecipeDetails()
+  }, 100)    
   }
 
   goToRecipeDetails() {
@@ -478,6 +482,8 @@ selectCategory(i, category) {
 
             <Text style={styles.text}>Add photo</Text>
             {img}
+
+            {this.state.isLoading && <ActivityIndicator size="large"/>}
 
           <TouchableOpacity style={[styles.button, {marginTop: hp("5%")}]} onPress={() => this.checkInputFields()}>
             <Text style={styles.btnText}>Add recipe</Text>

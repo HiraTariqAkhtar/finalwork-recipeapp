@@ -7,7 +7,8 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  ToastAndroid
+  ToastAndroid,
+  ActivityIndicator
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -35,7 +36,8 @@ export default class AddToMap extends React.Component {
         typeSelectedInRadioBtn: [],
         selectedType: "",
         latitude: 0,
-        longitude: 0
+        longitude: 0,
+        isLoading: false
     }
 
   }
@@ -76,11 +78,13 @@ export default class AddToMap extends React.Component {
   }
 
   async addToMap() {
+    this.setState({isLoading: true})
+    setTimeout(() => {
       let collectionName = this.state.selectedType.toLowerCase() + "s"
       //console.log(collectionName)
       let mapCollection = collection(DATABASE, collectionName)
 
-      await addDoc((mapCollection), {
+       addDoc((mapCollection), {
           id: uuid.v4(),
           title: this.state.placeName,
           description: `${this.state.streetNum}, ${this.state.postalCode} ${this.state.city}`,
@@ -92,6 +96,7 @@ export default class AddToMap extends React.Component {
 
       ToastAndroid.show(`${this.state.placeName} succesfully added`, ToastAndroid.SHORT)
       this.props.navigation.navigate("Map", { refresh: Date.now() });
+    }, 100)
   }
 
   goBack() {
@@ -138,6 +143,7 @@ export default class AddToMap extends React.Component {
                 />
               <Text style={styles.title}>Add to map</Text>
           </View>
+          {this.state.isLoading && <ActivityIndicator size="large"/>}
 
           <ScrollView style={{marginTop: hp("3%")}}>
             <Text style={styles.text}>Place name *</Text>
