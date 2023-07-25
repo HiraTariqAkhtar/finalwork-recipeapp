@@ -13,9 +13,11 @@ import {
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"; 
-import {DATABASE, AUTH} from "../firebaseConfig"
+import {DATABASE, AUTH, STORAGE} from "../firebaseConfig"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { deleteUser } from "firebase/auth"; 
+import { ref, deleteObject } from 'firebase/storage';
+
 
 export default class Settings extends React.Component {
   constructor(props) {
@@ -57,7 +59,7 @@ export default class Settings extends React.Component {
         if(doc.data().userId === userId) {
             myRecipes.push({
               id: doc.id,
-              recipe: doc.data().recipe
+              foodImg: doc.data().img
             })
         }
     })
@@ -83,13 +85,21 @@ export default class Settings extends React.Component {
 
    if(this.state.myRecipes.length > 0) {
     for(let recipe of this.state.myRecipes) {
+      // Remove recipes made by user from db
       await deleteDoc(doc(DATABASE, "recipes", recipe.id))
+
+      // Remove recipe image from storage
+      const foodImg = ref(STORAGE, recipe.foodImg)
+      await deleteObject(foodImg)
     }
    }
+   // Remove profile pic from storage
+   const profilePic = ref(STORAGE, `profilePicUser${this.state.userId}`)
+    await deleteObject(profilePic)
 
    await deleteUser(AUTH.currentUser)
 
-    // Remove everything from storage --> navigate back to profile page
+    // Remove everything from AsyncStorage --> navigate back to profile page
     await AsyncStorage.removeItem("userLoggedIn")
     await AsyncStorage.removeItem("firstName")
     await AsyncStorage.removeItem("lastName")
