@@ -109,8 +109,9 @@ export default class Profile extends React.Component {
     if(!result.canceled) {
       const storageRef = ref(STORAGE, `profilePicUser${this.state.userId}`)  // The name you want to give to uploaded img
 
-      const img = await fetch(result.assets[0].uri)
-      const blobFile = await img.blob()
+      const uri = result.assets[0].uri
+      const blobFile = await this.uriToBlob(uri);
+      console.log(blobFile);
 
       await uploadBytes(storageRef, blobFile)
 
@@ -118,6 +119,24 @@ export default class Profile extends React.Component {
     } else {
       ToastAndroid.show("No photo selected", ToastAndroid.SHORT)
     }
+  }
+
+  uriToBlob(uri) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+
+      xhr.onerror = function () {
+        reject(console.log('uriToBlob failed'));
+      };
+
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    })
   }
 
   async uploadPic() {

@@ -171,8 +171,8 @@ selectCategory(i, category) {
     if(!result.canceled) {
       const storageRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)  // The name you want to give to uploaded img
 
-      const img = await fetch(result.assets[0].uri)
-      const blobFile = await img.blob()
+      const img = result.assets[0].uri
+      const blobFile = await this.uriToBlob(img)
 
       await uploadBytes(storageRef, blobFile)
 
@@ -180,6 +180,24 @@ selectCategory(i, category) {
     } else {
       ToastAndroid.show("No photo selected", ToastAndroid.SHORT)
     }
+  }
+
+  uriToBlob(uri) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+
+      xhr.onerror = function () {
+        reject(console.log('uriToBlob failed'));
+      };
+
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    })
   }
 
   async uploadPic() {
