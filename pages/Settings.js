@@ -80,23 +80,27 @@ export default class Settings extends React.Component {
   }
 
   async deleteProfile() {
-    
-    await deleteDoc(doc(DATABASE, "users", this.state.userId));
-
    if(this.state.myRecipes.length > 0) {
     for(let recipe of this.state.myRecipes) {
       // Remove recipes made by user from db
       await deleteDoc(doc(DATABASE, "recipes", recipe.id))
 
-      // Remove recipe image from storage
-      const foodImg = ref(STORAGE, recipe.foodImg)
-      await deleteObject(foodImg)
+      //Remove recipe image from storage
+      if(recipe.foodImg !== "") {
+        const foodImg = ref(STORAGE, recipe.foodImg)
+        await deleteObject(foodImg)
+      }
     }
    }
    // Remove profile pic from storage
    const profilePic = ref(STORAGE, `profilePicUser${this.state.userId}`)
-    await deleteObject(profilePic)
+   try{
+     await deleteObject(profilePic)
+   } catch(e) {
+     console.log(e)
+   }
 
+   await deleteDoc(doc(DATABASE, "users", this.state.userId));
    await deleteUser(AUTH.currentUser)
 
     // Remove everything from AsyncStorage --> navigate back to profile page
