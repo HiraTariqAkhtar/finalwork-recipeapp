@@ -67,7 +67,9 @@ export default class Home extends React.Component {
     let recipeData = await getDocs(recipeCollection)
     if (recipeData.size > 0) {
       recipeData.forEach((doc) => {
-        recipes.push(doc.data())
+        if(doc.data().public == true) {
+          recipes.push(doc.data())
+        }
       })
     }
     
