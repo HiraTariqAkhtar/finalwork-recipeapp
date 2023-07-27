@@ -11,7 +11,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Ionicons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -29,7 +29,8 @@ export default class RecipeDetails extends React.Component {
         timeNeeded: this.props.route.params.timeNeeded,
         category: this.props.route.params.category,
         ingredients: this.props.route.params.ingredients,
-        instructions: this.props.route.params.instructions
+        instructions: this.props.route.params.instructions,
+        chef: this.props.route.params.chef
       },
       fav: false,
     }
@@ -189,6 +190,17 @@ export default class RecipeDetails extends React.Component {
               marginRight={wp("1%")}
             />
                 <Text style={styles.text}>{rec.category}</Text>
+            </View>)}
+
+            {rec.chef && (
+            <View style={styles.iconText}>
+            <MaterialCommunityIcons
+              name={"chef-hat"}
+              size={hp("4%")}
+              color="#115740"
+              marginRight={wp("1%")}
+            />
+                <Text style={styles.text}>{rec.chef}</Text>
             </View>)}
 
                 <View>

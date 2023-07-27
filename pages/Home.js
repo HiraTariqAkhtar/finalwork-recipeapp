@@ -13,7 +13,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import axios from "axios";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Ionicons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import {HOLIDAYS_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
@@ -33,6 +33,7 @@ export default class Home extends React.Component {
           ingredients: [],
           instructions: [],
           img: "",
+          chef: ""
         },
 
       holidays: [{
@@ -123,7 +124,8 @@ export default class Home extends React.Component {
       timeNeeded: rec.timeNeeded,
       ingredients: rec.ingredients,
       instructions: rec.instructions,
-      category: rec.category
+      category: rec.category,
+      chef: rec.chef
     })
   }
 
@@ -321,6 +323,15 @@ export default class Home extends React.Component {
                   color="#115740"
                 />
                   <Text style={styles.text}>{rec.category}</Text>
+                </View>)}
+                  {rec.chef && (
+                <View style={[styles.iconText, {width: wp("60%")}]}>
+                <MaterialCommunityIcons
+                  name={"chef-hat"}
+                  size={hp("2.5%")}
+                  color="#115740"
+                />
+                  <Text style={styles.text}>{rec.chef}</Text>
                 </View>)}
                 </View>
               </View>
