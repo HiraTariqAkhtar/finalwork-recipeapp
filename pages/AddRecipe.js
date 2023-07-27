@@ -444,7 +444,7 @@ selectCategory(i, category) {
             {this.state.ingredients.map((ingredient, index) => (
                 <View style={{display:"flex", flexDirection:"row"}} key={index}>
                 <TextInput
-                style={[styles.placeholder, {width:wp("20%")}]}
+                style={[styles.placeholder, {width:wp("20%"), marginRight:wp("0%")}]}
                 placeholder="quantity"
                 value={ingredient.quantity}
                 onChangeText={(txt) => this.addIngredient(txt, index, "quantity")}/>
@@ -476,7 +476,7 @@ selectCategory(i, category) {
                 <View style={[styles.iconText, {display:"flex", flexDirection:"row"}]} key={index}>
                 <Text style={[styles.text, {marginLeft: wp("7%")}]}>{index + 1}</Text>
                 <TextInput
-                style={[styles.placeholder, {width:wp("65%")}]}
+                style={[styles.placeholder, {width:wp("60%")}]}
                 placeholder="To do"
                 value={instruction.step}
                 onChangeText={(txt) => this.addInstruction(txt, index)}/>
