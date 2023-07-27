@@ -46,6 +46,7 @@ export default class Recipes extends React.Component {
       allServings:["<5 ppl", "5-10 ppl", ">10 ppl"],
       allPrepTime:["<10 minutes", "10-30 minutes", ">30 minutes"],
       allIngredientAmount:["<5 ingredients", "5-10 ingredients", ">10 ingredients"],
+      allChefs:[],
 
       filterScreenVisible: false,
       filters: [],
@@ -54,11 +55,13 @@ export default class Recipes extends React.Component {
       servingsCheckedInFilter: [],
       prepTimeCheckedInFilter: [],
       ingredientAmountCheckedInFilter: [],
+      chefCheckedInFilter: [],
 
       selectedCategory: "",
       selectedServings: "",
       selectedPrepTime: "",
-      selectedIngredientAmount: ""
+      selectedIngredientAmount: "",
+      selectedChef: "",
     };
   }
 
@@ -68,6 +71,7 @@ export default class Recipes extends React.Component {
     //console.log(selectedCategoryFromHome)
 
     let recipes = []
+    let chefs = []
     let recipeCollection = collection(DATABASE, "recipes")
     let recipeData = await getDocs(recipeCollection)
     if (recipeData.size > 0) {
@@ -86,13 +90,17 @@ export default class Recipes extends React.Component {
         recipeData.forEach((doc) => {
           if(doc.data().public == true) {
             recipes.push(doc.data())
+            if(!chefs.includes(doc.data().chef) && doc.data().chef !== undefined) {
+              chefs.push(doc.data().chef)
+            }
           }
         })
       }
     }
 
     //console.log(recipes)
-    this.setState({recipes: recipes})
+    //console.log(chefs)
+    this.setState({recipes: recipes, allChefs: chefs})
   }
 
   goToRecipeDetails(rec) {
@@ -234,6 +242,16 @@ export default class Recipes extends React.Component {
         })
       }
     }
+
+    if(this.state.selectedChef != "") {
+      recipeData.forEach((doc) => {
+        if(doc.data().chef === this.state.selectedChef) {
+          if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+            filteredRecipes.push(doc.data())
+          }
+        }
+      })
+    }
     }
 
     this.setState({recipes: filteredRecipes})
@@ -270,6 +288,9 @@ export default class Recipes extends React.Component {
     if(this.state.selectedIngredientAmount != "") {
       filters.push(this.state.selectedIngredientAmount)
     }
+    if(this.state.selectedChef != "") {
+      filters.push(this.state.selectedChef)
+    }
   
     this.setState({ filters: filters })
 
@@ -300,6 +321,11 @@ export default class Recipes extends React.Component {
     if (filter === this.state.selectedIngredientAmount) {
       this.state.servingsCheckedInFilter.fill(false)
       this.setState({ selectedIngredientAmount: "" , ingredientAmountCheckedInFilter: this.state.ingredientAmountCheckedInFilter});
+    }
+
+    if (filter === this.state.selectedChef) {
+      this.state.chefCheckedInFilter.fill(false)
+      this.setState({ selectedChef: "" , chefCheckedInFilter: this.state.chefCheckedInFilter});
     }
 
     if(filtersLeft.length == 0) {
@@ -388,6 +414,22 @@ export default class Recipes extends React.Component {
           }}
         />
         <Text style={styles.filterText}>{ingredients}</Text>
+      </View>
+    ));
+
+    let filterSelectionChefs = this.state.allChefs.map((chef, index) => (
+      <View style={styles.iconText} key={index}>
+        <Ionicons
+          name={this.state.chefCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          marginLeft={wp("3%")}
+          onPress={() => {
+            this.setState({selectedChef: chef})
+            this.selectRadioBtn(this.state.chefCheckedInFilter, index)
+          }}
+        />
+        <Text style={styles.filterText}>{chef}</Text>
       </View>
     ));
     
@@ -518,37 +560,46 @@ export default class Recipes extends React.Component {
               marginTop={hp("3%")}
               onPress={() => this.closeFilterScreen()}
             />
-              <View>
-                <Text style={styles.category}>Category</Text>
-                <View style={styles.filterChoice}>
-                  {filterSelectionCategory}
+              <ScrollView>
+                <View>
+                  <Text style={styles.category}>Chef</Text>
+                  <View style={styles.filterChoice}>
+                    {filterSelectionChefs}
+                  </View>
                 </View>
-              </View>
   
-              <View>
-                <Text style={styles.category}>Servings</Text>
-                <View style={styles.filterChoice}>
-                  {filterSelectionServings}
+                <View>
+                  <Text style={styles.category}>Category</Text>
+                  <View style={styles.filterChoice}>
+                    {filterSelectionCategory}
+                  </View>
                 </View>
-              </View>
+    
+                <View>
+                  <Text style={styles.category}>Servings</Text>
+                  <View style={styles.filterChoice}>
+                    {filterSelectionServings}
+                  </View>
+                </View>
+    
+                <View>
+                  <Text style={styles.category}>Preperation time</Text>
+                  <View style={styles.filterChoice}>
+                   {filterSelectionPrepTime}
+                  </View>
+                </View>
+    
+                <View>
+                  <Text style={styles.category}>Number of ingredients</Text>
+                  <View style={styles.filterChoice}>
+                    {filterSelectionIngredients}
+                  </View>
+                </View>
   
-              <View>
-                <Text style={styles.category}>Preperation time</Text>
-                <View style={styles.filterChoice}>
-                 {filterSelectionPrepTime}
-                </View>
-              </View>
-  
-              <View>
-                <Text style={styles.category}>Number of ingredients</Text>
-                <View style={styles.filterChoice}>
-                  {filterSelectionIngredients}
-                </View>
-              </View>
-
-            <TouchableOpacity style={styles.button} onPress={() => this.applyFilter()}>
-              <Text style={styles.btnText}>Apply filter(s)</Text>
-            </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, {marginBottom: hp("5%")}]} onPress={() => this.applyFilter()}>
+                <Text style={styles.btnText}>Apply filter(s)</Text>
+              </TouchableOpacity>
+              </ScrollView>
             
         </Modal>
       </View>
