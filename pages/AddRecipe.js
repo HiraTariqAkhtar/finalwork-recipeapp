@@ -290,7 +290,8 @@ selectCategory(i, category) {
      category: this.state.selectedCategory,
      timeNeeded: this.state.time,
      img: this.state.imgUrl,
-     public: visible
+     public: visible,
+     chef: "A registered user"
    })
 
    this.goToRecipeDetails()
