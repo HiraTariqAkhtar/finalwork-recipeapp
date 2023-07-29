@@ -19,7 +19,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 
 
-import { collection, getDocs, addDoc } from "firebase/firestore"; 
+import { collection, getDocs, addDoc, updateDoc, doc } from "firebase/firestore"; 
 import {DATABASE, STORAGE } from "../firebaseConfig"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from 'expo-image-picker'
@@ -331,28 +331,41 @@ selectCategory(i, category) {
 
   this.setState({isLoading: true})
   setTimeout(() => {
-    let recipeCollection = collection(DATABASE, "recipes")
-  
-     addDoc((recipeCollection), {
-     userId: this.state.userId,
-     id: uuid.v4(),
-     servings: this.state.servings,
-     recipeName: this.state.recipeName,
-     ingredients: this.state.ingredients,
-     instructions: this.state.instructions,
-     category: this.state.selectedCategory,
-     timeNeeded: this.state.time,
-     img: this.state.imgUrl,
-     public: visible,
-     chef: "A registered user"
-   })
-
+    if(this.props.route.params?.recipe !== undefined) {
+      let rec = this.props.route.params.recipe
+      updateDoc(doc(DATABASE, "recipes", rec.recipeId),{
+        servings: this.state.servings,
+        recipeName: this.state.recipeName,
+        ingredients: this.state.ingredients,
+        instructions: this.state.instructions,
+        category: this.state.selectedCategory,
+        timeNeeded: this.state.time,
+        img: this.state.imgUrl,
+        public: visible,
+      })
+      
+    } else {
+      let recipeCollection = collection(DATABASE, "recipes")
+      addDoc((recipeCollection), {
+        userId: this.state.userId,
+        id: uuid.v4(),
+        servings: this.state.servings,
+        recipeName: this.state.recipeName,
+        ingredients: this.state.ingredients,
+        instructions: this.state.instructions,
+        category: this.state.selectedCategory,
+        timeNeeded: this.state.time,
+        img: this.state.imgUrl,
+        public: visible,
+        chef: "A registered user"
+      })
+    }
    this.goToRecipeDetails()
   }, 100)    
   }
 
   goToRecipeDetails() {
-    this.props.navigation.navigate("Cookbook")
+    this.props.navigation.navigate("Cookbook", { refresh: Date.now() })
 
     this.setState({
         recipeName: "",
