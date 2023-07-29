@@ -40,7 +40,7 @@ export default class RecipeDetails extends React.Component {
         recipeId:""
       },
       fav: false,
-      recipeByCurrentUser: false
+      recipeByCurrentUser: false,
     }
       this.getRecipeDetails()
   }
@@ -186,7 +186,9 @@ export default class RecipeDetails extends React.Component {
   }
 
   async editRecipe() {
-
+    this.props.navigation.navigate("AddRecipe", {
+      recipe: this.state.recipe
+    })
   }
 
   async deleterecipe() {
@@ -290,7 +292,7 @@ export default class RecipeDetails extends React.Component {
           {fav}
         </View>
           <ScrollView style={styles.recipe}> 
-          <View style= {{display: "flex", flexDirection: "row", justifyContent: "center"}}>
+          <View style= {{display: "flex", flexDirection: "row", justifyContent: "center", marginBottom: hp("2%")}}>
             {editRecipe}
             {deleterecipe}
           </View>
