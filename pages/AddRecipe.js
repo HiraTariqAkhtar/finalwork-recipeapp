@@ -31,7 +31,59 @@ import uuid from 'react-native-uuid';
 export default class AddRecipe extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
+    if(this.props.route.params?.recipe !== undefined) {
+      let rec = this.props.route.params.recipe
+      let visibilitySelected;
+      let categorySelected;
+      let visibility;
+
+      if(rec.visible) {
+        visibilitySelected = [true, false]
+        visibility = "Public"
+      } else {
+        visibilitySelected = [false, true]
+        visibility = "Private"
+      }
+
+      if(rec.category === "Bread") {
+        categorySelected = [true, false, false, false, false, false]
+      } else if(rec.category === "Curry") {
+        categorySelected = [false, true, false, false, false, false]
+      } else if(rec.category === "Dessert") {
+        categorySelected = [false, false, true, false, false, false]
+      } else if(rec.category === "Rice") {
+        categorySelected = [false, false, false, true, false, false]
+      } else if(rec.category === "Snack") {
+        categorySelected = [false, false, false, false, true, false]
+      } else if(rec.category === "Sweets") {
+        categorySelected = [false, false, false, false, false, true]
+      }
+
+
+      this.state = {
+        userId: 0,
+
+        servings: rec.servings.toString(),
+        recipeName: rec.recipeName,
+        ingredients: rec.ingredients,
+        instructions: rec.instructions,
+        time: rec.timeNeeded.toString(),
+
+        categorySelection: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
+        visibilitySelection: ["Public", "Private"],
+
+        categoryCheckedInFilter: categorySelected,
+        visibilityCheckedInFilter: visibilitySelected,
+
+
+        selectedCategory: rec.category,
+        selectedVisibility: visibility,
+        imgUrl: rec.img,
+
+        isLoading: false
+      }
+    } else {
+      this.state = {
         userId: 0,
 
         servings: 0,
@@ -57,6 +109,7 @@ export default class AddRecipe extends React.Component {
         imgUrl: "",
 
         isLoading: false
+    }
     }
     this.getUser()
   }
