@@ -29,8 +29,16 @@ export default class Cookbook extends React.Component {
         myPublicRecipes:[],
         myPrivateRecipes:[]
       }
+  }
 
+  componentDidMount() {
+    this.getUser()
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.route.params?.refresh !== prevProps.route.params?.refresh) {
       this.getUser()
+    }
   }
 
   async getUser() {
@@ -75,14 +83,18 @@ export default class Cookbook extends React.Component {
   }
 
   goToRecipeDetails(rec) {
+    //console.log(rec)
     this.props.navigation.navigate("RecipeDetail", {
+      id: rec.id,
       recipeName: rec.recipeName,
       servings: rec.servings,
       timeNeeded: rec.timeNeeded,
       category: rec.category,
       ingredients: rec.ingredients,
       instructions: rec.instructions,
-      img: rec.img
+      img: rec.img,
+      userId: rec.userId,
+      visible: rec.public
     })
   }
 
