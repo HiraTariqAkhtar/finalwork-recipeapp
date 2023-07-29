@@ -296,6 +296,7 @@ export default class Home extends React.Component {
                   </Text>
   
                   <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+                    {rec.servings != "" && (
                     <View style={[styles.iconText, {marginRight: wp("5%")}]}>
                       <Ionicons
                         name={"people"}
@@ -304,8 +305,9 @@ export default class Home extends React.Component {
                       />
                       <Text style={styles.text}>{rec.servings}</Text>
   
-                    </View>
+                    </View>)}
   
+                    {rec.timeNeeded != "" && (
                     <View style={styles.iconText}>
                       <Ionicons
                         name={"stopwatch"}
@@ -313,7 +315,7 @@ export default class Home extends React.Component {
                         color="#115740"
                       />
                         <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
-                    </View>
+                    </View>)}
                   </View>
                   {rec.category && (
                 <View style={[styles.iconText, {width: wp("60%")}]}>
@@ -389,7 +391,7 @@ const styles = StyleSheet.create({
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
-    width: wp("55%")
+    width: wp("50%")
   },
   iconText: {
     display: "flex",

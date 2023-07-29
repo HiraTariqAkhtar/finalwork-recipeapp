@@ -162,6 +162,7 @@ export default class RecipeDetails extends React.Component {
             />}
           
           <View style={styles.info}>
+          {rec.servings && (
           <View style={styles.iconText}>
             <Ionicons
               name={"people"}
@@ -169,8 +170,9 @@ export default class RecipeDetails extends React.Component {
               color="#115740"
             />
               <Text style={styles.text}>{rec.servings}</Text>
-          </View>
+          </View>)}
 
+            {rec.timeNeeded && (
             <View style={styles.iconText}>
               <Ionicons
               name={"stopwatch"}
@@ -178,7 +180,7 @@ export default class RecipeDetails extends React.Component {
               color="#115740"
             />
               <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
-            </View>
+            </View>)}
           </View>
 
             {rec.category && (
