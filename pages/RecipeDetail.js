@@ -17,7 +17,7 @@ import { Ionicons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icon
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {DATABASE} from "../firebaseConfig"
-import { collection, getDocs, updateDoc, doc } from "firebase/firestore"; 
+import { collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore"; 
 
 
 export default class RecipeDetails extends React.Component {
@@ -183,12 +183,32 @@ export default class RecipeDetails extends React.Component {
         }
       ]
       );
-    
+  }
+
+  async editRecipe() {
+
+  }
+
+  async deleterecipe() {
+    Alert.alert(
+      "Delete recipe",
+      "Are you sure you want to delete this recipe?",
+      [
+        { text: "No", style:"cancel" },
+        { text: "Yes", onPress: () => {
+          deleteDoc(doc(DATABASE, "recipes", this.state.recipe.recipeId))
+          this.props.navigation.navigate("Cookbook", { refresh: Date.now() })
+        }
+        }
+      ]
+      );
   }
 
   render() {
     let rec = this.state.recipe
     let fav;
+    let editRecipe;
+    let deleterecipe;
 
     if(this.state.recipeByCurrentUser) {
       if(rec.visible) {
@@ -219,6 +239,23 @@ export default class RecipeDetails extends React.Component {
         <Text style= {styles.btnText}> Make recipe public</Text>
         </TouchableOpacity>
       }
+
+      editRecipe = 
+      <FontAwesome
+          name={"edit"}
+          size={hp("4%")}
+          color="#115740"
+          marginRight={wp("10%")}
+          onPress={() => this.editRecipe()}
+        />
+
+      deleterecipe = 
+      <Ionicons
+          name={"trash-outline"}
+          size={hp("4%")}
+          color="#ff0000"
+          onPress={() => this.deleterecipe()}
+        />
     } else {
       if(this.state.fav) {
         fav=
@@ -253,6 +290,10 @@ export default class RecipeDetails extends React.Component {
           {fav}
         </View>
           <ScrollView style={styles.recipe}> 
+          <View style= {{display: "flex", flexDirection: "row", justifyContent: "center"}}>
+            {editRecipe}
+            {deleterecipe}
+          </View>
         {rec.img != "" && rec.img !== undefined ?(
           <Image
           source={{uri: rec.img}}
