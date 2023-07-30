@@ -72,8 +72,9 @@ export default class Home extends React.Component {
         img: "",
         newsURL: "",
         src: ""
-      }
+      },
 
+      activeSlide: 0
 
     };
 
@@ -465,13 +466,24 @@ export default class Home extends React.Component {
     return (
       <ScrollView>
         <View style={styles.container}>
-          <Carousel
-          data = {header}
-          renderItem= {renderItem}
-          sliderWidth={wp("100%")}
-          itemWidth={wp("100%")}
-          marginTop = {hp("3%")}
-          />
+          <View>
+            <Carousel
+            data = {header}
+            renderItem= {renderItem}
+            sliderWidth={wp("100%")}
+            itemWidth={wp("100%")}
+            layout="tinder"
+            onSnapToItem={(index) => this.setState({ activeSlide: index }) }
+            />
+            <Pagination
+              dotsLength={header.length}
+              activeDotIndex={this.state.activeSlide}
+              containerStyle={styles.slider}
+              dotStyle={styles.sliderDots}
+              inactiveDotOpacity={0.4}
+              inactiveDotScale={0.6}
+            />
+          </View>
           <View>
             <Text style={styles.sectionTitle}>Recipe of the day</Text>
             <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
@@ -651,5 +663,23 @@ const styles = StyleSheet.create({
   },
   lastHoliday: {
     marginRight: wp("5%")
+  },
+  slider: {
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    height: hp("3%"),
+    width: wp("90%"),
+    marginHorizontal: wp ("5%"),
+    paddingVertical: 0,
+    borderRadius: 10,
+    borderColor: "#115740",
+    borderWidth: 3,
+    marginTop:hp("-3%")
+  },
+  sliderDots: {
+    width: wp ("10%"),
+    height: hp ("1%"),
+    borderRadius: 10,
+    marginHorizontal: 8,
+    backgroundColor: "#ff0000"
   }
 });
