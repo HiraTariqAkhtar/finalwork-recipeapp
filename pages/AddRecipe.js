@@ -80,7 +80,8 @@ export default class AddRecipe extends React.Component {
         selectedVisibility: visibility,
         imgUrl: rec.img,
 
-        isLoading: false
+        isLoading: false,
+        imgLoading: false
       }
     } else {
       this.state = {
@@ -108,7 +109,8 @@ export default class AddRecipe extends React.Component {
         selectedVisibility: "",
         imgUrl: "",
 
-        isLoading: false
+        isLoading: false,
+        imgLoading: false
     }
     }
     this.getUser()
@@ -254,19 +256,15 @@ selectCategory(i, category) {
   }
 
   async uploadPic() {
-    const imgRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)
-    await getDownloadURL(imgRef)
-    .then((img) => {
-      this.setState({imgUrl: img})
-    })
-  }
-
-  async editPhoto() {
+    this.setState({imgLoading: true})
+    setTimeout(async() => {
       const imgRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)
-      await deleteObject(imgRef)
-      .then(() => {
-        this.selectPhoto()
+      await getDownloadURL(imgRef)
+      .then((img) => {
+        this.setState({imgUrl: img})
       })
+      this.setState({imgLoading: false})
+    }, 100)  
   }
 
   confirmDelete() {
@@ -281,12 +279,17 @@ selectCategory(i, category) {
   }
 
   async removePhoto() {
-    const imgRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)
-    await deleteObject(imgRef)
-    .then(() => {
-      this.setState({imgUrl: ""})
-      ToastAndroid.show("Picture removed", ToastAndroid.SHORT)
-    })
+    this.setState({imgLoading: true})
+    setTimeout(async() => {
+      const imgRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)
+      await deleteObject(imgRef)
+      .then(() => {
+        this.setState({imgUrl: ""})
+        ToastAndroid.show("Picture removed", ToastAndroid.SHORT)
+      })
+      this.setState({imgLoading: false})
+    }, 100)  
+    
   }
 
    checkInputFields() {
@@ -360,11 +363,11 @@ selectCategory(i, category) {
         chef: "A registered user"
       })
     }
-   this.goToRecipeDetails()
+   this.goToCookbook()
   }, 100)    
   }
 
-  goToRecipeDetails() {
+  goToCookbook() {
     this.props.navigation.navigate("Cookbook", { refresh: Date.now() })
 
     this.setState({
@@ -450,7 +453,7 @@ selectCategory(i, category) {
         	<Image
         	src= {this.state.imgUrl}
         	style={styles.foodImg}/>
-          <TouchableOpacity style={[styles.photoOptions, {marginTop: hp("-13%"), backgroundColor: "#115740"}]} onPress={() => this.editPhoto()}>
+          <TouchableOpacity style={[styles.photoOptions, {marginTop: hp("-13%"), backgroundColor: "#115740"}]} onPress={() => this.selectPhoto()}>
             <Text style={styles.btnText}>Select another photo</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.photoOptions, {marginTop: hp("1%"), backgroundColor: "#FF0000"}]} onPress={() => this.confirmDelete()}>
@@ -566,6 +569,7 @@ selectCategory(i, category) {
             ))}
 
             <Text style={styles.text}>Add photo</Text>
+            {this.state.imgLoading && <ActivityIndicator size="large"/>}
             {img}
 
             {this.state.isLoading && <ActivityIndicator size="large"/>}
