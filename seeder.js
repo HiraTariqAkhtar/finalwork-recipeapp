@@ -28,6 +28,70 @@ const didYouKnows = [
         didYouKnow: "Pakistan has the world’s largest deep sea port",
         id: 6
     },
+    {
+        didYouKnow: "Pakistan produces over 500 varieties of mangoes",
+        id: 7
+    },
+    {
+        didYouKnow: "Pakistani dishes are known for having aromatic and sometimes spicy flavours",
+        id: 8
+    },
+    {
+        didYouKnow: "Pakistan was the first Muslim nation to elect a female prime minister",
+        id: 9
+    },
+    {
+        didYouKnow: "Pakistan is one of the few nations in the world that has nuclear warheads",
+        id: 10
+    },
+    {
+        didYouKnow: "There are six UNESCO World heritage sites in Pakistan",
+        id: 11
+    },
+    {
+        didYouKnow: "Field hockey is the national sport of Pakistan",
+        id: 12
+    },
+    {
+        didYouKnow: "The Markhor is the national animal of Pakistan",
+        id: 13
+    },
+    {
+        didYouKnow: "Pakistan is one of the largest producers of cotton in the world",
+        id: 14
+    },
+    {
+        didYouKnow: "Pakistan literally translates to “Land of The Pure”",
+        id: 15
+    },
+    {
+        didYouKnow: "There are over 80 languages spoken in Pakistan",
+        id: 16
+    },
+    {
+        didYouKnow: "Pakistan has the second largest salt mine in the world",
+        id: 17
+    },
+    {
+        didYouKnow: "The most popular sport in Pakistan is cricket",
+        id: 18
+    },
+    {
+        didYouKnow: "Pakistan’s military is the strongest in the islamic world",
+        id: 19
+    },
+    {
+        didYouKnow: "Pakistani military has 0% suicide rate",
+        id: 20
+    },
+    {
+        didYouKnow: "Pakistan’s national anthem, the qaumi taranah, is entirely written in Persian",
+        id: 21
+    },
+    {
+        didYouKnow: "Pakistan Air Force is the 10th strongest air force in the world",
+        id: 22
+    },
 ];
 
 // Recipes
