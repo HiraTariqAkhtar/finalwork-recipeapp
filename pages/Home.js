@@ -50,7 +50,12 @@ export default class Home extends React.Component {
 
       didYouKnow: "",
 
-      categories: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"]
+      categories: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
+
+      dateTime: {
+        date: "",
+        time: ""
+      },
     };
 
   }
@@ -59,6 +64,23 @@ export default class Home extends React.Component {
     this.getRecipeOfTheDay()
     //this.getHolidays()
     this.getDidYouKnow()
+    this.getTimeAndDate()
+  }
+
+  async getTimeAndDate() {
+    setInterval(()=>{
+      let date = new Date().toLocaleDateString("en-GB", {timeZone: "Asia/Karachi"})
+      let time = new Date().toLocaleTimeString("en-GB", {timeZone: "Asia/Karachi"})
+      let timeWithoutSeconds = time.slice(0, -3)
+      //console.log(timeWithoutSeconds)
+      
+      let dateAndTime = {
+        date: date,
+        time: timeWithoutSeconds
+      }
+      //console.log(dateAndTime)
+      this.setState({dateTime: dateAndTime})
+    }, 1000)
   }
 
   async getRecipeOfTheDay() {
@@ -213,8 +235,6 @@ export default class Home extends React.Component {
 
 
   render() {
-    let rec = this.state.recipeOfTheDay
-
     let holidays = this.state.holidays.map((holiday, index) =>
     <TouchableOpacity
       key = {index}
@@ -260,21 +280,41 @@ export default class Home extends React.Component {
         <Text style={styles.holidayName}>{category}</Text>
       </TouchableOpacity>
     );
+
+    let didYouKnow = 
+    <ImageBackground
+    source={require("../assets/recipeApp/bgHome.jpeg")}
+    resizeMode="cover"
+    style={styles.backgroundImage}>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Did you know that ...</Text>
+      <View style={styles.didYouKnow}>
+        <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
+      </View>
+    </ImageBackground>
+
+    let timeDate = 
+    <ImageBackground
+    source={require("../assets/recipeApp/bgHome.jpeg")}
+    resizeMode="cover"
+    style={styles.backgroundImage}>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Time and date in Pakistan</Text>
+      <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly"}}>
+      	<View style={[styles.didYouKnow, {width: wp("40%")}]}>
+      	  <Text  style={styles.holidayName}>{this.state.dateTime.date}</Text>
+      	</View>
+      	<View style={[styles.didYouKnow, {width: wp("40%")}]}>
+      	  <Text  style={styles.holidayName}>{this.state.dateTime.time}</Text>
+      	</View>
+      </View>
+    </ImageBackground>
     
 
-  
+    let rec = this.state.recipeOfTheDay
     return (
       <ScrollView>
         <View style={styles.container}>
-          <ImageBackground
-          source={require("../assets/recipeApp/bgHome.jpeg")}
-          resizeMode="cover"
-          style={styles.backgroundImage}>
-              <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Did you know that ...</Text>
-            <View style={styles.didYouKnow}>
-              <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
-            </View>
-          </ImageBackground>
+          {didYouKnow}
+          {timeDate}
           <View>
             <Text style={styles.sectionTitle}>Recipe of the day</Text>
             <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
@@ -444,7 +484,7 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     width: wp("100%"),
-    height: hp("30%"),
+    height: hp("35%"),
     marginTop: hp("3%")
   },
   categoryImage: {
