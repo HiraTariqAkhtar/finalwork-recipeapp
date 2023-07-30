@@ -15,7 +15,7 @@ import {
 import axios from "axios";
 import { Ionicons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 
-import {HOLIDAYS_API_KEY} from '@env'
+import {HOLIDAYS_API_KEY, WEATHER_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore"; 
 
@@ -56,6 +56,14 @@ export default class Home extends React.Component {
         date: "",
         time: ""
       },
+
+      weather: {
+        temp: "",
+        tempMax: "",
+        tempMin: "",
+        feelsLike: ""
+      },
+
     };
 
   }
@@ -65,6 +73,7 @@ export default class Home extends React.Component {
     //this.getHolidays()
     this.getDidYouKnow()
     this.getTimeAndDate()
+    this.getIslamabadWeather()
   }
 
   async getTimeAndDate() {
@@ -82,6 +91,31 @@ export default class Home extends React.Component {
       this.setState({dateTime: dateAndTime})
     }, 1000)
   }
+
+  async getIslamabadWeather() {
+    axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=33.7215&lon=73.0433&appid=${WEATHER_API_KEY}`)
+      .then((res) => {
+        //console.log(res.data.main)
+        let current_temp = this.kelvinToCelsius(res.data.main.temp)
+        let temp_max = this.kelvinToCelsius(res.data.main.temp_max)
+        let temp_min = this.kelvinToCelsius(res.data.main.temp_min)
+        let feels_like = this.kelvinToCelsius(res.data.main.feels_like)
+
+        let weatherInIslamabad = {
+          temp:`${current_temp} °C`,
+          tempMax: `${temp_max} °C`,
+          tempMin: `${temp_min} °C`,
+          feelsLike: `${feels_like} °C`
+        }
+
+        this.setState({weather: weatherInIslamabad})
+      })
+  }
+
+  kelvinToCelsius(kelvin) {
+    return Math.round(kelvin-273.15)
+  }
+
 
   async getRecipeOfTheDay() {
     let recipes = []
@@ -307,6 +341,35 @@ export default class Home extends React.Component {
       	</View>
       </View>
     </ImageBackground>
+
+    let weather = 
+    <ImageBackground
+    source={require("../assets/recipeApp/bgHome.jpeg")}
+    resizeMode="cover"
+    style={[styles.backgroundImage]}>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Weather in Islamabad</Text>
+      <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly", alignContent:"center"}}>
+        <View style={[styles.didYouKnow, {width: wp("40%")}]}>
+          <Text  style={styles.holidayName}>Temperature</Text>
+          <Text  style={styles.holidayName}>{this.state.weather.temp}</Text>
+        </View>
+          <View style={[styles.didYouKnow, {width: wp("40%")}]}>
+              <Text  style={styles.holidayName}>Feels like</Text>
+              <Text  style={styles.holidayName}>{this.state.weather.feelsLike}</Text>
+            </View>
+      </View>
+        <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly", alignContent:"center"}}>
+          <View style={[styles.didYouKnow, {width: wp("40%")}]}>
+              <Text  style={styles.holidayName}>Maximum</Text>
+              <Text  style={styles.holidayName}>{this.state.weather.tempMax}</Text>
+            </View>
+          <View style={[styles.didYouKnow, {width: wp("40%")}]}>
+          <Text  style={styles.holidayName}>Minimum</Text>
+              <Text  style={styles.holidayName}>{this.state.weather.tempMin}</Text>
+            </View>
+        </View>
+    </ImageBackground>
+
     
 
     let rec = this.state.recipeOfTheDay
@@ -315,6 +378,7 @@ export default class Home extends React.Component {
         <View style={styles.container}>
           {didYouKnow}
           {timeDate}
+          {weather}
           <View>
             <Text style={styles.sectionTitle}>Recipe of the day</Text>
             <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
