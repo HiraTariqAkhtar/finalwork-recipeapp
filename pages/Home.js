@@ -347,7 +347,7 @@ export default class Home extends React.Component {
     <ImageBackground
     source={require("../assets/recipeApp/bgHome.jpeg")}
     resizeMode="cover"
-    style={styles.backgroundImage}>
+    style={[styles.backgroundImage, {height: hp("30%")}]}>
       <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Did you know that ...</Text>
       <View style={styles.didYouKnow}>
         <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
@@ -356,9 +356,9 @@ export default class Home extends React.Component {
 
     let timeDate = 
     <ImageBackground
-    source={require("../assets/recipeApp/bgHome.jpeg")}
+    source={require("../assets/recipeApp/bgTime.jpg")}
     resizeMode="cover"
-    style={styles.backgroundImage}>
+    style={[styles.backgroundImage, {height: hp("25%")}]}>
       <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Time and date in Pakistan</Text>
       <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly"}}>
       	<View style={[styles.didYouKnow, {width: wp("40%")}]}>
@@ -372,9 +372,9 @@ export default class Home extends React.Component {
 
     let weather = 
     <ImageBackground
-    source={require("../assets/recipeApp/bgHome.jpeg")}
+    source={require("../assets/recipeApp/bgWeather.jpg")}
     resizeMode="cover"
-    style={[styles.backgroundImage]}>
+    style={[styles.backgroundImage, {height: hp("35%")}]}>
       <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Weather in Islamabad</Text>
       <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly", alignContent:"center"}}>
         <View style={[styles.didYouKnow, {width: wp("40%")}]}>
@@ -626,7 +626,6 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     width: wp("100%"),
-    height: hp("35%"),
     marginTop: hp("3%")
   },
   categoryImage: {
