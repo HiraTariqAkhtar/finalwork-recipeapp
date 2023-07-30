@@ -6,7 +6,8 @@ import {
   Text,
   Image,
   ScrollView,
-  ImageBackground
+  ImageBackground,
+  Linking
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -15,7 +16,7 @@ import {
 import axios from "axios";
 import { Ionicons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 
-import {HOLIDAYS_API_KEY, WEATHER_API_KEY} from '@env'
+import {HOLIDAYS_API_KEY, WEATHER_API_KEY, NEWS_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore"; 
 
@@ -64,6 +65,14 @@ export default class Home extends React.Component {
         feelsLike: ""
       },
 
+      newsHeadline: {
+        title: "",
+        img: "",
+        newsURL: "",
+        src: ""
+      }
+
+
     };
 
   }
@@ -74,6 +83,7 @@ export default class Home extends React.Component {
     this.getDidYouKnow()
     this.getTimeAndDate()
     this.getIslamabadWeather()
+    this.getNewsHeadline()
   }
 
   async getTimeAndDate() {
@@ -115,6 +125,24 @@ export default class Home extends React.Component {
   kelvinToCelsius(kelvin) {
     return Math.round(kelvin-273.15)
   }
+
+  async getNewsHeadline() {
+    axios.get(`https://gnews.io/api/v4/top-headlines?country=pk&category=nation&apikey=${NEWS_API_KEY}`)
+    .then((res) => {
+      console.log(res.data.articles[0])
+      let article = res.data.articles[0]
+      let news = {
+        title: article.title,
+        img: article.image,
+        newsURL: article.url,
+        src: article.source.name
+      }
+
+      //console.log(news)
+      this.setState({newsHeadline: news})
+    })
+  }
+
 
 
   async getRecipeOfTheDay() {
@@ -370,6 +398,55 @@ export default class Home extends React.Component {
         </View>
     </ImageBackground>
 
+    let news;
+    if(this.state.newsHeadline.title !== "") {
+      news = 
+      <ImageBackground
+      source={require("../assets/recipeApp/bgHome.jpeg")}
+      resizeMode="cover"
+      style={styles.backgroundImage}>
+        <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>News headline</Text>
+        <TouchableOpacity style={styles.didYouKnow} onPress={() => Linking.openURL(this.state.newsHeadline.newsURL)}>
+            <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+            {this.state.newsHeadline.img != "" ?(
+                  <Image
+                  source={{uri: this.state.newsHeadline.img}}
+                  style={styles.foodImg}
+                  />)
+                  : 
+                  <FontAwesome
+                      name={"image"}
+                      size={hp("15%")}
+                      color="#D3D3D3"
+                      marginRight={wp("3%")}
+                    />}
+                      <View>
+                        <Text style={[styles.holidayName, {width: wp("45%"), textAlign: "left"}]}>
+                          {this.state.newsHeadline.title}
+                        </Text>
+                        
+                      <View style={[styles.iconText, {width: wp("60%")}]}>
+                      <Ionicons
+                        name={"newspaper"}
+                        size={hp("2.5%")}
+                        color="#115740"
+                      />
+                        <Text style={styles.text}>Click here to read article</Text>
+                      </View>
+                        
+                      <View style={[styles.iconText, {width: wp("60%")}]}>
+                      <MaterialCommunityIcons
+                        name={"web"}
+                        size={hp("2.5%")}
+                        color="#115740"
+                      />
+                        <Text style={styles.text}>{this.state.newsHeadline.src}</Text>
+                      </View>
+                      </View>
+                    </View>
+        </TouchableOpacity>
+      </ImageBackground>
+    }
     
 
     let rec = this.state.recipeOfTheDay
@@ -379,6 +456,7 @@ export default class Home extends React.Component {
           {didYouKnow}
           {timeDate}
           {weather}
+          {news}
           <View>
             <Text style={styles.sectionTitle}>Recipe of the day</Text>
             <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
