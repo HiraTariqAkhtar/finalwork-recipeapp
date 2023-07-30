@@ -20,6 +20,8 @@ import {HOLIDAYS_API_KEY, WEATHER_API_KEY, NEWS_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore"; 
 
+import Carousel, { Pagination } from 'react-native-snap-carousel'
+
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -347,7 +349,7 @@ export default class Home extends React.Component {
     <ImageBackground
     source={require("../assets/recipeApp/bgHome.jpeg")}
     resizeMode="cover"
-    style={[styles.backgroundImage, {height: hp("30%")}]}>
+    style={styles.backgroundImage}>
       <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Did you know that ...</Text>
       <View style={styles.didYouKnow}>
         <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
@@ -358,7 +360,7 @@ export default class Home extends React.Component {
     <ImageBackground
     source={require("../assets/recipeApp/bgTime.jpg")}
     resizeMode="cover"
-    style={[styles.backgroundImage, {height: hp("25%")}]}>
+    style={styles.backgroundImage}>
       <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Time and date in Pakistan</Text>
       <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly"}}>
       	<View style={[styles.didYouKnow, {width: wp("40%")}]}>
@@ -374,7 +376,7 @@ export default class Home extends React.Component {
     <ImageBackground
     source={require("../assets/recipeApp/bgWeather.jpg")}
     resizeMode="cover"
-    style={[styles.backgroundImage, {height: hp("35%")}]}>
+    style={styles.backgroundImage}>
       <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Weather in Islamabad</Text>
       <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly", alignContent:"center"}}>
         <View style={[styles.didYouKnow, {width: wp("40%")}]}>
@@ -399,12 +401,12 @@ export default class Home extends React.Component {
     </ImageBackground>
 
     let news;
-    if(this.state.newsHeadline.title !== "") {
+    this.state.newsHeadline.title !== "" &&(
       news = 
       <ImageBackground
       source={require("../assets/recipeApp/bgNews.png")}
       resizeMode="cover"
-      style={[styles.backgroundImage, {height: hp("40%")}]}>
+      style={styles.backgroundImage}>
         <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>News headline</Text>
         <TouchableOpacity style={styles.didYouKnow} onPress={() => Linking.openURL(this.state.newsHeadline.newsURL)}>
             <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
@@ -446,17 +448,30 @@ export default class Home extends React.Component {
                     </View>
         </TouchableOpacity>
       </ImageBackground>
-    }
+    )
+
+    const header = [
+      {content: (didYouKnow)},
+      {content: (timeDate)},
+      {content: (weather)},
+      {content: (news)},
+    ]
+    const renderItem = ({ item }) => (
+      <View>{item.content}</View>
+    );
     
 
     let rec = this.state.recipeOfTheDay
     return (
       <ScrollView>
         <View style={styles.container}>
-          {didYouKnow}
-          {timeDate}
-          {weather}
-          {news}
+          <Carousel
+          data = {header}
+          renderItem= {renderItem}
+          sliderWidth={wp("100%")}
+          itemWidth={wp("100%")}
+          marginTop = {hp("3%")}
+          />
           <View>
             <Text style={styles.sectionTitle}>Recipe of the day</Text>
             <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
@@ -626,6 +641,7 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     width: wp("100%"),
+    height: hp("35%"),
     marginTop: hp("3%")
   },
   categoryImage: {
