@@ -401,9 +401,7 @@ export default class Home extends React.Component {
         </View>
     </ImageBackground>
 
-    let news;
-    this.state.newsHeadline.title !== "" &&(
-      news = 
+    let news = 
       <ImageBackground
       source={require("../assets/recipeApp/bgNews.png")}
       resizeMode="cover"
@@ -449,14 +447,23 @@ export default class Home extends React.Component {
                     </View>
         </TouchableOpacity>
       </ImageBackground>
-    )
 
-    const header = [
-      {content: (didYouKnow)},
-      {content: (timeDate)},
-      {content: (weather)},
-      {content: (news)},
-    ]
+    let header;
+    if(this.state.newsHeadline.title !== "") {
+      header = [
+        {content: (didYouKnow)},
+        {content: (timeDate)},
+        {content: (weather)},
+        {content: (news)},
+      ]
+    } else {
+      header = [
+        {content: (didYouKnow)},
+        {content: (timeDate)},
+        {content: (weather)},
+      ]
+    }
+
     const renderItem = ({ item }) => (
       <View>{item.content}</View>
     );
