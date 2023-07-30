@@ -402,9 +402,9 @@ export default class Home extends React.Component {
     if(this.state.newsHeadline.title !== "") {
       news = 
       <ImageBackground
-      source={require("../assets/recipeApp/bgHome.jpeg")}
+      source={require("../assets/recipeApp/bgNews.png")}
       resizeMode="cover"
-      style={styles.backgroundImage}>
+      style={[styles.backgroundImage, {height: hp("40%")}]}>
         <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>News headline</Text>
         <TouchableOpacity style={styles.didYouKnow} onPress={() => Linking.openURL(this.state.newsHeadline.newsURL)}>
             <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
