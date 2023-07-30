@@ -24,8 +24,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default class Recipes extends React.Component {
   constructor(props) {
     super(props);
-    this.getRecipes()
-
 
     this.state = {
       recipes: [
@@ -63,6 +61,13 @@ export default class Recipes extends React.Component {
       selectedIngredientAmount: "",
       selectedChef: "",
     };
+  }
+
+  componentDidMount(){
+    this.getRecipes()
+  }
+  componentDidUpdate() {
+    this.getRecipes()
   }
 
 

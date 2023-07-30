@@ -42,7 +42,12 @@ export default class RecipeDetails extends React.Component {
       fav: false,
       recipeByCurrentUser: false,
     }
-      this.getRecipeDetails()
+  }
+  componentDidMount() {
+    this.getRecipeDetails()
+  }
+  componentDidUpdate() {
+    this.getRecipeDetails()
   }
 
   async getRecipeDetails() {
