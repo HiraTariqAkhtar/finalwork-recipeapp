@@ -16,8 +16,8 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
-import { Ionicons } from "@expo/vector-icons";
-
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import SelectDropdown from 'react-native-select-dropdown'
 
 import { collection, getDocs, addDoc, updateDoc, doc } from "firebase/firestore"; 
 import {DATABASE, STORAGE } from "../firebaseConfig"
@@ -91,7 +91,8 @@ export default class AddRecipe extends React.Component {
         recipeName: "",
         ingredients: [{
             name: "",
-            quantity: ""
+            quantity: "",
+            unit: ""
         }],
         instructions: [{
             number: 0, 
@@ -101,6 +102,7 @@ export default class AddRecipe extends React.Component {
 
         categorySelection: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
         visibilitySelection: ["Public", "Private"],
+        unitOptions: ["N/A", "tbsp", "tsp", "cup", "A pinch", "kg", "g", "bunch", "piece", "To taste", "To fry", "As required"],
 
         categoryCheckedInFilter: [],
         visibilityCheckedInFilter: [],
@@ -169,7 +171,11 @@ selectCategory(i, category) {
       let ingredients= [... this.state.ingredients]
       ingredients[index][param] = ingredient
 
-      //console.log(ingredients)
+      if(ingredient === "To taste" || ingredient === "A pinch" || ingredient === "To fry" || ingredient === "As required"){
+        ingredients[index]["quantity"] = 0
+      }
+
+      console.log(ingredients)
 
       this.setState({ingredients: ingredients})
   }
@@ -178,7 +184,8 @@ selectCategory(i, category) {
       let ingredients= [... this.state.ingredients]
       ingredients.push({
           name:"",
-          quantity:""
+          quantity:0,
+          unit: ""
         })
         
       this.setState({ingredients: ingredients})
@@ -293,30 +300,72 @@ selectCategory(i, category) {
   }
 
    checkInputFields() {
-      if(this.state.recipeName == "") {
+     let unitNotSelected;
+     let noQuantity;
+     let noIngredient;
+     this.state.ingredients.some((ingredient) => {
+       if(ingredient.unit === "") {
+         unitNotSelected = true
+       } else {
+         unitNotSelected = false
+       }
+
+       if(ingredient.quantity === "") {
+         noQuantity = true
+       }else {
+         noQuantity = false
+       }
+
+       if(ingredient.name === "") {
+         noIngredient = true
+       }else {
+         noIngredient = false
+       }
+     })
+
+     let noInstructions;
+     this.state.instructions.forEach((step) => {
+       if(step.step === "") {
+        noInstructions = true
+       } else {
+        noInstructions = false
+       }
+     })
+
+      if(this.state.selectedVisibility == "") {
           Alert.alert(
-              "Recipe name required",
-              "Please enter a recipe name"
-              )
-      } else if(this.state.selectedVisibility == "") {
+            "Visibility required",
+            "Please select visibility"
+          )
+      } else if(this.state.recipe == "") {
           Alert.alert(
-              "Visibility required",
-              "Please select visibility"
-              )
+            "Recipe name required",
+            "Please enter a recipe name"
+          )
       } else if(this.state.selectedCategory == "") {
           Alert.alert(
               "Category required",
               "Please select a category"
               )
-      } else if(this.state.ingredients.length == 1 && (this.state.ingredients[0].name == "" || this.state.ingredients[0].quantity == "")) {
+      } else if(noQuantity) {
           Alert.alert(
-              "Ingredients required",
-              "Please enter all ingredients"
+            "Quantity required",
+            "Please enter a quantity for each ingredient"
               )
-      } else if(this.state.instructions.length == 1 && this.state.instructions[0].step == "") {
+      } else if(noIngredient) {
+        Alert.alert(
+            "Ingredients required",
+            "Please enter all ingredients"
+            )
+      }else if(unitNotSelected) {
+        Alert.alert(
+          "Unit required",
+          "Please select a unit for each ingredient"
+          )
+      } else if(noInstructions) {
           Alert.alert(
               "Instructions required",
-              "Please enter the instructions"
+              "Please enter all instructions"
               )
       } else {
           this.addRecipe()
@@ -377,7 +426,8 @@ selectCategory(i, category) {
         category: [],
         ingredients: [{
             name: "",
-            quantity: ""
+            quantity: 0,
+            unit: ""
         }],
         instructions: [{
             number: 0, 
@@ -510,16 +560,31 @@ selectCategory(i, category) {
                 {filterSelectionCategory}
               </View>
 
-            <Text style={styles.text}>Ingredients *</Text>
+            <Text style={[styles.text, {marginBottom:hp("0")}]}>Ingredients *</Text>
+            <Text style={[styles.info, {width:wp("90%"), marginBottom:hp("1")}]}>Please select "N/A" as unit if no specific unit is required.</Text>
             {this.state.ingredients.map((ingredient, index) => (
                 <View style={{display:"flex", flexDirection:"row"}} key={index}>
                 <TextInput
-                style={[styles.placeholder, {width:wp("20%"), marginRight:wp("0%")}]}
-                placeholder="quantity"
+                style={[styles.placeholder, {width:wp("10%"), marginRight:wp("1.5%")}]}
+                placeholder="0"
+                inputMode="numeric"
                 value={ingredient.quantity}
                 onChangeText={(txt) => this.addIngredient(txt, index, "quantity")}/>
+                <SelectDropdown
+                  buttonStyle = {[styles.placeholder, {width:wp("20%"), marginRight:wp("0%"), marginLeft:wp("1.5%"), backgroundColor:"#FFF"}]}
+                  buttonTextStyle = {styles.filterText}
+                  dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10}}
+                  rowTextStyle = {styles.filterText}
+                  data = {this.state.unitOptions}
+                  onSelect={(selectedItem) => {
+                    this.addIngredient(selectedItem, index, "unit")
+                  }}
+                  defaultButtonText= "unit"
+                  renderDropdownIcon={isOpened => {
+                    return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
+                  }}/>
                 <TextInput
-                style={[styles.placeholder, {width:wp("45%")}]}
+                style={[styles.placeholder, {width:wp("40%"), marginHorizontal:wp("0%")}]}
                 placeholder="ingredient"
                 value={ingredient.name}
                 onChangeText={(txt) => this.addIngredient(txt, index, "name")}/>
