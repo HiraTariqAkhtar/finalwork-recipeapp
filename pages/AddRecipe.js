@@ -71,6 +71,8 @@ export default class AddRecipe extends React.Component {
 
         categorySelection: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
         visibilitySelection: ["Public", "Private"],
+        unitOptions: ["N/A", "tbsp", "tsp", "cup", "A pinch", "kg", "g", "bunch", "piece", "To taste", "To fry", "As required"],
+
 
         categoryCheckedInFilter: categorySelected,
         visibilityCheckedInFilter: visibilitySelected,
