@@ -46,9 +46,6 @@ export default class RecipeDetails extends React.Component {
   componentDidMount() {
     this.getRecipeDetails()
   }
-  componentDidUpdate() {
-    this.getRecipeDetails()
-  }
 
   async getRecipeDetails() {
     let userEmail = await AsyncStorage.getItem("email")
