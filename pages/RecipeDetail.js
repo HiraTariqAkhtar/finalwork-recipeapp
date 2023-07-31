@@ -75,10 +75,18 @@ export default class RecipeDetails extends React.Component {
             chef: chefName
           }, recipeByCurrentUser: true}))
       } else{
-        this.setState({recipeByCurrentUser: false})
+        this.setState((prevState) => ({
+          recipe: {
+            ...prevState.recipe, 
+            chef: this.props.route.params.chef
+          }, recipeByCurrentUser: false}))
       }
-    }else{
-      this.setState({recipeByCurrentUser: false})
+    } else{
+      this.setState((prevState) => ({
+        recipe: {
+          ...prevState.recipe, 
+          chef: this.props.route.params.chef
+        }, recipeByCurrentUser: false}))
     }
 
     let recipeCollection = collection(DATABASE, "recipes")
@@ -367,7 +375,12 @@ export default class RecipeDetails extends React.Component {
                           size={hp("1%")}
                           color="#115740"
                         />
+                        {i.quantity !== 0 && (
                         <Text style={styles.text}>{i.quantity}</Text>
+                        )}
+                        {i.unit !== "N/A"&&(
+                        <Text style={styles.text}>{i.unit}</Text>
+                        )}
                         <Text style={styles.text}>{i.name}</Text>
                         <Ionicons
                           name={"cart"}
