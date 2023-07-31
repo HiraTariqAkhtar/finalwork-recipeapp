@@ -61,15 +61,9 @@ export default class Recipes extends React.Component {
       selectedIngredientAmount: "",
       selectedChef: "",
     };
-  }
-
-  componentDidMount(){
     this.getRecipes()
-  }
-  componentDidUpdate() {
-    this.getRecipes()
-  }
 
+  }
 
   async getRecipes() {
     let selectedCategoryFromHome = this.props.route.params?.category;
@@ -94,13 +88,15 @@ export default class Recipes extends React.Component {
       } else {
         recipeData.forEach((doc) => {
           if(doc.data().public == true) {
-            recipes.push(doc.data())
-            if(!chefs.includes(doc.data().chef) && doc.data().chef !== undefined) {
-              chefs.push(doc.data().chef)
-            }
+            recipes.push(doc.data()) 
           }
         })
       }
+      recipeData.forEach((doc) => {
+        if(!chefs.includes(doc.data().chef) && doc.data().chef !== undefined) {
+          chefs.push(doc.data().chef)
+        }
+      })
     }
 
     //console.log(recipes)
