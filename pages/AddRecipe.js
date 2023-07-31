@@ -222,6 +222,26 @@ selectCategory(i, category) {
     this.setState({instructions: this.state.instructions})
   }
 
+  dragInstructionUp(index) {
+      let instructions = [...this.state.instructions];
+    let currentInstruction = instructions[index].step
+      instructions[index].step = instructions[index - 1].step
+      instructions[index -1].step = currentInstruction
+
+      console.log(instructions)
+      this.setState({instructions: instructions})
+  };
+
+  dragInstructionDown(index) {
+    let instructions = [...this.state.instructions];
+    let currentInstruction = instructions[index].step
+    instructions[index].step = instructions[index + 1].step
+    instructions[index + 1].step = currentInstruction
+
+    console.log(instructions)
+    this.setState({instructions: instructions})
+  };
+
   async selectPhoto() {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -606,12 +626,31 @@ selectCategory(i, category) {
             </View>
             ))}
 
-            <Text style={styles.text}>Instructions *</Text>
+            <Text style={[styles.text, {marginBottom:hp("0")}]}>Instructions *</Text>
+            <Text style={[styles.info, {width:wp("90%"), marginBottom:hp("1")}]}>You can reorder the instructions by clicking on the correct arrow</Text>
             {this.state.instructions.map((instruction, index) => (
                 <View style={[styles.iconText, {display:"flex", flexDirection:"row"}]} key={index}>
-                <Text style={[styles.text, {marginLeft: wp("7%")}]}>{index + 1}</Text>
+                  {(index > 0) ?(
+                <Ionicons
+                name={'arrow-up'}
+                size={hp('3%')}
+                color="#115740"
+                style={{ marginLeft: wp("3%") }}
+                onPress={() => this.dragInstructionUp(index)}
+                />
+                )
+              :
+              <Ionicons
+              name={'arrow-up'}
+              size={hp('3%')}
+              color="#fff"
+              style={{ marginLeft: wp("3%") }}
+              />
+              }
+                  
+                <Text style={[styles.text]}>{index + 1}</Text>
                 <TextInput
-                style={[styles.placeholder, {width:wp("60%")}]}
+                style={[styles.placeholder, {width:wp("55%"), marginHorizontal:wp("1.5%")}]}
                 placeholder="To do"
                 value={instruction.step}
                 onChangeText={(txt) => this.addInstruction(txt, index)}/>
@@ -630,6 +669,16 @@ selectCategory(i, category) {
                 color="#FF0000"
                 onPress={() => this.removeInstruction(index)}/>
                 )}
+                {(this.state.instructions.length > 1 && index < this.state.instructions.length - 1) &&(
+                <Ionicons
+                name={'arrow-down'}
+                size={hp('3%')}
+                color="#115740"
+                style={{ marginLeft: wp("3%") }}
+                onPress={() => this.dragInstructionDown(index)}
+              />
+                )}
+                
             </View>
             ))}
 
