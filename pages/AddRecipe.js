@@ -173,7 +173,7 @@ selectCategory(i, category) {
       let ingredients= [... this.state.ingredients]
       ingredients[index][param] = ingredient
 
-      if(ingredient === "To taste" || ingredient === "A pinch" || ingredient === "To fry" || ingredient === "As required"){
+      if(ingredient === "To taste" || ingredient === "A pinch" || ingredient === "To fry" || ingredient === "As required" || ingredient === "A little bit"){
         ingredients[index]["quantity"] = 0
       }
 
