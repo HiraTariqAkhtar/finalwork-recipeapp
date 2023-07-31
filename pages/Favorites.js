@@ -76,13 +76,17 @@ export default class Favorites extends React.Component {
 
   goToRecipeDetails(rec) {
     this.props.navigation.navigate("RecipeDetail", {
+      id: rec.id,
       recipeName: rec.recipeName,
       img: rec.img,
       servings: rec.servings,
       timeNeeded: rec.timeNeeded,
-      category: rec.category,
       ingredients: rec.ingredients,
-      instructions: rec.instructions
+      instructions: rec.instructions,
+      category: rec.category,
+      chef: rec.chef,
+      userId: rec.userId,
+      visible: rec.public
     })
   }
 
@@ -94,32 +98,6 @@ export default class Favorites extends React.Component {
     name="trash-outline"
     color="#FFFFFF"
     size={hp("3%")}/>
-
-
-    // let dishTypes;
-    // let periods;
-    // this.state.favRecipes.forEach((rec) => {
-  
-    //   if(rec.dishTypes.length > 1) {
-    //     dishTypes =
-    //     rec.dishTypes.map((type) => (
-    //       <Text style={styles.text}>{type} |</Text>
-    //     ))
-    //   } else if(rec.dishTypes.length == 1){
-    //     dishTypes =
-    //     <Text style={styles.text}>{rec.dishTypes[0]}</Text>
-    //   }
-  
-    //   if(rec.period.length > 1) {
-    //     periods =
-    //     rec.period.map((period) => (
-    //       <Text style={styles.text}>{period} |</Text>
-    //     ))
-    //   } else if(rec.period.length == 1){
-    //     periods =
-    //     <Text style={styles.text}>{rec.period[0]}</Text>
-    //   }
-    // })
 
     let recipes;
     if(this.state.favRecipes.length > 0) {
@@ -148,24 +126,25 @@ export default class Favorites extends React.Component {
                   </Text>
                   
                   <View style={{display:"flex", flexDirection:"row"}}>
-                    <View style={[styles.iconText, {marginRight: wp("5%")}]}>
-                      <Ionicons
-                        name={"people"}
-                        size={hp("2.5%")}
-                        color="#FF5E00"
-                      />
-                      <Text style={styles.text}>{rec.servings}</Text>
-  
-                    </View>
-  
-                    <View style={styles.iconText}>
-                      <Ionicons
-                        name={"stopwatch"}
-                        size={hp("2.5%")}
-                        color="#FF5E00"
-                      />
-                        <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
-                    </View>
+                  {rec.servings != "" && (
+                  <View style={[styles.iconText, {marginRight: wp("5%")}]}>
+                    <Ionicons
+                      name={"people"}
+                      size={hp("2.5%")}
+                      color="#115740"
+                    />
+                    <Text style={styles.text}>{rec.servings}</Text>
+                  </View>)}
+
+                  {rec.timeNeeded != "" && (
+                  <View style={styles.iconText}>
+                    <Ionicons
+                      name={"stopwatch"}
+                      size={hp("2.5%")}
+                      color="#115740"
+                    />
+                      <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+                  </View>)}
                   </View>
     
                   {rec.category && (
@@ -173,30 +152,21 @@ export default class Favorites extends React.Component {
                 <FontAwesome
                   name={"cutlery"}
                   size={hp("2.5%")}
-                  color="#FF5E00"
+                  color="#115740"
                 />
                   <Text style={styles.text}>{rec.category}</Text>
                 </View>)}
-{/*     
-                {rec.dishTypes.length > 0 && (
-                <View style={[styles.iconText, {width: wp("60%")}]}>
-                <FontAwesome
-                  name={"cutlery"}
-                  size={hp("2.5%")}
-                  color="#FF5E00"
-                />
-                  {dishTypes}
-                </View>)}
-    
-                    {rec.period.length > 0 && (
-                  <View style={[styles.iconText, {width: wp("60%")}]}>
-                    <Ionicons
-                      name={"calendar"}
-                      size={hp("2.5%")}
-                      color="#FF5E00"
-                    />
-                      {periods}
-                    </View>)} */}
+
+                {rec.chef && (
+              <View style={[styles.iconText, {width: wp("60%")}]}>
+              <MaterialCommunityIcons
+                name={"chef-hat"}
+                size={hp("2.5%")}
+                color="#115740"
+              />
+                <Text style={styles.text}>{rec.chef}</Text>
+              </View>)}
+
                 </View>
               </View>
         </TouchableOpacity>
@@ -251,7 +221,7 @@ const styles = StyleSheet.create({
     padding: hp("1.5%"),
     width: wp("95%"),
     borderRadius: 10,
-    borderColor: "#FF5E00",
+    borderColor: "#115740",
     borderWidth: 3,
     marginTop: hp("3%"),
     marginHorizontal: wp ("2.5%")
