@@ -357,7 +357,7 @@ export default class Recipes extends React.Component {
 
   render() {
     let filterSelectionCategory = this.state.allCategories.map((category, index) => (
-      <View style={styles.iconText} key={index}>
+      <View style={styles.iconText} key={`category${index}`}>
         <Ionicons
           name={this.state.categoryCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
@@ -373,7 +373,7 @@ export default class Recipes extends React.Component {
     ));
 
     let filterSelectionServings = this.state.allServings.map((serving, index) => (
-      <View style={styles.iconText} key={index}>
+      <View style={styles.iconText} key={`serving${index}`}>
         <Ionicons
           name={this.state.servingsCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
@@ -389,7 +389,7 @@ export default class Recipes extends React.Component {
     ));
 
     let filterSelectionPrepTime = this.state.allPrepTime.map((time, index) => (
-      <View style={styles.iconText} key={index}>
+      <View style={styles.iconText} key={`prepTime${index}`}>
         <Ionicons
           name={this.state.prepTimeCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
@@ -405,7 +405,7 @@ export default class Recipes extends React.Component {
     ));
 
     let filterSelectionIngredients = this.state.allIngredientAmount.map((ingredients, index) => (
-      <View style={styles.iconText} key={index}>
+      <View style={styles.iconText} key={`Ingredients${index}`}>
         <Ionicons
           name={this.state.ingredientAmountCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
@@ -421,7 +421,7 @@ export default class Recipes extends React.Component {
     ));
 
     let filterSelectionChefs = this.state.allChefs.map((chef, index) => (
-      <View style={styles.iconText} key={index}>
+      <View style={styles.iconText} key={`chef${index}`}>
         <Ionicons
           name={this.state.chefCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
