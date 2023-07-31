@@ -107,8 +107,8 @@ export default class Cart extends React.Component {
         <View style={styles.cart}>
           <ScrollView>
           {this.state.hasData ? 
-            this.state.cartItems.map((item) => (
-              <View style={styles.iconText}>
+            this.state.cartItems.map((item, index) => (
+              <View key={index} style={styles.iconText}>
                 <FontAwesome
                   name={"circle"}
                   size={hp("1%")}

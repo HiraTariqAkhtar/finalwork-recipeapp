@@ -368,8 +368,8 @@ export default class RecipeDetails extends React.Component {
 
                 <View>
                     <Text style={styles.pageTitle}>Ingredients</Text>
-                    {rec.ingredients.map((i) => (
-                    <View style={styles.iconText}>
+                    {rec.ingredients.map((i, index) => (
+                    <View key={`Ingredient${index}`} style={styles.iconText}>
                         <FontAwesome
                           name={"circle"}
                           size={hp("1%")}
@@ -395,8 +395,8 @@ export default class RecipeDetails extends React.Component {
 
                 <View style={{marginBottom: hp("5%")}}>
                     <Text style={styles.pageTitle}>Instructions</Text>
-                    {rec.instructions.map((step) => (
-                    <View style= {{marginBottom: hp("2%")}}>
+                    {rec.instructions.map((step, index) => (
+                    <View key={`Instruction${index}`} style= {{marginBottom: hp("2%")}}>
                         <Text style={styles.steps}>Step {step.number}:</Text>
                         <Text style={styles.text}>{step.step}</Text>
                     </View>
