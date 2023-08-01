@@ -298,7 +298,7 @@ export default class RecipeDetails extends React.Component {
               color="#115740"
               onPress={() => this.props.navigation.goBack()}
             />
-          <Text style={styles.pageTitle}>{rec.recipeName}</Text>
+          <Text style={[styles.pageTitle, {textAlign: "center"}]}>{rec.recipeName}</Text>
           {fav}
         </View>
           <ScrollView style={styles.recipe}> 
@@ -433,7 +433,6 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
     width: wp("60%"),
-    textAlign: "center"
   },
   info: {
     display: "flex",
