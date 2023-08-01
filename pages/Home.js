@@ -21,6 +21,7 @@ import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore"; 
 
 import Carousel, { Pagination } from 'react-native-snap-carousel'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -74,7 +75,8 @@ export default class Home extends React.Component {
         src: ""
       },
 
-      activeSlide: 0
+      activeSlide: 0,
+      user: ""
 
     };
 
@@ -87,6 +89,16 @@ export default class Home extends React.Component {
     this.getTimeAndDate()
     this.getIslamabadWeather()
     //this.getNewsHeadline()
+    this.getUser()
+  }
+
+  async getUser() {
+    let userFirstName = await AsyncStorage.getItem("firstName")
+    if(userFirstName !== null) {
+      this.setState({user: userFirstName})
+    } else {
+      this.setState({user: ""})
+    }
   }
 
   async getTimeAndDate() {
@@ -347,9 +359,32 @@ export default class Home extends React.Component {
       </TouchableOpacity>
     );
 
+    
+
+    let welcome = 
+    <ImageBackground
+      source={require("../assets/recipeApp/bgHome.jpeg")}
+      resizeMode="cover"
+      style={styles.backgroundImage}
+    >
+      {this.state.user !== "" ? (
+        <Text style={[styles.sectionTitle, { marginTop: hp("3%") }]}>
+          Welcome {this.state.user}
+        </Text>
+      ) : (
+        <Text style={[styles.sectionTitle, { marginTop: hp("3%") }]}>
+          Welcome
+        </Text>
+      )}
+      <View style={styles.didYouKnow}>
+        <Text style={styles.fact}>Swipe to see more information about Pakistan</Text>
+      </View>
+    </ImageBackground>
+
+
     let didYouKnow = 
     <ImageBackground
-    source={require("../assets/recipeApp/bgHome.jpeg")}
+    source={require("../assets/recipeApp/bgDidYouKnow.jpg")}
     resizeMode="cover"
     style={styles.backgroundImage}>
       <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Did you know that ...</Text>
@@ -452,6 +487,7 @@ export default class Home extends React.Component {
     let header;
     if(this.state.newsHeadline.title !== "") {
       header = [
+        {content: (welcome)},
         {content: (didYouKnow)},
         {content: (timeDate)},
         {content: (weather)},
@@ -459,6 +495,7 @@ export default class Home extends React.Component {
       ]
     } else {
       header = [
+        {content: (welcome)},
         {content: (didYouKnow)},
         {content: (timeDate)},
         {content: (weather)},
