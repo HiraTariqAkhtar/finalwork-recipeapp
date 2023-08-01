@@ -1454,8 +1454,8 @@ const restaurants = [
         title: "Punjab Tandoori", 
         description: "Sleepstraat 67, 9000 Gent", 
         coordinate:{
-        latitude: 50.6408911, 
-        longitude: 5.5703465
+        latitude: 51.0610246, 
+        longitude: 3.7259579
         }
     },
 
