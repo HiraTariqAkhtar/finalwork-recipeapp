@@ -608,7 +608,7 @@ const recipes = [
           { number: 5, step: "Garnish with almonds and pistachios." }
         ],
         category: "Sweets",
-        img: "https://example.com/khushk_doodh_kay_gulab_jaman.jpg",
+        img: "https://www.masala.tv/wp-content/uploads/2016/07/1-1.jpg",
         public: true,
         chef: "Rida Aftab"
     },
@@ -868,7 +868,7 @@ const recipes = [
             { number: 8, step: "Sprinkle chopped pistachios over it." },
             { number: 9, step: "Bread Barfi is ready to serve." }
         ],
-        category: "Sweest",
+        category: "Sweets",
         img: "http://www.pakistanichefrecipes.com/wp-content/uploads/2018/12/Bread-Barfi.jpg",
         public: true,
         chef: "Rida Aftab"
