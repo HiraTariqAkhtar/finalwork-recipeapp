@@ -25,8 +25,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from 'expo-image-picker'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
-import uuid from 'react-native-uuid';
-
 
 export default class AddRecipe extends React.Component {
   constructor(props) {
@@ -173,11 +171,11 @@ selectCategory(i, category) {
       let ingredients= [... this.state.ingredients]
       ingredients[index][param] = ingredient
 
-      if(ingredient === "To taste" || ingredient === "A pinch" || ingredient === "To fry" || ingredient === "As required" || ingredient === "A little bit"){
+      if(ingredient === "To taste" || ingredient === "A pinch" || ingredient === "To fry" || ingredient === "As required" || ingredient === "A little bit" || ingredient === "A few drops" || ingredient === "For garnishing"){
         ingredients[index]["quantity"] = 0
       }
 
-      console.log(ingredients)
+      //console.log(ingredients)
 
       this.setState({ingredients: ingredients})
   }
@@ -403,7 +401,11 @@ selectCategory(i, category) {
     visible = false
   }
 
+  let userCollection = collection(DATABASE, "recipes")
+  let userData = await getDocs(userCollection)
+
   this.setState({isLoading: true})
+  
   setTimeout(() => {
     if(this.props.route.params?.recipe !== undefined) {
       let rec = this.props.route.params.recipe
@@ -422,7 +424,7 @@ selectCategory(i, category) {
       let recipeCollection = collection(DATABASE, "recipes")
       addDoc((recipeCollection), {
         userId: this.state.userId,
-        id: uuid.v4(),
+        id: userData.size + 1,
         servings: this.state.servings,
         recipeName: this.state.recipeName,
         ingredients: this.state.ingredients,
