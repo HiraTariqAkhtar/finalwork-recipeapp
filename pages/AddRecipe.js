@@ -534,6 +534,15 @@ selectCategory(i, category) {
         </View>
     }
 
+    let addBtnText;
+    if(this.props.route.params?.recipe !== undefined) {
+      addBtnText=
+      <Text style={styles.btnText}>Edit recipe</Text>
+    } else {
+      addBtnText=
+      <Text style={styles.btnText}>Add recipe</Text>
+    }
+
     return (
       <View style={styles.container}>
           <View style={styles.header}>
@@ -593,7 +602,7 @@ selectCategory(i, category) {
                 value={ingredient.quantity}
                 onChangeText={(txt) => this.addIngredient(txt, index, "quantity")}/>
                 <SelectDropdown
-                  buttonStyle = {[styles.placeholder, {width:wp("20%"), marginRight:wp("0%"), marginLeft:wp("1.5%"), backgroundColor:"#FFF"}]}
+                  buttonStyle = {[styles.placeholder, {width:wp("30%"), marginRight:wp("0%"), marginLeft:wp("1.5%"), backgroundColor:"#FFF"}]}
                   buttonTextStyle = {styles.filterText}
                   dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10}}
                   rowTextStyle = {styles.filterText}
@@ -601,12 +610,12 @@ selectCategory(i, category) {
                   onSelect={(selectedItem) => {
                     this.addIngredient(selectedItem, index, "unit")
                   }}
-                  defaultButtonText= "unit"
+                  defaultButtonText= {ingredient.unit}
                   renderDropdownIcon={isOpened => {
                     return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
                   }}/>
                 <TextInput
-                style={[styles.placeholder, {width:wp("40%"), marginHorizontal:wp("0%")}]}
+                style={[styles.placeholder, {width:wp("30%"), marginHorizontal:wp("0%")}]}
                 placeholder="ingredient"
                 value={ingredient.name}
                 onChangeText={(txt) => this.addIngredient(txt, index, "name")}/>
@@ -691,7 +700,7 @@ selectCategory(i, category) {
             {this.state.isLoading && <ActivityIndicator size="large"/>}
 
           <TouchableOpacity style={[styles.button, {marginTop: hp("5%")}]} onPress={() => this.checkInputFields()}>
-            <Text style={styles.btnText}>Add recipe</Text>
+            {addBtnText}
           </TouchableOpacity> 
           </ScrollView>
 
