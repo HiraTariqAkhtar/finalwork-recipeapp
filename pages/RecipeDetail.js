@@ -432,6 +432,8 @@ const styles = StyleSheet.create({
     color: "#FF5E00",
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
+    width: wp("60%"),
+    textAlign: "center"
   },
   info: {
     display: "flex",
