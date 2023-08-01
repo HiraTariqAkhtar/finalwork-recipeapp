@@ -93,12 +93,12 @@ export default class Recipes extends React.Component {
         })
       }
       recipeData.forEach((doc) => {
-        if(!chefs.includes(doc.data().chef) && doc.data().chef !== undefined) {
+        if(!chefs.includes(doc.data().chef) && doc.data().chef !== undefined && doc.data().chef !== "") {
           chefs.push(doc.data().chef)
+          chefs.sort()
         }
       })
     }
-
     //console.log(recipes)
     //console.log(chefs)
     this.setState({recipes: recipes, allChefs: chefs})
