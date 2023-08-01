@@ -86,7 +86,7 @@ export default class Home extends React.Component {
     this.getDidYouKnow()
     this.getTimeAndDate()
     this.getIslamabadWeather()
-    this.getNewsHeadline()
+    //this.getNewsHeadline()
   }
 
   async getTimeAndDate() {
@@ -157,6 +157,7 @@ export default class Home extends React.Component {
       recipeData.forEach((doc) => {
         if(doc.data().public == true) {
           recipes.push(doc.data())
+          recipes.sort((a,b) => a.id - b.id)
         }
       })
     }
