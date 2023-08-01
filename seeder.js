@@ -1145,6 +1145,7 @@ const supermarkets = [
             longitude: 4.336440
         },
     },
+
     {
         id: 2,
         title: "Ideal Cash & Carry", 
@@ -1154,6 +1155,7 @@ const supermarkets = [
             longitude: 4.336840
         },
     },
+
     {
         id: 3,
         title: "Express Afro-Indian", 
@@ -1161,6 +1163,176 @@ const supermarkets = [
         coordinate:{
             latitude: 50.8370456, 
             longitude: 4.3423893
+        },
+    },
+
+    {
+        id: 4,
+        title: "Wasila Market", 
+        description: "Torhoutsesteenweg 274, 8400 Oostende", 
+        coordinate:{
+            latitude: 51.2162529, 
+            longitude: 2.907425
+        },
+    },
+
+    {
+        id: 5,
+        title: "Gill Store", 
+        description: "Charlottalei 42, 2018 Antwerpen", 
+        coordinate:{
+            latitude: 51.20864486694336, 
+            longitude: 4.418739318847656
+        },
+    },
+
+    {
+        id: 6,
+        title: "Euro Asians Supermarket", 
+        description: "Statiestraat 75, 2600 Antwerpen", 
+        coordinate:{
+            latitude: 51.1981804, 
+            longitude: 4.4264992
+        },
+    },
+
+    {
+        id: 7,
+        title: "Surabhir Euro Asia Supermarket", 
+        description: "Carnotstraat 80, 2060 Antwerpen", 
+        coordinate:{
+            latitude: 51.217767, 
+            longitude: 4.4254962
+        },
+    },
+
+    {
+        id: 8,
+        title: "Paak Supermarkt", 
+        description: "Frederik van Eedenplein, 2050 Antwerpen", 
+        coordinate:{
+            latitude: 51.2235841, 
+            longitude: 4.3860588
+        },
+    },
+
+    {
+        id: 9,
+        title: "Ansari Market", 
+        description: "Sint-Gummarusstraat 46, 2060 Antwerpen", 
+        coordinate:{
+            latitude: 51.2246359, 
+            longitude: 4.4211111
+        },
+    },
+
+    {
+        id: 10,
+        title: "Sharif Traders", 
+        description: "Brederodestraat 71, 2018 Antwerpen", 
+        coordinate:{
+            latitude: 51.2049738, 
+            longitude: 4.3955592
+        },
+    },
+
+    {
+        id: 11,
+        title: "Rahman.S Supermarket", 
+        description: "Sint-Elisabethstraat 14, 2060 Antwerpen", 
+        coordinate:{
+            latitude: 51.2225425, 
+            longitude: 4.423064
+        },
+    },
+
+    {
+        id: 12,
+        title: "Pak Asian & African Food", 
+        description: "Pilorijnstraat 4-18, 9000 Gent", 
+        coordinate:{
+            latitude: 51.057453, 
+            longitude: 3.7424463
+        },
+    },
+
+    {
+        id: 13,
+        title: "Himalaya Exotic Market", 
+        description: "Brusselsepoortstraat 110, 9000 Gent", 
+        coordinate:{
+            latitude: 51.0425451, 
+            longitude: 3.7379423
+        },
+    },
+
+    {
+        id: 14,
+        title: "African & Asian Foods", 
+        description: "Wondelgemstraat 48A, 9000 Gent", 
+        coordinate:{
+            latitude: 51.0606944, 
+            longitude: 3.7105429
+        },
+    },
+
+    {
+        id: 15,
+        title: "Noor Supermarkt", 
+        description: "Phoenixstraat 59, 9000 Gent", 
+        coordinate:{
+            latitude: 51.0578756, 
+            longitude: 3.7058933
+        },
+    },
+
+    {
+        id: 16,
+        title: "Everest House", 
+        description: "Brusselsestraat 128, 3000 Leuven", 
+        coordinate:{
+            latitude: 50.8806624, 
+            longitude: 4.6943737
+        },
+    },
+
+    {
+        id: 17,
+        title: "Exotic Food", 
+        description: "Diestsesteenweg 105, 3010 Leuven", 
+        coordinate:{
+            latitude: 50.8840336, 
+            longitude: 4.7201509
+        },
+    },
+
+    {
+        id: 18,
+        title: "A&A Halal Bazar", 
+        description: "Bd de la Constitution 46, 4020 Liège", 
+        coordinate:{
+            latitude: 50.6434184, 
+            longitude: 5.5860235
+        },
+    },
+
+    {
+        id: 19,
+        title: "Kausar Ethnic Market", 
+        description: "Rue de la Cathédrale 7, 4000 Liège", 
+        coordinate:{
+            latitude: 50.6435668, 
+            longitude: 5.5769726
+        },
+    },
+
+    {
+        id: 20,
+        title: "Afro asia supermarket", 
+        description: "Rue des Carmes 61, 5000 Namur", 
+        coordinate:{
+            latitude: 50.4669856, 
+            longitude: 4.8636884
         },
     },
 ]
@@ -1176,6 +1348,7 @@ const restaurants = [
             longitude: 4.354060
         }
     },
+
     {
         id: 2,
         title: "Maharaja Tandoori", 
@@ -1185,6 +1358,7 @@ const restaurants = [
         longitude: 4.350570
         }
     },
+
     {
         id: 3,
         title: "Maharaja Tandoori Restaurant", 
@@ -1194,7 +1368,8 @@ const restaurants = [
         longitude: 4.332180
         }
     },
-        {
+
+    {
         id: 4,
         title: "Chanab Tandoori", 
         description: "Rue de Fiennes 19, 1070 Anderlecht", 
@@ -1203,7 +1378,8 @@ const restaurants = [
         longitude: 4.332180
         }
     },
-        {
+
+    {
         id: 5,
         title: "Shezan", 
         description: "Waverse Steenweg 120,1050 Ixelles", 
@@ -1212,7 +1388,8 @@ const restaurants = [
         longitude: 4.3674027
         }
     },
-        {
+
+    {
         id: 6,
         title: "Zam Zam", 
         description: "Rue Brogniez 78, 1070 Anderlecht", 
@@ -1221,6 +1398,67 @@ const restaurants = [
         longitude: 4.3355466
         }
     },
+
+    {
+        id: 7,
+        title: "Mumtaz", 
+        description: "Waversesteenweg 64, 1050 Elsene", 
+        coordinate:{
+        latitude: 50.8369471, 
+        longitude: 4.3650431
+        }
+    },
+
+    {
+        id: 8,
+        title: "Nawaab Tandoori", 
+        description: "Turnhoutsebaan 365, 2140 Antwerpen", 
+        coordinate:{
+        latitude: 51.2145331, 
+        longitude: 4.4426815
+        }
+    },
+
+    {
+        id: 9,
+        title: "Mansha's ", 
+        description: "Liersesteenweg 146, 2800 Mechelen", 
+        coordinate:{
+        latitude: 51.0383749, 
+        longitude: 4.4806414
+        }
+    },
+
+    {
+        id: 10,
+        title: "Nirvana Kitchen", 
+        description: "Monseigneur Ladeuzeplein 32, 3000 Leuven", 
+        coordinate:{
+        latitude: 50.8782841, 
+        longitude: 4.7054095
+        }
+    },
+
+    {
+        id: 11,
+        title: "Tandoori", 
+        description: "Rue Pont d'Avroy 10, 4000 Liège", 
+        coordinate:{
+        latitude: 50.6408911, 
+        longitude: 5.5703465
+        }
+    },
+
+    {
+        id: 12,
+        title: "Punjab Tandoori", 
+        description: "Sleepstraat 67, 9000 Gent", 
+        coordinate:{
+        latitude: 50.6408911, 
+        longitude: 5.5703465
+        }
+    },
+
 ]
 
 // Recipe of the day
