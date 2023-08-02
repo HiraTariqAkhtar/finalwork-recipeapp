@@ -249,7 +249,7 @@ export default class Cookbook extends React.Component {
         <View>
           {this.state.myPrivateRecipes.length > 0 && this.state.myPublicRecipes.length > 0  ? (
             <View>
-              <Text style={styles.section}>Private Recipes</Text>
+              <Text style={styles.section}>Public Recipes</Text>
               <ScrollView style={{height: hp("33%")}}>
                 {publicRecipes}
               </ScrollView>
