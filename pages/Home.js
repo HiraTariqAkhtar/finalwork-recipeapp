@@ -620,13 +620,6 @@ style={styles.backgroundImage}>
            {categories}
           </ScrollView>
           </View>
-{/*   
-          <View>
-          <Text style={styles.sectionTitle}>Upcoming holidays in Pakistan</Text>
-          <ScrollView horizontal>
-           {holidays}
-          </ScrollView>
-          </View> */}
       </View>
         </ScrollView>
     );
@@ -637,6 +630,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:"#FFFFFF",
+    minHeight: hp("100%")
   },
   sectionTitle: {
     fontSize: hp("3%"),
