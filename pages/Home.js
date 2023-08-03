@@ -40,17 +40,17 @@ export default class Home extends React.Component {
           chef: ""
         },
 
-      holidays: [{
-        name: "Independence Day",
-        description: "Pakistan celebrates its Independence Day on August 14. This day marks Pakistan’s emergence as an independent state.",
-        locations: "All",
+      holiday: {
+        name: "",
+        description: "",
+        locations: "",
         datetime: {
-            year: 2023,
-            month: 8,
-            day: 14
+            year: 0,
+            month: 0,
+            day: 0
         },
-        holidayType: "Public holiday"
-      }], 
+        holidayType: ""
+      }, 
 
       didYouKnow: "",
 
@@ -142,9 +142,9 @@ export default class Home extends React.Component {
   }
 
   async getNewsHeadline() {
-    axios.get(`https://gnews.io/api/v4/top-headlines?country=pk&category=nation&apikey=${NEWS_API_KEY}`)
+    axios.get(`https://gnews.io/api/v4/top-headlines?country=pk&apikey=${NEWS_API_KEY}`)
     .then((res) => {
-      console.log(res.data.articles[0])
+      //console.log(res.data.articles[0])
       let article = res.data.articles[0]
       let news = {
         title: article.title,
@@ -255,29 +255,8 @@ export default class Home extends React.Component {
                   }
               });
               holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
-              this.setState({holidays: holidaysThisMonth})
+               this.setState({holiday: holidaysThisMonth[0]})
             })
-
-      if(currentMonth != 12) {
-        for(let i = currentMonth+1; i <= 12; i++) {
-          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${i}&year=${currentYear}`)
-          .then((res) => {
-              //console.log(res.data.response.holidays)
-              let holidays = res.data.response.holidays
-              holidays.forEach((holiday) => {
-                      holidaysThisMonth.push({
-                          name: holiday.name,
-                          description: holiday.description,
-                          locations: holiday.locations,
-                          datetime: holiday.date.datetime,
-                          holidayType: holiday.primary_type
-                      })
-              });
-              holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
-              this.setState({holidays: holidaysThisMonth})
-            })
-      }
-      }
   }
 
   async goToHolidaysPage(name, description, locations, day, month, year, holidayType) {
@@ -313,29 +292,6 @@ export default class Home extends React.Component {
 
 
   render() {
-    let holidays = this.state.holidays.map((holiday, index) =>
-    <TouchableOpacity
-      key = {index}
-      style={[
-        styles.holidays,
-        index === this.state.holidays.length - 1 ? styles.lastHoliday : null,
-      ]}
-      onPress={() => this.goToHolidaysPage(holiday.name, holiday.description, holiday.locations, holiday.datetime.day, holiday.datetime.month, holiday.datetime.year, holiday.holidayType)}
-      >
-      <Text  style={styles.holidayName}>{holiday.name}</Text>
-      <Text  style={styles.holidayDate}>{holiday.datetime.day} - {holiday.datetime.month} - {holiday.datetime.year}</Text>
-      {holiday.holidayType &&
-                  <View style={styles.iconText}>
-                <Ionicons
-                    name={"information-circle"}
-                    size={hp("3%")}
-                    color="#115740"
-                />
-                <Text style={styles.text}>{holiday.holidayType}</Text>
-              </View>}
-    </TouchableOpacity>
-    )
-
     let categoryImg = {
       'Bread': require('../assets/recipeApp/bread.jpeg'),
       'Curry': require('../assets/recipeApp/curry.jpeg'),
@@ -368,11 +324,11 @@ export default class Home extends React.Component {
       style={styles.backgroundImage}
     >
       {this.state.user !== "" ? (
-        <Text style={[styles.sectionTitle, { marginTop: hp("3%") }]}>
+        <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
           Welcome {this.state.user}
         </Text>
       ) : (
-        <Text style={[styles.sectionTitle, { marginTop: hp("3%") }]}>
+        <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
           Welcome
         </Text>
       )}
@@ -387,18 +343,19 @@ export default class Home extends React.Component {
     source={require("../assets/recipeApp/bgDidYouKnow.jpg")}
     resizeMode="cover"
     style={styles.backgroundImage}>
-      <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Did you know that ...</Text>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Did you know that ...</Text>
       <View style={styles.didYouKnow}>
         <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
       </View>
     </ImageBackground>
+
 
     let timeDate = 
     <ImageBackground
     source={require("../assets/recipeApp/bgTime.jpg")}
     resizeMode="cover"
     style={styles.backgroundImage}>
-      <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Time and date in Pakistan</Text>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Time and date in Pakistan</Text>
       <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly"}}>
       	<View style={[styles.didYouKnow, {width: wp("40%")}]}>
       	  <Text  style={styles.holidayName}>{this.state.dateTime.date}</Text>
@@ -414,7 +371,7 @@ export default class Home extends React.Component {
     source={require("../assets/recipeApp/bgWeather.jpg")}
     resizeMode="cover"
     style={styles.backgroundImage}>
-      <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Weather in Islamabad</Text>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Weather in Islamabad</Text>
       <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly", alignContent:"center"}}>
         <View style={[styles.didYouKnow, {width: wp("40%")}]}>
           <Text  style={styles.holidayName}>Temperature</Text>
@@ -437,12 +394,56 @@ export default class Home extends React.Component {
         </View>
     </ImageBackground>
 
+let holiday = this.state.holiday
+    
+let nextHoliday =
+<ImageBackground
+source={require("../assets/recipeApp/bgHoliday.jpg")}
+resizeMode="cover"
+style={styles.backgroundImage}>
+  <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Upcoming holiday in Pakistan</Text>
+  <TouchableOpacity
+  style={[
+    styles.didYouKnow
+  ]}
+  onPress={() => this.goToHolidaysPage(holiday.name, holiday.description, holiday.locations, holiday.datetime.day, holiday.datetime.month, holiday.datetime.year, holiday.holidayType)}
+  >
+  <Text  style={styles.holidayName}>{holiday.name}</Text>
+  <View style={styles.iconText}>
+  <Ionicons
+    name={"calendar"}
+    size={hp("2.5%")}
+    color="#115740"
+  />
+  <Text  style={styles.text}>{holiday.datetime.day} - {holiday.datetime.month} - {holiday.datetime.year}</Text>
+  </View>
+  {holiday.holidayType &&
+    <View style={styles.iconText}>
+    <Ionicons
+        name={"information-circle"}
+        size={hp("3%")}
+        color="#115740"
+    />
+    <Text style={styles.text}>{holiday.holidayType}</Text>
+  </View>}
+
+  <View style={styles.iconText}>
+  <Ionicons
+    name={"newspaper"}
+    size={hp("2.5%")}
+    color="#115740"
+  />
+    <Text style={styles.text}>Click here to read more about the holiday</Text>
+  </View>
+</TouchableOpacity>
+</ImageBackground>
+
     let news = 
       <ImageBackground
       source={require("../assets/recipeApp/bgNews.png")}
       resizeMode="cover"
       style={styles.backgroundImage}>
-        <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>News headline</Text>
+        <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>News headline</Text>
         <TouchableOpacity style={styles.didYouKnow} onPress={() => Linking.openURL(this.state.newsHeadline.newsURL)}>
             <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
             {this.state.newsHeadline.img != "" ?(
@@ -485,20 +486,37 @@ export default class Home extends React.Component {
       </ImageBackground>
 
     let header;
-    if(this.state.newsHeadline.title !== "") {
+    if(this.state.newsHeadline.title !== "" && this.state.holiday.name !== "") {
       header = [
         {content: (welcome)},
-        {content: (didYouKnow)},
         {content: (timeDate)},
         {content: (weather)},
+        {content: (didYouKnow)},
+        {content: (nextHoliday)},
         {content: (news)},
+      ]
+    } else if(this.state.newsHeadline.title !== "" && this.state.holiday.name == "") {
+      header = [
+        {content: (welcome)},
+        {content: (timeDate)},
+        {content: (weather)},
+        {content: (didYouKnow)},
+        {content: (news)},
+      ]
+    } else if(this.state.newsHeadline.title == "" && this.state.holiday.name !== "") {
+      header = [
+        {content: (welcome)},
+        {content: (timeDate)},
+        {content: (weather)},
+        {content: (didYouKnow)},
+        {content: (nextHoliday)},
       ]
     } else {
       header = [
         {content: (welcome)},
-        {content: (didYouKnow)},
         {content: (timeDate)},
         {content: (weather)},
+        {content: (didYouKnow)},
       ]
     }
 
@@ -602,13 +620,13 @@ export default class Home extends React.Component {
            {categories}
           </ScrollView>
           </View>
-  
+{/*   
           <View>
           <Text style={styles.sectionTitle}>Upcoming holidays in Pakistan</Text>
           <ScrollView horizontal>
            {holidays}
           </ScrollView>
-          </View>
+          </View> */}
       </View>
         </ScrollView>
     );
@@ -624,7 +642,7 @@ const styles = StyleSheet.create({
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
     marginLeft: wp("5%"),
-    marginTop: hp("1%"),
+    marginTop: hp("1.5%"),
     color: "#FF5E00"
   },
   recipe: {
@@ -694,12 +712,11 @@ const styles = StyleSheet.create({
     borderColor: "#115740",
     borderWidth: 3,
     marginHorizontal: wp ("5%"),
-    marginTop: hp("1%")
+    marginVertical: hp("1%")
   },
   backgroundImage: {
     width: wp("100%"),
     height: hp("35%"),
-    marginTop: hp("3%")
   },
   categoryImage: {
     width: wp("30%"),
@@ -718,10 +735,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: "#115740",
     borderWidth: 3,
-    marginTop:hp("-3%")
+    marginTop:hp("0.5%")
   },
   sliderDots: {
-    width: wp ("10%"),
+    width: wp ("5%"),
     height: hp ("1%"),
     borderRadius: 10,
     marginHorizontal: 8,
