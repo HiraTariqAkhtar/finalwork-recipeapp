@@ -6,18 +6,22 @@ import {
   Text,
   Image,
   ScrollView,
-  ImageBackground
+  ImageBackground,
+  Linking
 } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import axios from "axios";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Ionicons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 
-import {HOLIDAYS_API_KEY} from '@env'
+import {HOLIDAYS_API_KEY, WEATHER_API_KEY, NEWS_API_KEY} from '@env'
 import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore"; 
+
+import Carousel, { Pagination } from 'react-native-snap-carousel'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -33,23 +37,47 @@ export default class Home extends React.Component {
           ingredients: [],
           instructions: [],
           img: "",
+          chef: ""
         },
 
-      holidays: [{
-        name: "Independence Day",
-        description: "Pakistan celebrates its Independence Day on August 14. This day marks Pakistan’s emergence as an independent state.",
-        locations: "All",
+      holiday: {
+        name: "",
+        description: "",
+        locations: "",
         datetime: {
-            year: 2023,
-            month: 8,
-            day: 14
+            year: 0,
+            month: 0,
+            day: 0
         },
-        holidayType: "Public holiday"
-      }], 
+        holidayType: ""
+      }, 
 
       didYouKnow: "",
 
-      categories: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"]
+      categories: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
+
+      dateTime: {
+        date: "",
+        time: ""
+      },
+
+      weather: {
+        temp: "",
+        tempMax: "",
+        tempMin: "",
+        feelsLike: ""
+      },
+
+      newsHeadline: {
+        title: "",
+        img: "",
+        newsURL: "",
+        src: ""
+      },
+
+      activeSlide: 0,
+      user: ""
+
     };
 
   }
@@ -58,7 +86,79 @@ export default class Home extends React.Component {
     this.getRecipeOfTheDay()
     //this.getHolidays()
     this.getDidYouKnow()
+    this.getTimeAndDate()
+    this.getIslamabadWeather()
+    //this.getNewsHeadline()
+    this.getUser()
   }
+
+  async getUser() {
+    let userFirstName = await AsyncStorage.getItem("firstName")
+    if(userFirstName !== null) {
+      this.setState({user: userFirstName})
+    } else {
+      this.setState({user: ""})
+    }
+  }
+
+  async getTimeAndDate() {
+    setInterval(()=>{
+      let date = new Date().toLocaleDateString("en-GB", {timeZone: "Asia/Karachi"})
+      let time = new Date().toLocaleTimeString("en-GB", {timeZone: "Asia/Karachi"})
+      let timeWithoutSeconds = time.slice(0, -3)
+      //console.log(timeWithoutSeconds)
+      
+      let dateAndTime = {
+        date: date,
+        time: timeWithoutSeconds
+      }
+      //console.log(dateAndTime)
+      this.setState({dateTime: dateAndTime})
+    }, 1000)
+  }
+
+  async getIslamabadWeather() {
+    axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=33.7215&lon=73.0433&appid=${WEATHER_API_KEY}`)
+      .then((res) => {
+        //console.log(res.data.main)
+        let current_temp = this.kelvinToCelsius(res.data.main.temp)
+        let temp_max = this.kelvinToCelsius(res.data.main.temp_max)
+        let temp_min = this.kelvinToCelsius(res.data.main.temp_min)
+        let feels_like = this.kelvinToCelsius(res.data.main.feels_like)
+
+        let weatherInIslamabad = {
+          temp:`${current_temp} °C`,
+          tempMax: `${temp_max} °C`,
+          tempMin: `${temp_min} °C`,
+          feelsLike: `${feels_like} °C`
+        }
+
+        this.setState({weather: weatherInIslamabad})
+      })
+  }
+
+  kelvinToCelsius(kelvin) {
+    return Math.round(kelvin-273.15)
+  }
+
+  async getNewsHeadline() {
+    axios.get(`https://gnews.io/api/v4/top-headlines?country=pk&apikey=${NEWS_API_KEY}`)
+    .then((res) => {
+      //console.log(res.data.articles[0])
+      let article = res.data.articles[0]
+      let news = {
+        title: article.title,
+        img: article.image,
+        newsURL: article.url,
+        src: article.source.name
+      }
+
+      //console.log(news)
+      this.setState({newsHeadline: news})
+    })
+  }
+
+
 
   async getRecipeOfTheDay() {
     let recipes = []
@@ -69,6 +169,7 @@ export default class Home extends React.Component {
       recipeData.forEach((doc) => {
         if(doc.data().public == true) {
           recipes.push(doc.data())
+          recipes.sort((a,b) => a.id - b.id)
         }
       })
     }
@@ -123,7 +224,10 @@ export default class Home extends React.Component {
       timeNeeded: rec.timeNeeded,
       ingredients: rec.ingredients,
       instructions: rec.instructions,
-      category: rec.category
+      category: rec.category,
+      chef: rec.chef,
+      userId: rec.userId,
+      visible: rec.public
     })
   }
 
@@ -151,29 +255,8 @@ export default class Home extends React.Component {
                   }
               });
               holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
-              this.setState({holidays: holidaysThisMonth})
+               this.setState({holiday: holidaysThisMonth[0]})
             })
-
-      if(currentMonth != 12) {
-        for(let i = currentMonth+1; i <= 12; i++) {
-          axios.get(`https://calendarific.com/api/v2/holidays?api_key=${HOLIDAYS_API_KEY}&country=pk&month=${i}&year=${currentYear}`)
-          .then((res) => {
-              //console.log(res.data.response.holidays)
-              let holidays = res.data.response.holidays
-              holidays.forEach((holiday) => {
-                      holidaysThisMonth.push({
-                          name: holiday.name,
-                          description: holiday.description,
-                          locations: holiday.locations,
-                          datetime: holiday.date.datetime,
-                          holidayType: holiday.primary_type
-                      })
-              });
-              holidaysThisMonth.sort((a,b) => a.datetime.month - b.datetime.month)
-              this.setState({holidays: holidaysThisMonth})
-            })
-      }
-      }
   }
 
   async goToHolidaysPage(name, description, locations, day, month, year, holidayType) {
@@ -209,31 +292,6 @@ export default class Home extends React.Component {
 
 
   render() {
-    let rec = this.state.recipeOfTheDay
-
-    let holidays = this.state.holidays.map((holiday, index) =>
-    <TouchableOpacity
-      key = {index}
-      style={[
-        styles.holidays,
-        index === this.state.holidays.length - 1 ? styles.lastHoliday : null,
-      ]}
-      onPress={() => this.goToHolidaysPage(holiday.name, holiday.description, holiday.locations, holiday.datetime.day, holiday.datetime.month, holiday.datetime.year, holiday.holidayType)}
-      >
-      <Text  style={styles.holidayName}>{holiday.name}</Text>
-      <Text  style={styles.holidayDate}>{holiday.datetime.day} - {holiday.datetime.month} - {holiday.datetime.year}</Text>
-      {holiday.holidayType &&
-                  <View style={styles.iconText}>
-                <Ionicons
-                    name={"information-circle"}
-                    size={hp("3%")}
-                    color="#115740"
-                />
-                <Text style={styles.text}>{holiday.holidayType}</Text>
-              </View>}
-    </TouchableOpacity>
-    )
-
     let categoryImg = {
       'Bread': require('../assets/recipeApp/bread.jpeg'),
       'Curry': require('../assets/recipeApp/curry.jpeg'),
@@ -256,21 +314,239 @@ export default class Home extends React.Component {
         <Text style={styles.holidayName}>{category}</Text>
       </TouchableOpacity>
     );
+
     
 
-  
+    let welcome = 
+    <ImageBackground
+      source={require("../assets/recipeApp/bgHome.jpeg")}
+      resizeMode="cover"
+      style={styles.backgroundImage}
+    >
+      {this.state.user !== "" ? (
+        <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
+          Welcome {this.state.user}
+        </Text>
+      ) : (
+        <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
+          Welcome
+        </Text>
+      )}
+      <View style={styles.didYouKnow}>
+        <Text style={styles.fact}>Swipe to see more information about Pakistan</Text>
+      </View>
+    </ImageBackground>
+
+
+    let didYouKnow = 
+    <ImageBackground
+    source={require("../assets/recipeApp/bgDidYouKnow.jpg")}
+    resizeMode="cover"
+    style={styles.backgroundImage}>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Did you know that ...</Text>
+      <View style={styles.didYouKnow}>
+        <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
+      </View>
+    </ImageBackground>
+
+
+    let timeDate = 
+    <ImageBackground
+    source={require("../assets/recipeApp/bgTime.jpg")}
+    resizeMode="cover"
+    style={styles.backgroundImage}>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Time and date in Pakistan</Text>
+      <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly"}}>
+      	<View style={[styles.didYouKnow, {width: wp("40%")}]}>
+      	  <Text  style={styles.holidayName}>{this.state.dateTime.date}</Text>
+      	</View>
+      	<View style={[styles.didYouKnow, {width: wp("40%")}]}>
+      	  <Text  style={styles.holidayName}>{this.state.dateTime.time}</Text>
+      	</View>
+      </View>
+    </ImageBackground>
+
+    let weather = 
+    <ImageBackground
+    source={require("../assets/recipeApp/bgWeather.jpg")}
+    resizeMode="cover"
+    style={styles.backgroundImage}>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Weather in Islamabad</Text>
+      <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly", alignContent:"center"}}>
+        <View style={[styles.didYouKnow, {width: wp("40%")}]}>
+          <Text  style={styles.holidayName}>Temperature</Text>
+          <Text  style={styles.holidayName}>{this.state.weather.temp}</Text>
+        </View>
+          <View style={[styles.didYouKnow, {width: wp("40%")}]}>
+              <Text  style={styles.holidayName}>Feels like</Text>
+              <Text  style={styles.holidayName}>{this.state.weather.feelsLike}</Text>
+            </View>
+      </View>
+        <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly", alignContent:"center"}}>
+          <View style={[styles.didYouKnow, {width: wp("40%")}]}>
+              <Text  style={styles.holidayName}>Maximum</Text>
+              <Text  style={styles.holidayName}>{this.state.weather.tempMax}</Text>
+            </View>
+          <View style={[styles.didYouKnow, {width: wp("40%")}]}>
+          <Text  style={styles.holidayName}>Minimum</Text>
+              <Text  style={styles.holidayName}>{this.state.weather.tempMin}</Text>
+            </View>
+        </View>
+    </ImageBackground>
+
+let holiday = this.state.holiday
+    
+let nextHoliday =
+<ImageBackground
+source={require("../assets/recipeApp/bgHoliday.jpg")}
+resizeMode="cover"
+style={styles.backgroundImage}>
+  <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Upcoming holiday in Pakistan</Text>
+  <TouchableOpacity
+  style={[
+    styles.didYouKnow
+  ]}
+  onPress={() => this.goToHolidaysPage(holiday.name, holiday.description, holiday.locations, holiday.datetime.day, holiday.datetime.month, holiday.datetime.year, holiday.holidayType)}
+  >
+  <Text  style={styles.holidayName}>{holiday.name}</Text>
+  <View style={styles.iconText}>
+  <Ionicons
+    name={"calendar"}
+    size={hp("2.5%")}
+    color="#115740"
+  />
+  <Text  style={styles.text}>{holiday.datetime.day} - {holiday.datetime.month} - {holiday.datetime.year}</Text>
+  </View>
+  {holiday.holidayType &&
+    <View style={styles.iconText}>
+    <Ionicons
+        name={"information-circle"}
+        size={hp("3%")}
+        color="#115740"
+    />
+    <Text style={styles.text}>{holiday.holidayType}</Text>
+  </View>}
+
+  <View style={styles.iconText}>
+  <Ionicons
+    name={"newspaper"}
+    size={hp("2.5%")}
+    color="#115740"
+  />
+    <Text style={styles.text}>Click here to read more about the holiday</Text>
+  </View>
+</TouchableOpacity>
+</ImageBackground>
+
+    let news = 
+      <ImageBackground
+      source={require("../assets/recipeApp/bgNews.png")}
+      resizeMode="cover"
+      style={styles.backgroundImage}>
+        <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>News headline</Text>
+        <TouchableOpacity style={styles.didYouKnow} onPress={() => Linking.openURL(this.state.newsHeadline.newsURL)}>
+            <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+            {this.state.newsHeadline.img != "" ?(
+                  <Image
+                  source={{uri: this.state.newsHeadline.img}}
+                  style={styles.foodImg}
+                  />)
+                  : 
+                  <FontAwesome
+                      name={"image"}
+                      size={hp("15%")}
+                      color="#D3D3D3"
+                      marginRight={wp("3%")}
+                    />}
+                      <View>
+                        <Text style={[styles.holidayName, {width: wp("45%"), textAlign: "left"}]}>
+                          {this.state.newsHeadline.title}
+                        </Text>
+                        
+                      <View style={[styles.iconText, {width: wp("60%")}]}>
+                      <Ionicons
+                        name={"newspaper"}
+                        size={hp("2.5%")}
+                        color="#115740"
+                      />
+                        <Text style={styles.text}>Click here to read article</Text>
+                      </View>
+                        
+                      <View style={[styles.iconText, {width: wp("60%")}]}>
+                      <MaterialCommunityIcons
+                        name={"web"}
+                        size={hp("2.5%")}
+                        color="#115740"
+                      />
+                        <Text style={styles.text}>{this.state.newsHeadline.src}</Text>
+                      </View>
+                      </View>
+                    </View>
+        </TouchableOpacity>
+      </ImageBackground>
+
+    let header;
+    if(this.state.newsHeadline.title !== "" && this.state.holiday.name !== "") {
+      header = [
+        {content: (welcome)},
+        {content: (timeDate)},
+        {content: (weather)},
+        {content: (didYouKnow)},
+        {content: (nextHoliday)},
+        {content: (news)},
+      ]
+    } else if(this.state.newsHeadline.title !== "" && this.state.holiday.name == "") {
+      header = [
+        {content: (welcome)},
+        {content: (timeDate)},
+        {content: (weather)},
+        {content: (didYouKnow)},
+        {content: (news)},
+      ]
+    } else if(this.state.newsHeadline.title == "" && this.state.holiday.name !== "") {
+      header = [
+        {content: (welcome)},
+        {content: (timeDate)},
+        {content: (weather)},
+        {content: (didYouKnow)},
+        {content: (nextHoliday)},
+      ]
+    } else {
+      header = [
+        {content: (welcome)},
+        {content: (timeDate)},
+        {content: (weather)},
+        {content: (didYouKnow)},
+      ]
+    }
+
+    const renderItem = ({ item }) => (
+      <View>{item.content}</View>
+    );
+    
+
+    let rec = this.state.recipeOfTheDay
     return (
       <ScrollView>
         <View style={styles.container}>
-          <ImageBackground
-          source={require("../assets/recipeApp/bgHome.jpeg")}
-          resizeMode="cover"
-          style={styles.backgroundImage}>
-              <Text  style={[styles.sectionTitle, {marginTop: hp("3%")}]}>Did you know that ...</Text>
-            <View style={styles.didYouKnow}>
-              <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
-            </View>
-          </ImageBackground>
+          <View>
+            <Carousel
+            data = {header}
+            renderItem= {renderItem}
+            sliderWidth={wp("100%")}
+            itemWidth={wp("100%")}
+            layout="tinder"
+            onSnapToItem={(index) => this.setState({ activeSlide: index }) }
+            />
+            <Pagination
+              dotsLength={header.length}
+              activeDotIndex={this.state.activeSlide}
+              containerStyle={styles.slider}
+              dotStyle={styles.sliderDots}
+              inactiveDotOpacity={0.4}
+              inactiveDotScale={0.6}
+            />
+          </View>
           <View>
             <Text style={styles.sectionTitle}>Recipe of the day</Text>
             <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
@@ -294,6 +570,7 @@ export default class Home extends React.Component {
                   </Text>
   
                   <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+                    {rec.servings != "" && (
                     <View style={[styles.iconText, {marginRight: wp("5%")}]}>
                       <Ionicons
                         name={"people"}
@@ -302,8 +579,9 @@ export default class Home extends React.Component {
                       />
                       <Text style={styles.text}>{rec.servings}</Text>
   
-                    </View>
+                    </View>)}
   
+                    {rec.timeNeeded != "" && (
                     <View style={styles.iconText}>
                       <Ionicons
                         name={"stopwatch"}
@@ -311,7 +589,7 @@ export default class Home extends React.Component {
                         color="#115740"
                       />
                         <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
-                    </View>
+                    </View>)}
                   </View>
                   {rec.category && (
                 <View style={[styles.iconText, {width: wp("60%")}]}>
@@ -321,6 +599,15 @@ export default class Home extends React.Component {
                   color="#115740"
                 />
                   <Text style={styles.text}>{rec.category}</Text>
+                </View>)}
+                  {rec.chef && (
+                <View style={[styles.iconText, {width: wp("60%")}]}>
+                <MaterialCommunityIcons
+                  name={"chef-hat"}
+                  size={hp("2.5%")}
+                  color="#115740"
+                />
+                  <Text style={styles.text}>{rec.chef}</Text>
                 </View>)}
                 </View>
               </View>
@@ -333,13 +620,6 @@ export default class Home extends React.Component {
            {categories}
           </ScrollView>
           </View>
-  
-          <View>
-          <Text style={styles.sectionTitle}>Upcoming holidays in Pakistan</Text>
-          <ScrollView horizontal>
-           {holidays}
-          </ScrollView>
-          </View>
       </View>
         </ScrollView>
     );
@@ -350,12 +630,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:"#FFFFFF",
+    minHeight: hp("100%")
   },
   sectionTitle: {
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
     marginLeft: wp("5%"),
-    marginTop: hp("1%"),
+    marginTop: hp("1.5%"),
     color: "#FF5E00"
   },
   recipe: {
@@ -378,7 +659,7 @@ const styles = StyleSheet.create({
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
-    width: wp("55%")
+    width: wp("50%")
   },
   iconText: {
     display: "flex",
@@ -425,12 +706,11 @@ const styles = StyleSheet.create({
     borderColor: "#115740",
     borderWidth: 3,
     marginHorizontal: wp ("5%"),
-    marginTop: hp("1%")
+    marginVertical: hp("1%")
   },
   backgroundImage: {
     width: wp("100%"),
-    height: hp("30%"),
-    marginTop: hp("3%")
+    height: hp("35%"),
   },
   categoryImage: {
     width: wp("30%"),
@@ -439,5 +719,23 @@ const styles = StyleSheet.create({
   },
   lastHoliday: {
     marginRight: wp("5%")
+  },
+  slider: {
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    height: hp("3%"),
+    width: wp("90%"),
+    marginHorizontal: wp ("5%"),
+    paddingVertical: 0,
+    borderRadius: 10,
+    borderColor: "#115740",
+    borderWidth: 3,
+    marginTop:hp("0.5%")
+  },
+  sliderDots: {
+    width: wp ("5%"),
+    height: hp ("1%"),
+    borderRadius: 10,
+    marginHorizontal: 8,
+    backgroundColor: "#ff0000"
   }
 });

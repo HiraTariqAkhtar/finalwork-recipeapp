@@ -29,8 +29,16 @@ export default class Cookbook extends React.Component {
         myPublicRecipes:[],
         myPrivateRecipes:[]
       }
+  }
 
+  componentDidMount() {
+    this.getUser()
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.route.params?.refresh !== prevProps.route.params?.refresh) {
       this.getUser()
+    }
   }
 
   async getUser() {
@@ -75,155 +83,154 @@ export default class Cookbook extends React.Component {
   }
 
   goToRecipeDetails(rec) {
+    //console.log(rec)
     this.props.navigation.navigate("RecipeDetail", {
+      id: rec.id,
       recipeName: rec.recipeName,
       servings: rec.servings,
       timeNeeded: rec.timeNeeded,
       category: rec.category,
       ingredients: rec.ingredients,
       instructions: rec.instructions,
-      img: rec.img
+      img: rec.img,
+      userId: rec.userId,
+      visible: rec.public
     })
   }
 
 
   render() {
-    let recipes;
-    if(this.state.myPublicRecipes.length > 0 || this.state.myPrivateRecipes.length > 0) {
-      recipes = 
-      <View>
-        <Text style={styles.section}>Public Recipes</Text>
-        <ScrollView style={{height: hp("33%")}}>
-         { this.state.myPublicRecipes.map((rec) => (
-            <TouchableOpacity
-            key={rec.id}
-            style={styles.recipe}
-            onPress={() => this.goToRecipeDetails(rec)}>
-              <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-                 
-              {rec.img != "" ?(
-            <Image
-            source={{uri: rec.img}}
-            style={styles.foodImg}
-            />)
-            : 
-            <FontAwesome
-                name={"image"}
-                size={hp("15%")}
-                color="#D3D3D3"
-                marginRight={wp("3%")}
-              />}
-        
-                    <View>
-                      <Text style={styles.recipeName}>
-                        {rec.recipeName}
-                      </Text>
-                      
-                      <View style={{display:"flex", flexDirection:"row"}}>
-                        <View style={[styles.iconText, {marginRight: wp("5%")}]}>
-                          <Ionicons
-                            name={"people"}
-                            size={hp("2.5%")}
-                            color="#115740"
-                          />
-                          <Text style={styles.text}>{rec.servings}</Text>
-      
-                        </View>
-      
-                        <View style={styles.iconText}>
-                          <Ionicons
-                            name={"stopwatch"}
-                            size={hp("2.5%")}
-                            color="#115740"
-                          />
-                            <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
-                        </View>
-                      </View>
-        
-                      {rec.category.length > 0 && (
-                    <View style={[styles.iconText, {width: wp("60%")}]}>
-                    <FontAwesome
-                      name={"cutlery"}
-                      size={hp("2.5%")}
-                      color="#115740"
-                    />
-                      <Text style={styles.text}>{rec.category}</Text>
-                    </View>)}
-                    </View>
-                  </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+    let publicRecipes;
+    let privateRecipes;
+    let noRecipes;
 
-        <Text style={styles.section}>Private Recipes</Text>
-        <ScrollView style={{height: hp("33%")}}>
-         { this.state.myPrivateRecipes.map((rec) => (
-            <TouchableOpacity
-            key={rec.id}
-            style={styles.recipe}
-            onPress={() => this.goToRecipeDetails(rec)}>
-              <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
-              {rec.img != "" ?(
-            <Image
-            source={{uri: rec.img}}
-            style={styles.foodImg}
-            />)
-            : 
-            <FontAwesome
-                name={"image"}
-                size={hp("15%")}
-                color="#D3D3D3"
-                marginRight={wp("3%")}
-              />}
+    if(this.state.myPublicRecipes.length > 0) {
+      publicRecipes = 
+       this.state.myPublicRecipes.map((rec) => (
+          <TouchableOpacity
+          key={rec.id}
+          style={styles.recipe}
+          onPress={() => this.goToRecipeDetails(rec)}>
+            <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+            {rec.img != "" ?(
+          <Image
+          source={{uri: rec.img}}
+          style={styles.foodImg}
+          />)
+          : 
+          <FontAwesome
+              name={"image"}
+              size={hp("15%")}
+              color="#D3D3D3"
+              marginRight={wp("3%")}
+            />}
+            <View>
+              <Text style={styles.recipeName}>
+                {rec.recipeName}
+              </Text>
+              
+              <View style={{display:"flex", flexDirection:"row"}}>
+                <View style={[styles.iconText, {marginRight: wp("5%")}]}>
+                  <Ionicons
+                    name={"people"}
+                    size={hp("2.5%")}
+                    color="#115740"
+                  />
+                  <Text style={styles.text}>{rec.servings}</Text>
+    
+                </View>
+    
+                <View style={styles.iconText}>
+                  <Ionicons
+                    name={"stopwatch"}
+                    size={hp("2.5%")}
+                    color="#115740"
+                  />
+                    <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+                </View>
+                </View>
         
-                    <View>
-                      <Text style={styles.recipeName}>
-                        {rec.recipeName}
-                      </Text>
-                      
-                      <View style={{display:"flex", flexDirection:"row"}}>
-                        <View style={[styles.iconText, {marginRight: wp("5%")}]}>
-                          <Ionicons
-                            name={"people"}
-                            size={hp("2.5%")}
-                            color="#115740"
-                          />
-                          <Text style={styles.text}>{rec.servings}</Text>
-      
-                        </View>
-      
-                        <View style={styles.iconText}>
-                          <Ionicons
-                            name={"stopwatch"}
-                            size={hp("2.5%")}
-                            color="#115740"
-                          />
-                            <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
-                        </View>
-                      </View>
+                {rec.category.length > 0 && (
+              <View style={[styles.iconText, {width: wp("60%")}]}>
+              <FontAwesome
+                name={"cutlery"}
+                size={hp("2.5%")}
+                color="#115740"
+              />
+                <Text style={styles.text}>{rec.category}</Text>
+              </View>)}
+              </View>
+            </View>
+      </TouchableOpacity>
+    ))
+    } 
+    if(this.state.myPrivateRecipes.length > 0) {
+      privateRecipes=
+        this.state.myPrivateRecipes.map((rec) => (
+        <TouchableOpacity
+          key={rec.id}
+          style={styles.recipe}
+          onPress={() => this.goToRecipeDetails(rec)}>
+            <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
+            {rec.img != "" ?(
+          <Image
+          source={{uri: rec.img}}
+          style={styles.foodImg}
+          />)
+          : 
+          <FontAwesome
+              name={"image"}
+              size={hp("15%")}
+              color="#D3D3D3"
+              marginRight={wp("3%")}
+            />}
+            <View>
+              <Text style={styles.recipeName}>
+                {rec.recipeName}
+              </Text>
+              
+              <View style={{display:"flex", flexDirection:"row"}}>
+                <View style={[styles.iconText, {marginRight: wp("5%")}]}>
+                  <Ionicons
+                    name={"people"}
+                    size={hp("2.5%")}
+                    color="#115740"
+                  />
+                  <Text style={styles.text}>{rec.servings}</Text>
+    
+                </View>
+    
+                <View style={styles.iconText}>
+                  <Ionicons
+                    name={"stopwatch"}
+                    size={hp("2.5%")}
+                    color="#115740"
+                  />
+                    <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+                </View>
+                </View>
         
-                      {rec.category.length > 0 && (
-                    <View style={[styles.iconText, {width: wp("60%")}]}>
-                    <FontAwesome
-                      name={"cutlery"}
-                      size={hp("2.5%")}
-                      color="#115740"
-                    />
-                      <Text style={styles.text}>{rec.category}</Text>
-                    </View>)}
-                    </View>
-                  </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-    } else {
-      recipes = 
+                {rec.category.length > 0 && (
+              <View style={[styles.iconText, {width: wp("60%")}]}>
+              <FontAwesome
+                name={"cutlery"}
+                size={hp("2.5%")}
+                color="#115740"
+              />
+                <Text style={styles.text}>{rec.category}</Text>
+              </View>)}
+              </View>
+            </View>
+        </TouchableOpacity>
+      ))
+    }
+    if(!this.state.hasData){
+      noRecipes = 
       <View>
           <Text style={styles.noRecipes}>No recipes added yet</Text>
           <View style={{display:"flex", flexDirection:"row", justifyContent:"center"}}>
-                <Text style={styles.question}>Add a new recipe?</Text>
-                <Text style={styles.nav} onPress={() => this.props.navigation.navigate("AddRecipe")}>Click here</Text>
+              <Text style={styles.question}>Add a new recipe?</Text>
+              <Text style={styles.nav} onPress={() => this.props.navigation.navigate("AddRecipe")}>Click here</Text>
         </View>
       </View>
     }
@@ -240,7 +247,36 @@ export default class Cookbook extends React.Component {
           <Text style={styles.title}>My Cookbook</Text>
         </View>
         <View>
-            {recipes}
+          {this.state.myPrivateRecipes.length > 0 && this.state.myPublicRecipes.length > 0  ? (
+            <View>
+              <Text style={styles.section}>Public Recipes</Text>
+              <ScrollView style={{height: hp("33%")}}>
+                {publicRecipes}
+              </ScrollView>
+              <Text style={styles.section}>Private Recipes</Text>
+              <ScrollView style={{height: hp("33%")}}>
+                {privateRecipes}
+              </ScrollView>
+            </View>
+          ) : this.state.myPrivateRecipes.length > 0 && this.state.myPublicRecipes.length == 0  ? (
+          <View>
+            <Text style={styles.section}>Private Recipes</Text>
+            <ScrollView>
+              {privateRecipes}
+            </ScrollView>
+          </View>
+          ) : this.state.myPrivateRecipes.length == 0 && this.state.myPublicRecipes.length > 0 ?(
+            <View>
+            <Text style={styles.section}>Public Recipes</Text>
+            <ScrollView>
+              {publicRecipes}
+            </ScrollView>
+          </View>
+          ):
+            <View>
+            	{noRecipes}
+            </View>
+          }
         </View>
       </View>
     );

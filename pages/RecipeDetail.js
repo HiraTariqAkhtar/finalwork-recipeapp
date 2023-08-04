@@ -5,15 +5,19 @@ import {
   ScrollView,
   Text,
   Image,
-  ToastAndroid
+  ToastAndroid,
+  TouchableOpacity,
+  Alert
 } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Ionicons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {DATABASE} from "../firebaseConfig"
+import { collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore"; 
 
 
 export default class RecipeDetails extends React.Component {
@@ -29,16 +33,77 @@ export default class RecipeDetails extends React.Component {
         timeNeeded: this.props.route.params.timeNeeded,
         category: this.props.route.params.category,
         ingredients: this.props.route.params.ingredients,
-        instructions: this.props.route.params.instructions
+        instructions: this.props.route.params.instructions,
+        chef: "",
+        userId: this.props.route.params.userId,
+        visible: this.props.route.params.visible,
+        recipeId:""
       },
       fav: false,
+      recipeByCurrentUser: false,
+    }
+  }
+  componentDidMount() {
+    this.getRecipeDetails()
+  }
+
+  async getRecipeDetails() {
+    let userEmail = await AsyncStorage.getItem("email")
+    if(userEmail != null) {
+      let userId = ""
+      let userFirstName;
+      let userLastName;
+      let userCollection = collection(DATABASE, "users")
+      let userData = await getDocs(userCollection)
+      if (userData.size > 0) {
+        userData.forEach((doc) => {
+          if(doc.data().email === userEmail) {
+              userId = doc.id
+              userFirstName = doc.data().firstName
+              userLastName = doc.data().lastName
+          }
+        })
+      }
+      if(this.state.recipe.userId !== undefined && this.state.recipe.userId === userId) {
+        let chefName = `${userFirstName} ${userLastName}`
+        this.setState((prevState) => ({
+          recipe: {
+            ...prevState.recipe, 
+            chef: chefName
+          }, recipeByCurrentUser: true}))
+      } else{
+        this.setState((prevState) => ({
+          recipe: {
+            ...prevState.recipe, 
+            chef: this.props.route.params.chef
+          }, recipeByCurrentUser: false}))
+      }
+    } else{
+      this.setState((prevState) => ({
+        recipe: {
+          ...prevState.recipe, 
+          chef: this.props.route.params.chef
+        }, recipeByCurrentUser: false}))
     }
 
-      this.checkFav()
+    let recipeCollection = collection(DATABASE, "recipes")
+    let recipeData = await getDocs(recipeCollection)
+    if(recipeData.size > 1) {
+      recipeData.forEach((doc) => {
+        if(doc.data().id === this.state.recipe.id) {
+          this.setState((prevState) => ({
+            recipe: {
+              ...prevState.recipe, 
+              recipeId: doc.id
+            }
+          }))
+        }
+      })
+    }
+    this.checkFav()
   }
 
   async checkFav() {
-    //console.log(this.state.recipe)
     let fav = await AsyncStorage.getItem("favorites")
     if(fav) {
       favRecipesList = JSON.parse(fav)
@@ -113,27 +178,117 @@ export default class RecipeDetails extends React.Component {
     ToastAndroid.show(`${this.state.recipe.recipeName} removed from favorites`, ToastAndroid.SHORT)
   }
 
+  async editRecipeVisibility() {
+    Alert.alert(
+      "Change recipe visibility",
+      "Are you sure you want to change the visibility of this recipe?",
+      [
+        { text: "No", style:"cancel" },
+        { text: "Yes", onPress: () => {
+          updateDoc(doc(DATABASE, "recipes", this.state.recipe.recipeId), 
+          {public: !this.state.recipe.visible}
+          )
+          this.props.navigation.navigate("Cookbook", { refresh: Date.now() })
+        }
+        }
+      ]
+      );
+  }
+
+  async editRecipe() {
+    this.props.navigation.navigate("AddRecipe", {
+      recipe: this.state.recipe
+    })
+  }
+
+  async deleterecipe() {
+    Alert.alert(
+      "Delete recipe",
+      "Are you sure you want to delete this recipe?",
+      [
+        { text: "No", style:"cancel" },
+        { text: "Yes", onPress: () => {
+          deleteDoc(doc(DATABASE, "recipes", this.state.recipe.recipeId))
+          this.props.navigation.navigate("Cookbook", { refresh: Date.now() })
+        }
+        }
+      ]
+      );
+  }
+
   render() {
+    let rec = this.state.recipe
     let fav;
-    if(this.state.fav) {
-      fav=
+    let editRecipe;
+    let deleterecipe;
+
+    if(this.state.recipeByCurrentUser) {
+      if(rec.visible) {
+        fav= 
+        <TouchableOpacity
+        style= {[styles.editVisibility, {display: "flex", flexDirection: "row"}]}
+        onPress={() => this.editRecipeVisibility()}>
+          <Ionicons
+        name={"eye-off"}
+        color="#FFFFFF"
+        size={hp("3%")}
+        marginRight={wp("1%")}
+        />
+        <Text style= {styles.btnText}> Make recipe private</Text>
+        </TouchableOpacity>
+      }
+      else {
+        fav= 
+        <TouchableOpacity 
+        style= {[styles.editVisibility, {display: "flex", flexDirection: "row"}]}
+        onPress={() => this.editRecipeVisibility()}>
+          <Ionicons
+        name={"eye"}
+        color="#FFFFFF"
+        size={hp("3%")}
+        marginRight={wp("1%")}
+        />
+        <Text style= {styles.btnText}> Make recipe public</Text>
+        </TouchableOpacity>
+      }
+
+      editRecipe = 
+      <FontAwesome
+          name={"edit"}
+          size={hp("4%")}
+          color="#115740"
+          marginRight={wp("10%")}
+          onPress={() => this.editRecipe()}
+        />
+
+      deleterecipe = 
       <Ionicons
-      name={"heart"}
-      color="#FF0000"
-      size={hp("5%")}
-      onPress={() => this.removeFromFav()}
-      />
+          name={"trash-outline"}
+          size={hp("4%")}
+          color="#ff0000"
+          onPress={() => this.deleterecipe()}
+        />
     } else {
-      fav=
-      <Ionicons
-      name={"heart-outline"}
-      color="#FF0000"
-      size={hp("5%")}
-      onPress={() => this.addToFav()}
-      />
+      if(this.state.fav) {
+        fav=
+        <Ionicons
+        name={"heart"}
+        color="#FF0000"
+        size={hp("5%")}
+        onPress={() => this.removeFromFav()}
+        />
+      } else {
+        fav=
+        <Ionicons
+        name={"heart-outline"}
+        color="#FF0000"
+        size={hp("5%")}
+        onPress={() => this.addToFav()}
+        />
+      }
     }
 
-    let rec = this.state.recipe
+
     return (
       <View style={styles.container}>
          <View style={styles.header}>
@@ -143,10 +298,14 @@ export default class RecipeDetails extends React.Component {
               color="#115740"
               onPress={() => this.props.navigation.goBack()}
             />
-          <Text style={styles.pageTitle}>{rec.recipeName}</Text>
+          <Text style={[styles.pageTitle, {textAlign: "center"}]}>{rec.recipeName}</Text>
           {fav}
         </View>
           <ScrollView style={styles.recipe}> 
+          <View style= {{display: "flex", flexDirection: "row", justifyContent: "center", marginBottom: hp("2%")}}>
+            {editRecipe}
+            {deleterecipe}
+          </View>
         {rec.img != "" && rec.img !== undefined ?(
           <Image
           source={{uri: rec.img}}
@@ -161,6 +320,7 @@ export default class RecipeDetails extends React.Component {
             />}
           
           <View style={styles.info}>
+          {rec.servings && (
           <View style={styles.iconText}>
             <Ionicons
               name={"people"}
@@ -168,8 +328,9 @@ export default class RecipeDetails extends React.Component {
               color="#115740"
             />
               <Text style={styles.text}>{rec.servings}</Text>
-          </View>
+          </View>)}
 
+            {rec.timeNeeded && (
             <View style={styles.iconText}>
               <Ionicons
               name={"stopwatch"}
@@ -177,7 +338,7 @@ export default class RecipeDetails extends React.Component {
               color="#115740"
             />
               <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
-            </View>
+            </View>)}
           </View>
 
             {rec.category && (
@@ -191,16 +352,32 @@ export default class RecipeDetails extends React.Component {
                 <Text style={styles.text}>{rec.category}</Text>
             </View>)}
 
+            {rec.chef && (
+            <View style={styles.iconText}>
+            <MaterialCommunityIcons
+              name={"chef-hat"}
+              size={hp("4%")}
+              color="#115740"
+              marginRight={wp("1%")}
+            />
+                <Text style={styles.text}>{rec.chef}</Text>
+            </View>)}
+
                 <View>
                     <Text style={styles.pageTitle}>Ingredients</Text>
-                    {rec.ingredients.map((i) => (
-                    <View style={styles.iconText}>
+                    {rec.ingredients.map((i, index) => (
+                    <View key={`Ingredient${index}`} style={styles.iconText}>
                         <FontAwesome
                           name={"circle"}
                           size={hp("1%")}
                           color="#115740"
                         />
+                        {i.quantity !== 0 && (
                         <Text style={styles.text}>{i.quantity}</Text>
+                        )}
+                        {i.unit !== "N/A"&&(
+                        <Text style={styles.text}>{i.unit}</Text>
+                        )}
                         <Text style={styles.text}>{i.name}</Text>
                         <Ionicons
                           name={"cart"}
@@ -215,8 +392,8 @@ export default class RecipeDetails extends React.Component {
 
                 <View style={{marginBottom: hp("5%")}}>
                     <Text style={styles.pageTitle}>Instructions</Text>
-                    {rec.instructions.map((step) => (
-                    <View style= {{marginBottom: hp("2%")}}>
+                    {rec.instructions.map((step, index) => (
+                    <View key={`Instruction${index}`} style= {{marginBottom: hp("2%")}}>
                         <Text style={styles.steps}>Step {step.number}:</Text>
                         <Text style={styles.text}>{step.step}</Text>
                     </View>
@@ -255,6 +432,7 @@ const styles = StyleSheet.create({
     color: "#FF5E00",
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
+    width: wp("60%"),
   },
   info: {
     display: "flex",
@@ -292,5 +470,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: hp("1%"),
     marginHorizontal: wp("5%")
-  }
+  },
+  editVisibility: {
+    width: wp("25%"),
+    padding: hp("1%"),
+    backgroundColor: "#115740",
+    borderRadius: 10,
+  },
+  btnText:{
+    fontFamily:"Nunito_700Bold",
+    color: "#ffffff",
+    fontSize: hp("1.25%"),
+    width: wp("15%"),
+},
 });

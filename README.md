@@ -18,6 +18,8 @@ To get started with the app, run the following commands in your terminal:
 1. Register for the following APIs to obtain API keys:
   - [Calendarific API](https://calendarific.com/api-documentation)
   - [Location API](https://developer.here.com/documentation/geocoding-search-api/dev_guide/topics/quick-start.html)
+  - [Weather API](https://openweathermap.org/api)
+  - [News API](https://gnews.io/)
 2. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/u/0/) and link a web app to it (click on '</>').
    - Copy the Firebase configuration code that looks like this:
      ```
@@ -42,6 +44,8 @@ To get started with the app, run the following commands in your terminal:
     FIREBASE_MEASUREMENT_ID={Firebase measurementId}
     HOLIDAYS_API_KEY={Calendarific api key}
     LOCATION_API_KEY={HERE geocoding api key}
+    WEATHER_API_KEY={OpenWeatherMap api key}
+    NEWS_API_KEY={gnews api key}
     ```
 
 ## Running the application

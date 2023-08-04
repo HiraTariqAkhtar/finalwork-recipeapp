@@ -13,7 +13,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Ionicons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { collection, getDocs } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
@@ -24,8 +24,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default class Recipes extends React.Component {
   constructor(props) {
     super(props);
-    this.getRecipes()
-
 
     this.state = {
       recipes: [
@@ -38,6 +36,7 @@ export default class Recipes extends React.Component {
           ingredients: [],
           instructions: [],
           img: "",
+          chef: ""
         },
       ],
 
@@ -45,6 +44,7 @@ export default class Recipes extends React.Component {
       allServings:["<5 ppl", "5-10 ppl", ">10 ppl"],
       allPrepTime:["<10 minutes", "10-30 minutes", ">30 minutes"],
       allIngredientAmount:["<5 ingredients", "5-10 ingredients", ">10 ingredients"],
+      allChefs:[],
 
       filterScreenVisible: false,
       filters: [],
@@ -53,20 +53,24 @@ export default class Recipes extends React.Component {
       servingsCheckedInFilter: [],
       prepTimeCheckedInFilter: [],
       ingredientAmountCheckedInFilter: [],
+      chefCheckedInFilter: [],
 
       selectedCategory: "",
       selectedServings: "",
       selectedPrepTime: "",
-      selectedIngredientAmount: ""
+      selectedIngredientAmount: "",
+      selectedChef: "",
     };
-  }
+    this.getRecipes()
 
+  }
 
   async getRecipes() {
     let selectedCategoryFromHome = this.props.route.params?.category;
     //console.log(selectedCategoryFromHome)
 
     let recipes = []
+    let chefs = []
     let recipeCollection = collection(DATABASE, "recipes")
     let recipeData = await getDocs(recipeCollection)
     if (recipeData.size > 0) {
@@ -84,14 +88,20 @@ export default class Recipes extends React.Component {
       } else {
         recipeData.forEach((doc) => {
           if(doc.data().public == true) {
-            recipes.push(doc.data())
+            recipes.push(doc.data()) 
           }
         })
       }
+      recipeData.forEach((doc) => {
+        if(!chefs.includes(doc.data().chef) && doc.data().chef !== undefined && doc.data().chef !== "") {
+          chefs.push(doc.data().chef)
+          chefs.sort()
+        }
+      })
     }
-
     //console.log(recipes)
-    this.setState({recipes: recipes})
+    //console.log(chefs)
+    this.setState({recipes: recipes, allChefs: chefs})
   }
 
   goToRecipeDetails(rec) {
@@ -103,7 +113,10 @@ export default class Recipes extends React.Component {
       timeNeeded: rec.timeNeeded,
       ingredients: rec.ingredients,
       instructions: rec.instructions,
-      category: rec.category
+      category: rec.category,
+      chef: rec.chef,
+      userId: rec.userId,
+      visible: rec.public
     })
   }
 
@@ -232,6 +245,16 @@ export default class Recipes extends React.Component {
         })
       }
     }
+
+    if(this.state.selectedChef != "") {
+      recipeData.forEach((doc) => {
+        if(doc.data().chef === this.state.selectedChef) {
+          if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
+            filteredRecipes.push(doc.data())
+          }
+        }
+      })
+    }
     }
 
     this.setState({recipes: filteredRecipes})
@@ -268,6 +291,9 @@ export default class Recipes extends React.Component {
     if(this.state.selectedIngredientAmount != "") {
       filters.push(this.state.selectedIngredientAmount)
     }
+    if(this.state.selectedChef != "") {
+      filters.push(this.state.selectedChef)
+    }
   
     this.setState({ filters: filters })
 
@@ -300,6 +326,11 @@ export default class Recipes extends React.Component {
       this.setState({ selectedIngredientAmount: "" , ingredientAmountCheckedInFilter: this.state.ingredientAmountCheckedInFilter});
     }
 
+    if (filter === this.state.selectedChef) {
+      this.state.chefCheckedInFilter.fill(false)
+      this.setState({ selectedChef: "" , chefCheckedInFilter: this.state.chefCheckedInFilter});
+    }
+
     if(filtersLeft.length == 0) {
       this.getRecipes()
     } else {
@@ -326,7 +357,7 @@ export default class Recipes extends React.Component {
 
   render() {
     let filterSelectionCategory = this.state.allCategories.map((category, index) => (
-      <View style={styles.iconText} key={index}>
+      <View style={styles.iconText} key={`category${index}`}>
         <Ionicons
           name={this.state.categoryCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
@@ -342,7 +373,7 @@ export default class Recipes extends React.Component {
     ));
 
     let filterSelectionServings = this.state.allServings.map((serving, index) => (
-      <View style={styles.iconText} key={index}>
+      <View style={styles.iconText} key={`serving${index}`}>
         <Ionicons
           name={this.state.servingsCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
@@ -358,7 +389,7 @@ export default class Recipes extends React.Component {
     ));
 
     let filterSelectionPrepTime = this.state.allPrepTime.map((time, index) => (
-      <View style={styles.iconText} key={index}>
+      <View style={styles.iconText} key={`prepTime${index}`}>
         <Ionicons
           name={this.state.prepTimeCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
@@ -374,7 +405,7 @@ export default class Recipes extends React.Component {
     ));
 
     let filterSelectionIngredients = this.state.allIngredientAmount.map((ingredients, index) => (
-      <View style={styles.iconText} key={index}>
+      <View style={styles.iconText} key={`Ingredients${index}`}>
         <Ionicons
           name={this.state.ingredientAmountCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
           color="#115740"
@@ -386,6 +417,22 @@ export default class Recipes extends React.Component {
           }}
         />
         <Text style={styles.filterText}>{ingredients}</Text>
+      </View>
+    ));
+
+    let filterSelectionChefs = this.state.allChefs.map((chef, index) => (
+      <View style={styles.iconText} key={`chef${index}`}>
+        <Ionicons
+          name={this.state.chefCheckedInFilter[index] ? "radio-button-on" : "radio-button-off"}
+          color="#115740"
+          size={hp("3%")}
+          marginLeft={wp("3%")}
+          onPress={() => {
+            this.setState({selectedChef: chef})
+            this.selectRadioBtn(this.state.chefCheckedInFilter, index)
+          }}
+        />
+        <Text style={styles.filterText}>{chef}</Text>
       </View>
     ));
     
@@ -418,6 +465,7 @@ export default class Recipes extends React.Component {
                 </Text>
                 
                 <View style={{display:"flex", flexDirection:"row"}}>
+                  {rec.servings != "" && (
                   <View style={[styles.iconText, {marginRight: wp("5%")}]}>
                     <Ionicons
                       name={"people"}
@@ -425,9 +473,9 @@ export default class Recipes extends React.Component {
                       color="#115740"
                     />
                     <Text style={styles.text}>{rec.servings}</Text>
+                  </View>)}
 
-                  </View>
-
+                  {rec.timeNeeded != "" && (
                   <View style={styles.iconText}>
                     <Ionicons
                       name={"stopwatch"}
@@ -435,7 +483,7 @@ export default class Recipes extends React.Component {
                       color="#115740"
                     />
                       <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
-                  </View>
+                  </View>)}
                 </View>
   
               {rec.category && (
@@ -446,6 +494,16 @@ export default class Recipes extends React.Component {
                 color="#115740"
               />
                 <Text style={styles.text}>{rec.category}</Text>
+              </View>)}
+
+              {rec.chef && (
+              <View style={[styles.iconText, {width: wp("60%")}]}>
+              <MaterialCommunityIcons
+                name={"chef-hat"}
+                size={hp("2.5%")}
+                color="#115740"
+              />
+                <Text style={styles.text}>{rec.chef}</Text>
               </View>)}
               </View>
             </View>
@@ -506,37 +564,46 @@ export default class Recipes extends React.Component {
               marginTop={hp("3%")}
               onPress={() => this.closeFilterScreen()}
             />
-              <View>
-                <Text style={styles.category}>Category</Text>
-                <View style={styles.filterChoice}>
-                  {filterSelectionCategory}
+              <ScrollView>
+                <View>
+                  <Text style={styles.category}>Chef</Text>
+                  <View style={styles.filterChoice}>
+                    {filterSelectionChefs}
+                  </View>
                 </View>
-              </View>
   
-              <View>
-                <Text style={styles.category}>Servings</Text>
-                <View style={styles.filterChoice}>
-                  {filterSelectionServings}
+                <View>
+                  <Text style={styles.category}>Category</Text>
+                  <View style={styles.filterChoice}>
+                    {filterSelectionCategory}
+                  </View>
                 </View>
-              </View>
+    
+                <View>
+                  <Text style={styles.category}>Servings</Text>
+                  <View style={styles.filterChoice}>
+                    {filterSelectionServings}
+                  </View>
+                </View>
+    
+                <View>
+                  <Text style={styles.category}>Preperation time</Text>
+                  <View style={styles.filterChoice}>
+                   {filterSelectionPrepTime}
+                  </View>
+                </View>
+    
+                <View>
+                  <Text style={styles.category}>Number of ingredients</Text>
+                  <View style={styles.filterChoice}>
+                    {filterSelectionIngredients}
+                  </View>
+                </View>
   
-              <View>
-                <Text style={styles.category}>Preperation time</Text>
-                <View style={styles.filterChoice}>
-                 {filterSelectionPrepTime}
-                </View>
-              </View>
-  
-              <View>
-                <Text style={styles.category}>Number of ingredients</Text>
-                <View style={styles.filterChoice}>
-                  {filterSelectionIngredients}
-                </View>
-              </View>
-
-            <TouchableOpacity style={styles.button} onPress={() => this.applyFilter()}>
-              <Text style={styles.btnText}>Apply filter(s)</Text>
-            </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, {marginBottom: hp("5%")}]} onPress={() => this.applyFilter()}>
+                <Text style={styles.btnText}>Apply filter(s)</Text>
+              </TouchableOpacity>
+              </ScrollView>
             
         </Modal>
       </View>
@@ -583,7 +650,7 @@ const styles = StyleSheet.create({
     fontSize: hp("3%"),
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
-    width: wp("55%")
+    width: wp("50%")
   },
   iconText: {
     display: "flex",

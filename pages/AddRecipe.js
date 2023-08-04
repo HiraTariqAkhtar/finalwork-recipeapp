@@ -16,29 +16,83 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import SelectDropdown from 'react-native-select-dropdown'
 
-
-import { collection, getDocs, addDoc } from "firebase/firestore"; 
+import { collection, getDocs, addDoc, updateDoc, doc } from "firebase/firestore"; 
 import {DATABASE, STORAGE } from "../firebaseConfig"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from 'expo-image-picker'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
-import uuid from 'react-native-uuid';
-
 
 export default class AddRecipe extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
+    if(this.props.route.params?.recipe !== undefined) {
+      let rec = this.props.route.params.recipe
+      let visibilitySelected;
+      let categorySelected;
+      let visibility;
+
+      if(rec.visible) {
+        visibilitySelected = [true, false]
+        visibility = "Public"
+      } else {
+        visibilitySelected = [false, true]
+        visibility = "Private"
+      }
+
+      if(rec.category === "Bread") {
+        categorySelected = [true, false, false, false, false, false]
+      } else if(rec.category === "Curry") {
+        categorySelected = [false, true, false, false, false, false]
+      } else if(rec.category === "Dessert") {
+        categorySelected = [false, false, true, false, false, false]
+      } else if(rec.category === "Rice") {
+        categorySelected = [false, false, false, true, false, false]
+      } else if(rec.category === "Snack") {
+        categorySelected = [false, false, false, false, true, false]
+      } else if(rec.category === "Sweets") {
+        categorySelected = [false, false, false, false, false, true]
+      }
+
+
+      this.state = {
+        userId: 0,
+
+        servings: rec.servings.toString(),
+        recipeName: rec.recipeName,
+        ingredients: rec.ingredients,
+        instructions: rec.instructions,
+        time: rec.timeNeeded.toString(),
+
+        categorySelection: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
+        visibilitySelection: ["Public", "Private"],
+        unitOptions: ["N/A", "tbsp", "tsp", "cup", "A pinch", "kg", "g", "liter", "bunch", "piece", "can", "A few drops", "A little bit", "To taste", "To fry", "As required", "For garnishing"],
+
+
+        categoryCheckedInFilter: categorySelected,
+        visibilityCheckedInFilter: visibilitySelected,
+
+
+        selectedCategory: rec.category,
+        selectedVisibility: visibility,
+        imgUrl: rec.img,
+
+        isLoading: false,
+        imgLoading: false
+      }
+    } else {
+      this.state = {
         userId: 0,
 
         servings: 0,
         recipeName: "",
         ingredients: [{
             name: "",
-            quantity: ""
+            quantity: "",
+            unit: ""
         }],
         instructions: [{
             number: 0, 
@@ -48,6 +102,7 @@ export default class AddRecipe extends React.Component {
 
         categorySelection: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
         visibilitySelection: ["Public", "Private"],
+        unitOptions: ["N/A", "tbsp", "tsp", "cup", "A pinch", "kg", "g", "liter", "bunch", "piece", "can", "A few drops", "A little bit", "To taste", "To fry", "As required", "For garnishing"],
 
         categoryCheckedInFilter: [],
         visibilityCheckedInFilter: [],
@@ -56,7 +111,9 @@ export default class AddRecipe extends React.Component {
         selectedVisibility: "",
         imgUrl: "",
 
-        isLoading: false
+        isLoading: false,
+        imgLoading: false
+    }
     }
     this.getUser()
   }
@@ -114,6 +171,10 @@ selectCategory(i, category) {
       let ingredients= [... this.state.ingredients]
       ingredients[index][param] = ingredient
 
+      if(ingredient === "To taste" || ingredient === "A pinch" || ingredient === "To fry" || ingredient === "As required" || ingredient === "A little bit" || ingredient === "A few drops" || ingredient === "For garnishing"){
+        ingredients[index]["quantity"] = 0
+      }
+
       //console.log(ingredients)
 
       this.setState({ingredients: ingredients})
@@ -123,7 +184,8 @@ selectCategory(i, category) {
       let ingredients= [... this.state.ingredients]
       ingredients.push({
           name:"",
-          quantity:""
+          quantity:0,
+          unit: ""
         })
         
       this.setState({ingredients: ingredients})
@@ -159,6 +221,26 @@ selectCategory(i, category) {
 
     this.setState({instructions: this.state.instructions})
   }
+
+  dragInstructionUp(index) {
+      let instructions = [...this.state.instructions];
+    let currentInstruction = instructions[index].step
+      instructions[index].step = instructions[index - 1].step
+      instructions[index -1].step = currentInstruction
+
+      console.log(instructions)
+      this.setState({instructions: instructions})
+  };
+
+  dragInstructionDown(index) {
+    let instructions = [...this.state.instructions];
+    let currentInstruction = instructions[index].step
+    instructions[index].step = instructions[index + 1].step
+    instructions[index + 1].step = currentInstruction
+
+    console.log(instructions)
+    this.setState({instructions: instructions})
+  };
 
   async selectPhoto() {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -201,19 +283,15 @@ selectCategory(i, category) {
   }
 
   async uploadPic() {
-    const imgRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)
-    await getDownloadURL(imgRef)
-    .then((img) => {
-      this.setState({imgUrl: img})
-    })
-  }
-
-  async editPhoto() {
+    this.setState({imgLoading: true})
+    setTimeout(async() => {
       const imgRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)
-      await deleteObject(imgRef)
-      .then(() => {
-        this.selectPhoto()
+      await getDownloadURL(imgRef)
+      .then((img) => {
+        this.setState({imgUrl: img})
       })
+      this.setState({imgLoading: false})
+    }, 100)  
   }
 
   confirmDelete() {
@@ -228,39 +306,86 @@ selectCategory(i, category) {
   }
 
   async removePhoto() {
-    const imgRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)
-    await deleteObject(imgRef)
-    .then(() => {
-      this.setState({imgUrl: ""})
-      ToastAndroid.show("Picture removed", ToastAndroid.SHORT)
-    })
+    this.setState({imgLoading: true})
+    setTimeout(async() => {
+      const imgRef = ref(STORAGE, `recipe-${this.state.recipeName}-user-${this.state.userId}`)
+      await deleteObject(imgRef)
+      .then(() => {
+        this.setState({imgUrl: ""})
+        ToastAndroid.show("Picture removed", ToastAndroid.SHORT)
+      })
+      this.setState({imgLoading: false})
+    }, 100)  
+    
   }
 
    checkInputFields() {
-      if(this.state.recipeName == "") {
+     let unitNotSelected;
+     let noQuantity;
+     let noIngredient;
+     this.state.ingredients.some((ingredient) => {
+       if(ingredient.unit === "") {
+         unitNotSelected = true
+       } else {
+         unitNotSelected = false
+       }
+
+       if(ingredient.quantity === "") {
+         noQuantity = true
+       }else {
+         noQuantity = false
+       }
+
+       if(ingredient.name === "") {
+         noIngredient = true
+       }else {
+         noIngredient = false
+       }
+     })
+
+     let noInstructions;
+     this.state.instructions.forEach((step) => {
+       if(step.step === "") {
+        noInstructions = true
+       } else {
+        noInstructions = false
+       }
+     })
+
+      if(this.state.selectedVisibility == "") {
           Alert.alert(
-              "Recipe name required",
-              "Please enter a recipe name"
-              )
-      } else if(this.state.selectedVisibility == "") {
+            "Visibility required",
+            "Please select visibility"
+          )
+      } else if(this.state.recipe == "") {
           Alert.alert(
-              "Visibility required",
-              "Please select visibility"
-              )
+            "Recipe name required",
+            "Please enter a recipe name"
+          )
       } else if(this.state.selectedCategory == "") {
           Alert.alert(
               "Category required",
               "Please select a category"
               )
-      } else if(this.state.ingredients.length == 1 && (this.state.ingredients[0].name == "" || this.state.ingredients[0].quantity == "")) {
+      } else if(noQuantity) {
           Alert.alert(
-              "Ingredients required",
-              "Please enter all ingredients"
+            "Quantity required",
+            "Please enter a quantity for each ingredient"
               )
-      } else if(this.state.instructions.length == 1 && this.state.instructions[0].step == "") {
+      } else if(noIngredient) {
+        Alert.alert(
+            "Ingredients required",
+            "Please enter all ingredients"
+            )
+      }else if(unitNotSelected) {
+        Alert.alert(
+          "Unit required",
+          "Please select a unit for each ingredient"
+          )
+      } else if(noInstructions) {
           Alert.alert(
               "Instructions required",
-              "Please enter the instructions"
+              "Please enter all instructions"
               )
       } else {
           this.addRecipe()
@@ -276,29 +401,47 @@ selectCategory(i, category) {
     visible = false
   }
 
-  this.setState({isLoading: true})
-  setTimeout(() => {
-    let recipeCollection = collection(DATABASE, "recipes")
-  
-     addDoc((recipeCollection), {
-     userId: this.state.userId,
-     id: uuid.v4(),
-     servings: this.state.servings,
-     recipeName: this.state.recipeName,
-     ingredients: this.state.ingredients,
-     instructions: this.state.instructions,
-     category: this.state.selectedCategory,
-     timeNeeded: this.state.time,
-     img: this.state.imgUrl,
-     public: visible
-   })
+  let userCollection = collection(DATABASE, "recipes")
+  let userData = await getDocs(userCollection)
 
-   this.goToRecipeDetails()
+  this.setState({isLoading: true})
+  
+  setTimeout(() => {
+    if(this.props.route.params?.recipe !== undefined) {
+      let rec = this.props.route.params.recipe
+      updateDoc(doc(DATABASE, "recipes", rec.recipeId),{
+        servings: this.state.servings,
+        recipeName: this.state.recipeName,
+        ingredients: this.state.ingredients,
+        instructions: this.state.instructions,
+        category: this.state.selectedCategory,
+        timeNeeded: this.state.time,
+        img: this.state.imgUrl,
+        public: visible,
+      })
+      
+    } else {
+      let recipeCollection = collection(DATABASE, "recipes")
+      addDoc((recipeCollection), {
+        userId: this.state.userId,
+        id: userData.size + 1,
+        servings: this.state.servings,
+        recipeName: this.state.recipeName,
+        ingredients: this.state.ingredients,
+        instructions: this.state.instructions,
+        category: this.state.selectedCategory,
+        timeNeeded: this.state.time,
+        img: this.state.imgUrl,
+        public: visible,
+        chef: "A registered user"
+      })
+    }
+   this.goToCookbook()
   }, 100)    
   }
 
-  goToRecipeDetails() {
-    this.props.navigation.navigate("Cookbook")
+  goToCookbook() {
+    this.props.navigation.navigate("Cookbook", { refresh: Date.now() })
 
     this.setState({
         recipeName: "",
@@ -307,7 +450,8 @@ selectCategory(i, category) {
         category: [],
         ingredients: [{
             name: "",
-            quantity: ""
+            quantity: 0,
+            unit: ""
         }],
         instructions: [{
             number: 0, 
@@ -383,13 +527,22 @@ selectCategory(i, category) {
         	<Image
         	src= {this.state.imgUrl}
         	style={styles.foodImg}/>
-          <TouchableOpacity style={[styles.photoOptions, {marginTop: hp("-13%"), backgroundColor: "#115740"}]} onPress={() => this.editPhoto()}>
+          <TouchableOpacity style={[styles.photoOptions, {marginTop: hp("-13%"), backgroundColor: "#115740"}]} onPress={() => this.selectPhoto()}>
             <Text style={styles.btnText}>Select another photo</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.photoOptions, {marginTop: hp("1%"), backgroundColor: "#FF0000"}]} onPress={() => this.confirmDelete()}>
             <Text style={styles.btnText}>Remove photo</Text>
           </TouchableOpacity>
         </View>
+    }
+
+    let addBtnText;
+    if(this.props.route.params?.recipe !== undefined) {
+      addBtnText=
+      <Text style={styles.btnText}>Edit recipe</Text>
+    } else {
+      addBtnText=
+      <Text style={styles.btnText}>Add recipe</Text>
     }
 
     return (
@@ -440,16 +593,31 @@ selectCategory(i, category) {
                 {filterSelectionCategory}
               </View>
 
-            <Text style={styles.text}>Ingredients *</Text>
+            <Text style={[styles.text, {marginBottom:hp("0")}]}>Ingredients *</Text>
+            <Text style={[styles.info, {width:wp("90%"), marginBottom:hp("1")}]}>Please select "N/A" as unit if no specific unit is required.</Text>
             {this.state.ingredients.map((ingredient, index) => (
                 <View style={{display:"flex", flexDirection:"row"}} key={index}>
                 <TextInput
-                style={[styles.placeholder, {width:wp("20%")}]}
-                placeholder="quantity"
+                style={[styles.placeholder, {width:wp("10%"), marginRight:wp("1.5%")}]}
+                placeholder="0"
+                inputMode="numeric"
                 value={ingredient.quantity}
                 onChangeText={(txt) => this.addIngredient(txt, index, "quantity")}/>
+                <SelectDropdown
+                  buttonStyle = {[styles.placeholder, {width:wp("30%"), marginRight:wp("0%"), marginLeft:wp("1.5%"), backgroundColor:"#FFF"}]}
+                  buttonTextStyle = {styles.filterText}
+                  dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10}}
+                  rowTextStyle = {styles.filterText}
+                  data = {this.state.unitOptions}
+                  onSelect={(selectedItem) => {
+                    this.addIngredient(selectedItem, index, "unit")
+                  }}
+                  defaultButtonText= {ingredient.unit}
+                  renderDropdownIcon={isOpened => {
+                    return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
+                  }}/>
                 <TextInput
-                style={[styles.placeholder, {width:wp("45%")}]}
+                style={[styles.placeholder, {width:wp("30%"), marginHorizontal:wp("0%")}]}
                 placeholder="ingredient"
                 value={ingredient.name}
                 onChangeText={(txt) => this.addIngredient(txt, index, "name")}/>
@@ -471,12 +639,31 @@ selectCategory(i, category) {
             </View>
             ))}
 
-            <Text style={styles.text}>Instructions *</Text>
+            <Text style={[styles.text, {marginBottom:hp("0")}]}>Instructions *</Text>
+            <Text style={[styles.info, {width:wp("90%"), marginBottom:hp("1")}]}>You can reorder the instructions by clicking on the correct arrow</Text>
             {this.state.instructions.map((instruction, index) => (
                 <View style={[styles.iconText, {display:"flex", flexDirection:"row"}]} key={index}>
-                <Text style={[styles.text, {marginLeft: wp("7%")}]}>{index + 1}</Text>
+                  {(index > 0) ?(
+                <Ionicons
+                name={'arrow-up'}
+                size={hp('3%')}
+                color="#115740"
+                style={{ marginLeft: wp("3%") }}
+                onPress={() => this.dragInstructionUp(index)}
+                />
+                )
+              :
+              <Ionicons
+              name={'arrow-up'}
+              size={hp('3%')}
+              color="#fff"
+              style={{ marginLeft: wp("3%") }}
+              />
+              }
+                  
+                <Text style={[styles.text]}>{index + 1}</Text>
                 <TextInput
-                style={[styles.placeholder, {width:wp("65%")}]}
+                style={[styles.placeholder, {width:wp("55%"), marginHorizontal:wp("1.5%")}]}
                 placeholder="To do"
                 value={instruction.step}
                 onChangeText={(txt) => this.addInstruction(txt, index)}/>
@@ -495,16 +682,27 @@ selectCategory(i, category) {
                 color="#FF0000"
                 onPress={() => this.removeInstruction(index)}/>
                 )}
+                {(this.state.instructions.length > 1 && index < this.state.instructions.length - 1) &&(
+                <Ionicons
+                name={'arrow-down'}
+                size={hp('3%')}
+                color="#115740"
+                style={{ marginLeft: wp("3%") }}
+                onPress={() => this.dragInstructionDown(index)}
+              />
+                )}
+                
             </View>
             ))}
 
             <Text style={styles.text}>Add photo</Text>
+            {this.state.imgLoading && <ActivityIndicator size="large"/>}
             {img}
 
             {this.state.isLoading && <ActivityIndicator size="large"/>}
 
           <TouchableOpacity style={[styles.button, {marginTop: hp("5%")}]} onPress={() => this.checkInputFields()}>
-            <Text style={styles.btnText}>Add recipe</Text>
+            {addBtnText}
           </TouchableOpacity> 
           </ScrollView>
 
