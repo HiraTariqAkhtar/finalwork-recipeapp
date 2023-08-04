@@ -84,11 +84,11 @@ export default class Home extends React.Component {
   
   componentDidMount() {
     this.getRecipeOfTheDay()
-    //this.getHolidays()
+    this.getHolidays()
     this.getDidYouKnow()
     this.getTimeAndDate()
     this.getIslamabadWeather()
-    //this.getNewsHeadline()
+    this.getNewsHeadline()
     this.getUser()
   }
 
@@ -142,7 +142,7 @@ export default class Home extends React.Component {
   }
 
   async getNewsHeadline() {
-    axios.get(`https://gnews.io/api/v4/top-headlines?country=pk&apikey=${NEWS_API_KEY}`)
+    axios.get(`https://gnews.io/api/v4/top-headlines?country=pk&category=nation&apikey=${NEWS_API_KEY}`)
     .then((res) => {
       //console.log(res.data.articles[0])
       let article = res.data.articles[0]
