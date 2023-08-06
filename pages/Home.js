@@ -372,7 +372,6 @@ export default class Home extends React.Component {
           />
         </View>
       ) : (
-        <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
           <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
           <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
             {translations[this.state.lang].welcome}
@@ -394,7 +393,6 @@ export default class Home extends React.Component {
           }}
           />
         </View>
-        </Text>
       )}
       <View style={styles.didYouKnow}>
         <Text style={styles.fact}>{translations[this.state.lang].swipeForMoreInfo}</Text>
