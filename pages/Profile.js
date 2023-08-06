@@ -189,6 +189,7 @@ export default class Profile extends React.Component {
     await AsyncStorage.removeItem("firstName")
     await AsyncStorage.removeItem("lastName")
     await AsyncStorage.removeItem("email")
+    await AsyncStorage.removeItem("password")
     
     await signOut(AUTH)
 
