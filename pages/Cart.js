@@ -15,6 +15,8 @@ import {Ionicons, FontAwesome } from "@expo/vector-icons";
 import { Button } from "react-native-elements/dist/buttons/Button";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import translations from '../translation'
+
 
 
 export default class Cart extends React.Component {
@@ -23,11 +25,23 @@ export default class Cart extends React.Component {
 
     this.state = {
       hasData: false,
-      cartItems:[]
+      cartItems:[],
+      lang:"en"
     }
   }
 
   async componentDidMount() {
+    this.getLang()
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected})
+    } else {
+      this.setState({lang: "en"})
+    }
+
     this.getCartData()
   }
 
@@ -51,11 +65,11 @@ export default class Cart extends React.Component {
 
   confirmDelete(item) {
     Alert.alert(
-      "Remove from cart",
-      `Are you sure you want to remove ${item} from cart?`,
+      translations[this.state.lang].removeFromCart,
+      translations[this.state.lang].confirmRemoveFromCart.replace('${item}', item),
       [
-        {text: "No", style: "cancel"},
-        {text: "Yes", onPress: () => this.removeFromCart(item)}
+        {text: translations[this.state.lang].no, style: "cancel"},
+        {text: translations[this.state.lang].yes, onPress: () => this.removeFromCart(item)}
       ]
     )
   }
@@ -64,18 +78,18 @@ export default class Cart extends React.Component {
     let itemRemoved = this.state.cartItems.filter(i => i != item)
     this.setState({cartItems: itemRemoved})
     await AsyncStorage.setItem("cart", JSON.stringify(this.state.cartItems))
-    ToastAndroid.show(`${item} removed from cart`, ToastAndroid.SHORT)
+    ToastAndroid.show(translations[this.state.lang].removedFromCart.replace('${item}', item), ToastAndroid.SHORT)
     
     this.checkRemainingItems()
   }
 
   confirmClear() {
     Alert.alert(
-      "Clear cart",
-      `Are you sure you want to clear the cart?`,
+      translations[this.state.lang].clearCart,
+      translations[this.state.lang].confirmClearCart,
       [
-        {text: "No", style: "cancel"},
-        {text: "Yes", onPress: () => this.clearList()}
+        {text: translations[this.state.lang].no, style: "cancel"},
+        {text: translations[this.state.lang].yes, onPress: () => this.clearList()}
       ]
     )
   }
@@ -85,7 +99,7 @@ export default class Cart extends React.Component {
     this.setState({cartItems: emptyList})
     this.setState({hasData: false})
     await AsyncStorage.removeItem("cart")
-    ToastAndroid.show("Cart cleared", ToastAndroid.SHORT)
+    ToastAndroid.show(translations[this.state.lang].cartCleared, ToastAndroid.SHORT)
   }
 
 
@@ -98,11 +112,12 @@ export default class Cart extends React.Component {
 
     return (
       <View style={styles.container}>
-          <Text style={styles.title}>Cart</Text>
+          <Text style={styles.title}>{translations[this.state.lang].cart}</Text>
           <Button
-          title="Clear list"
+          title={translations[this.state.lang].clearList}
           icon={clearIcon}
           buttonStyle={styles.clear}
+          titleStyle={{fontFamily:"Nunito_700Bold"}}
           onPress={() => this.confirmClear()}/>
         <View style={styles.cart}>
           <ScrollView>
@@ -123,7 +138,7 @@ export default class Cart extends React.Component {
               </View>
             )) 
           :
-          <Text style={styles.cartItem}>Cart is empty.{'\n'} Add ingredients to see your cart</Text>}
+          <Text style={styles.cartItem}>{translations[this.state.lang].emptyCart}</Text>}
           </ScrollView>
         </View>
       </View>
@@ -160,8 +175,8 @@ const styles = StyleSheet.create({
   },
   clear: {
     backgroundColor:"#ff0000",
-    width: wp("30%"),
-    left: wp("65%"),
+    width: wp("40%"),
+    left: wp("55%"),
     marginBottom: hp("3%")
   },
   cart: {

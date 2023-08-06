@@ -89,6 +89,15 @@ const translations = {
     reorderInstructions:"You can reorder the instructions by clicking on the correct arrow",
     toDo:"To do",
     addPic:"Add picture",
+    removeFromCart:"Remove from cart",
+    confirmRemoveFromCart:"Are you sure you want to remove ${item} from cart?",
+    removedFromCart: "${item} removed from cart",
+    clearCart:"Clear cart",
+    confirmClearCart:"Are you sure you want to clear the cart?",
+    cartCleared:"Cart cleared",
+    cart:"Cart",
+    clearList:"Clear list",
+    emptyCart:"Cart is empty \n \n Add ingredients from a recipe to see your cart"
   },
 
 
@@ -180,7 +189,15 @@ const translations = {
     reorderInstructions:"Je kunt de instructies herschikken door te klikken op de juiste pijl.",
     toDo:"Te doen",
     addPic:"Foto toevoegen",
-
+    removeFromCart:"Verwijderen uit boodschappenlijst",
+    confirmRemoveFromCart:"Ben je zeker dat je ${item} uit het boodschappenlijst wilt verwijderen?",
+    removedFromCart: "${item} verwijderd uit boodschappenlijst",
+    clearCart:"Boodschappenlijst leegmaken",
+    confirmClearCart:"Ben je zeker dat je het boodschappenlijst wil leegmaken?",
+    cartCleared:"Boodschappenlijst leeg gemaakt",
+    cart:"Boodschappenlijst",
+    clearList:"Lijst leegmaken",
+    emptyCart:"Boodschappenlijst is leeg \n \n Voeg ingrediënten uit een recept toe om je boodschappenlijst te kunnen zien"
   }
 };
   
