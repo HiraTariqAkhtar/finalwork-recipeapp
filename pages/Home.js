@@ -23,6 +23,7 @@ import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import Carousel, { Pagination } from 'react-native-snap-carousel'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import SelectDropdown from 'react-native-select-dropdown'
 import translations from '../translation'
 
 export default class Home extends React.Component {
@@ -80,7 +81,8 @@ export default class Home extends React.Component {
       activeSlide: 0,
       user: "",
 
-      lang: "en"
+      lang: "en",
+      langOptions: ["en", "nl"]
 
     };
 
@@ -95,7 +97,7 @@ export default class Home extends React.Component {
     if(langSelected !== null) {
       this.setState({lang: langSelected, categories: translations[langSelected].categories})
     } else {
-      this.setState({lang: "nl", categories: translations["nl"].categories})
+      this.setState({lang: "en", categories: translations["en"].categories})
     }
 
 
@@ -348,12 +350,50 @@ export default class Home extends React.Component {
       style={styles.backgroundImage}
     >
       {this.state.user !== "" ? (
-        <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
-          {translations[this.state.lang].welcome} {this.state.user}
-        </Text>
+        <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
+          <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
+            {translations[this.state.lang].welcome} {this.state.user}
+          </Text>
+
+          <SelectDropdown
+          buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%"), marginTop: hp("5%")}]}
+          buttonTextStyle = {styles.fact}
+          dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10}}
+          rowTextStyle = {styles.fact}
+          data = {this.state.langOptions}
+          defaultButtonText= {this.state.lang}
+          renderDropdownIcon={isOpened => {
+            return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
+          }}
+          onSelect={(selectedItem) => {
+            AsyncStorage.setItem("langSelected", selectedItem)
+            this.setState({lang: selectedItem, categories: translations[selectedItem].categories})
+          }}
+          />
+        </View>
       ) : (
         <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
-          {translations[this.state.lang].welcome}
+          <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
+          <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
+            {translations[this.state.lang].welcome}
+          </Text>
+
+          <SelectDropdown
+          buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%"), marginTop: hp("5%")}]}
+          buttonTextStyle = {styles.fact}
+          dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10}}
+          rowTextStyle = {styles.fact}
+          data = {this.state.langOptions}
+          defaultButtonText= {this.state.lang}
+          renderDropdownIcon={isOpened => {
+            return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
+          }}
+          onSelect={(selectedItem) => {
+            this.setState({lang: selectedItem, categories: translations[selectedItem].categories})
+            AsyncStorage.setItem("langSelected", selectedItem)
+          }}
+          />
+        </View>
         </Text>
       )}
       <View style={styles.didYouKnow}>
