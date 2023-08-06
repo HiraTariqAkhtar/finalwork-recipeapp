@@ -23,6 +23,8 @@ import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import Carousel, { Pagination } from 'react-native-snap-carousel'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import translations from '../translation'
+
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -54,7 +56,7 @@ export default class Home extends React.Component {
 
       didYouKnow: "",
 
-      categories: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
+      categories: [],
 
       dateTime: {
         date: "",
@@ -76,19 +78,33 @@ export default class Home extends React.Component {
       },
 
       activeSlide: 0,
-      user: ""
+      user: "",
+
+      lang: "en"
 
     };
 
   }
   
   componentDidMount() {
+    this.getLang()
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected, categories: translations[langSelected].categories})
+    } else {
+      this.setState({lang: "nl", categories: translations["nl"].categories})
+    }
+
+
     this.getRecipeOfTheDay()
-    this.getHolidays()
+    //this.getHolidays()
     this.getDidYouKnow()
     this.getTimeAndDate()
     this.getIslamabadWeather()
-    this.getNewsHeadline()
+    //this.getNewsHeadline()
     this.getUser()
   }
 
@@ -293,12 +309,20 @@ export default class Home extends React.Component {
 
   render() {
     let categoryImg = {
+      // en
       'Bread': require('../assets/recipeApp/bread.jpeg'),
+      'Rice': require('../assets/recipeApp/rice.jpg'),
+      'Sweets': require('../assets/recipeApp/sweets.jpeg'),
+
+      // nl
+      'Brood': require('../assets/recipeApp/bread.jpeg'),
+      'Rijst': require('../assets/recipeApp/rice.jpg'),
+      'Zoetigheden': require('../assets/recipeApp/sweets.jpeg'),
+
+      // common
       'Curry': require('../assets/recipeApp/curry.jpeg'),
       'Dessert': require('../assets/recipeApp/dessert.jpeg'),
-      'Rice': require('../assets/recipeApp/rice.jpg'),
       'Snack': require('../assets/recipeApp/snack.jpeg'),
-      'Sweets': require('../assets/recipeApp/sweets.jpeg'),
     }
 
     let categories = this.state.categories.map((category, index) => 
@@ -325,15 +349,15 @@ export default class Home extends React.Component {
     >
       {this.state.user !== "" ? (
         <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
-          Welcome {this.state.user}
+          {translations[this.state.lang].welcome} {this.state.user}
         </Text>
       ) : (
         <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
-          Welcome
+          {translations[this.state.lang].welcome}
         </Text>
       )}
       <View style={styles.didYouKnow}>
-        <Text style={styles.fact}>Swipe to see more information about Pakistan</Text>
+        <Text style={styles.fact}>{translations[this.state.lang].swipeForMoreInfo}</Text>
       </View>
     </ImageBackground>
 
@@ -343,7 +367,7 @@ export default class Home extends React.Component {
     source={require("../assets/recipeApp/bgDidYouKnow.jpg")}
     resizeMode="cover"
     style={styles.backgroundImage}>
-      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Did you know that ...</Text>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>{translations[this.state.lang].didYouKnow}</Text>
       <View style={styles.didYouKnow}>
         <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
       </View>
@@ -355,7 +379,7 @@ export default class Home extends React.Component {
     source={require("../assets/recipeApp/bgTime.jpg")}
     resizeMode="cover"
     style={styles.backgroundImage}>
-      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Time and date in Pakistan</Text>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>{translations[this.state.lang].timeDate}</Text>
       <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly"}}>
       	<View style={[styles.didYouKnow, {width: wp("40%")}]}>
       	  <Text  style={styles.holidayName}>{this.state.dateTime.date}</Text>
@@ -371,14 +395,14 @@ export default class Home extends React.Component {
     source={require("../assets/recipeApp/bgWeather.jpg")}
     resizeMode="cover"
     style={styles.backgroundImage}>
-      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Weather in Islamabad</Text>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>{translations[this.state.lang].weather}</Text>
       <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly", alignContent:"center"}}>
         <View style={[styles.didYouKnow, {width: wp("40%")}]}>
-          <Text  style={styles.holidayName}>Temperature</Text>
+          <Text  style={styles.holidayName}>{translations[this.state.lang].temp}</Text>
           <Text  style={styles.holidayName}>{this.state.weather.temp}</Text>
         </View>
           <View style={[styles.didYouKnow, {width: wp("40%")}]}>
-              <Text  style={styles.holidayName}>Feels like</Text>
+              <Text  style={styles.holidayName}>{translations[this.state.lang].feelsLike}</Text>
               <Text  style={styles.holidayName}>{this.state.weather.feelsLike}</Text>
             </View>
       </View>
@@ -401,7 +425,7 @@ let nextHoliday =
 source={require("../assets/recipeApp/bgHoliday.jpg")}
 resizeMode="cover"
 style={styles.backgroundImage}>
-  <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Upcoming holiday in Pakistan</Text>
+  <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>{translations[this.state.lang].upcomingHoliday}</Text>
   <TouchableOpacity
   style={[
     styles.didYouKnow
@@ -433,7 +457,7 @@ style={styles.backgroundImage}>
     size={hp("2.5%")}
     color="#115740"
   />
-    <Text style={styles.text}>Click here to read more about the holiday</Text>
+    <Text style={styles.text}>{translations[this.state.lang].clickForInfoHoliday}</Text>
   </View>
 </TouchableOpacity>
 </ImageBackground>
@@ -443,7 +467,7 @@ style={styles.backgroundImage}>
       source={require("../assets/recipeApp/bgNews.png")}
       resizeMode="cover"
       style={styles.backgroundImage}>
-        <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>News headline</Text>
+        <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>{translations[this.state.lang].news}</Text>
         <TouchableOpacity style={styles.didYouKnow} onPress={() => Linking.openURL(this.state.newsHeadline.newsURL)}>
             <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
             {this.state.newsHeadline.img != "" ?(
@@ -469,7 +493,7 @@ style={styles.backgroundImage}>
                         size={hp("2.5%")}
                         color="#115740"
                       />
-                        <Text style={styles.text}>Click here to read article</Text>
+                        <Text style={[styles.text, {width: wp("40%")}]}>{translations[this.state.lang].clickToReadArticle}</Text>
                       </View>
                         
                       <View style={[styles.iconText, {width: wp("60%")}]}>
@@ -548,7 +572,7 @@ style={styles.backgroundImage}>
             />
           </View>
           <View>
-            <Text style={styles.sectionTitle}>Recipe of the day</Text>
+            <Text style={styles.sectionTitle}>{translations[this.state.lang].recipeOfTheDay}</Text>
             <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
               <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
               {rec.img != "" ?(
@@ -588,7 +612,7 @@ style={styles.backgroundImage}>
                         size={hp("2.5%")}
                         color="#115740"
                       />
-                        <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+                        <Text style={styles.text}>{rec.timeNeeded} {translations[this.state.lang].minutes}</Text>
                     </View>)}
                   </View>
                   {rec.category && (
@@ -615,7 +639,7 @@ style={styles.backgroundImage}>
           </View>
   
           <View>
-          <Text style={styles.sectionTitle}>Recipes per category</Text>
+          <Text style={styles.sectionTitle}>{translations[this.state.lang].recipesPerCategory}</Text>
           <ScrollView horizontal>
            {categories}
           </ScrollView>
