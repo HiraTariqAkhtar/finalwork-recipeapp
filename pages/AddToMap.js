@@ -20,7 +20,10 @@ import axios from "axios";
 import {LOCATION_API_KEY} from '@env'
 import { collection, getDocs, addDoc } from "firebase/firestore"; 
 import {DATABASE} from "../firebaseConfig"
-import uuid from 'react-native-uuid';
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import translations from '../translation'
+
 
 
 export default class AddToMap extends React.Component {
@@ -32,14 +35,28 @@ export default class AddToMap extends React.Component {
         streetNum: "",
         postalCode: 0,
         city: "",
-        placeTypes: ["Restaurant", "Supermarket"],
+        placeTypes: [],
         typeSelectedInRadioBtn: [],
         selectedType: "",
         latitude: 0,
         longitude: 0,
-        isLoading: false
+        isLoading: false,
+        lang:"en"
     }
 
+  }
+
+  componentDidMount() {
+    this.getLang()
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected, placeTypes: translations[langSelected].placeTypes})
+    } else {
+      this.setState({lang: "en", placeTypes: translations["en"].placeTypes})
+    }
   }
 
   selectRadioBtn(i, type) {
@@ -59,8 +76,8 @@ export default class AddToMap extends React.Component {
   checkInputFields(){
         if(this.state.placeName == "" || this.state.selectedType == "" || this.state.streetNum == "" || this.state.postalCode == 0 || this.state.city == "") {
             Alert.alert(
-                "All fields required",
-                "Please fill in all fields"
+                translations[this.state.lang].alertAllFieldsRequired,
+                translations[this.state.lang].fillInAllFields
             )
         } else {
             this.getLatLng()
@@ -79,13 +96,19 @@ export default class AddToMap extends React.Component {
 
   async addToMap() {
     this.setState({isLoading: true})
-    setTimeout(() => {
-      let collectionName = this.state.selectedType.toLowerCase() + "s"
+    setTimeout(async() => {
+      let collectionName;
+      if (this.state.selectedType === "Restaurant") {
+        collectionName = "restaurants"
+      } else {
+        collectionName = "supermarkets"
+      }
       //console.log(collectionName)
       let mapCollection = collection(DATABASE, collectionName)
+      let mapData = await getDocs(mapCollection)
 
        addDoc((mapCollection), {
-          id: uuid.v4(),
+          id: mapData.size + 1,
           title: this.state.placeName,
           description: `${this.state.streetNum}, ${this.state.postalCode} ${this.state.city}`,
           coordinate: {
@@ -94,7 +117,7 @@ export default class AddToMap extends React.Component {
           }
       })
 
-      ToastAndroid.show(`${this.state.placeName} succesfully added`, ToastAndroid.SHORT)
+      ToastAndroid.show(`${this.state.placeName} ${translations[this.state.lang].succesfullyAdded}`, ToastAndroid.SHORT)
       this.props.navigation.navigate("Map", { refresh: Date.now() });
     }, 100)
   }
@@ -102,11 +125,11 @@ export default class AddToMap extends React.Component {
   goBack() {
       if(this.state.placeName !== "" || this.state.selectedType !== "" || this.state.streetNum !== "" || this.state.postalCode !== 0 || this.state.city !== "") {
           Alert.alert(
-            "Leave page?",
-            "All unsaved changes will be lost",
+            translations[this.state.lang].leavePage,
+            translations[this.state.lang].unsavedChanges,
             [
-              { text: "No", style:"cancel" },
-              { text: "Yes", onPress: () => {this.props.navigation.goBack()} }
+              { text: translations[this.state.lang].no, style:"cancel" },
+              { text: translations[this.state.lang].yes, onPress: () => {this.props.navigation.goBack()} }
             ]
           )
       } else {
@@ -138,50 +161,50 @@ export default class AddToMap extends React.Component {
                   name={"arrow-back"}
                   size={hp("5%")}
                   color="#115740"
-                  marginRight={wp("15%")}
+                  marginRight={wp("5%")}
                   onPress={() => this.goBack()}
                 />
-              <Text style={styles.title}>Add to map</Text>
+              <Text style={styles.title}>{translations[this.state.lang].addToMap}</Text>
           </View>
           {this.state.isLoading && <ActivityIndicator size="large"/>}
 
           <ScrollView style={{marginTop: hp("3%")}}>
-            <Text style={styles.text}>Place name *</Text>
+            <Text style={styles.text}>{translations[this.state.lang].placeName}</Text>
             <TextInput
             style={styles.placeholder}
-            placeholder="Place Name"
+            placeholder={translations[this.state.lang].placeName.slice(0, -2)}
             value={this.state.placeName}
             onChangeText={(txt) => this.setState({placeName: txt})}/>
 
-            <Text style={styles.text}>Place type *</Text>
+            <Text style={styles.text}>{translations[this.state.lang].placeType}</Text>
             <View style={styles.placeTypeChoice}>
               <View style={{display:"flex", flexDirection:"row"}}>
                   {select}
               </View>
             </View>
             
-            <Text style={styles.text}>Street + number *</Text>
+            <Text style={styles.text}>{translations[this.state.lang].streetNum}</Text>
             <TextInput
             style={styles.placeholder}
-            placeholder="Street + number"
+            placeholder={translations[this.state.lang].streetNum.slice(0, -2)}
             value={this.state.streetNum}
             onChangeText={(txt) => this.setState({streetNum: txt})}/>
 
             <View style={{display:"flex", flexDirection:"row"}}>
                 <View style={{display:"flex", flexDirection:"column"}}>
-                    <Text style={styles.text}>Postal code *</Text>
+                    <Text style={styles.text}>{translations[this.state.lang].postalCode}</Text>
                         <TextInput
                         style={[styles.placeholder, {width:wp("25%")}]}
-                        placeholder="Postal Code"
+                        placeholder={translations[this.state.lang].postalCode.slice(0, -2)}
                         inputMode="numeric"
                         value={this.state.postalCode}
                         onChangeText={(txt) => this.setState({postalCode: parseInt(txt)})}/>
                 </View>
                 <View style={{display:"flex", flexDirection:"column"}}>
-                    <Text style={styles.text}>City *</Text>
+                    <Text style={styles.text}>{translations[this.state.lang].city}</Text>
                         <TextInput
                         style={[styles.placeholder, {width:wp("55%")}]}
-                        placeholder="City"
+                        placeholder={translations[this.state.lang].city.slice(0, -2)}
                         value={this.state.city}
                         onChangeText={(txt) => this.setState({city: txt})}/>
                 </View>
@@ -189,7 +212,7 @@ export default class AddToMap extends React.Component {
 
             
           <TouchableOpacity style={styles.button} onPress={() => this.checkInputFields()}>
-            <Text style={styles.btnText}>Add to map</Text>
+            <Text style={styles.btnText}>{translations[this.state.lang].addToMap}</Text>
           </TouchableOpacity> 
           </ScrollView>
       </View>
@@ -213,7 +236,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontFamily: "Nunito_700Bold",
         fontSize: hp("3.5%"),
-        color: "#FF5E00"
+        color: "#FF5E00",
       },
       text: {
         fontFamily: "Nunito_700Bold",

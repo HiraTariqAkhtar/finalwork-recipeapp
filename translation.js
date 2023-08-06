@@ -26,6 +26,20 @@ const translations = {
     cancel:"Cancel",
     map:"Map",
     yourLocation:"Your location",
+    placeTypes:["Restaurant", "Supermarket"],
+    alertAllFieldsRequired:"All fields required",
+    fillInAllFields:"Please fill in all fields",
+    succesfullyAdded:"succesfully added",
+    leavePage:"Leave page?",
+    unsavedChanges: "All unsaved changes will be lost",
+    yes:"Yes",
+    no:"No",
+    addToMap:"Add to map",
+    placeName:"Place name *",
+    placeType:"Place type *",
+    streetNum:"Street + number *",
+    postalCode:"Postal code *",
+    city:"City *"
   },
 
 
@@ -54,6 +68,20 @@ const translations = {
     cancel:"Annuleer",
     map:"Kaart",
     yourLocation:"Jouw locatie",
+    placeTypes:["Restaurant", "Supermarkt"],
+    alertAllFieldsRequired:"Alle velden zijn verplicht",
+    fillInAllFields:"Vul alstublieft alle velden in",
+    succesfullyAdded:"succesvol toegevoegd",
+    leavePage:"Pagina verlaten?",
+    unsavedChanges: "Alle niet-opgeslagen wijzigingen gaan verloren",
+    yes:"Ja",
+    no:"Neen",
+    addToMap:"Toevoegen aan kaart",
+    placeName:"Plaatsnaam *",
+    placeType:"Type plaats *",
+    streetNum:"Straat + nummer *",
+    postalCode:"Postcode *",
+    city:"Stad *"
   }
 };
   
