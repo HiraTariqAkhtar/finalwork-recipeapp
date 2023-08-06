@@ -97,8 +97,15 @@ const translations = {
     listCleared:"List cleared",
     cart:"Cart",
     emptyCart:"Cart is empty \n \n Add ingredients from a recipe to see your cart",
-    fav:"Favorites"
-
+    fav:"Favorites",
+    removeProfilePic:"Remove profile picture",
+    confirmRemoveProfilePic:"Are you sure you want to remove your profile picture?",
+    profilePicRemoved:"Profile picture succesfully removed",
+    myCookbook:"My Cookbook",
+    settings:"Settings",
+    logOut:"Log out",
+    login:"Log in",
+    profile:"Profile"
   },
 
 
@@ -198,7 +205,15 @@ const translations = {
     listCleared:"Lijst leeg gemaakt",
     cart:"Boodschappenlijst",
     emptyCart:"Boodschappenlijst is leeg \n \n Voeg ingrediënten uit een recept toe om je boodschappenlijst te kunnen zien",
-    fav:"Favorieten"
+    fav:"Favorieten",
+    removeProfilePic:"Profielfoto verwijderen",
+    confirmRemoveProfilePic:"Ben je zeker dat je je profielfoto wil verwijderen?",
+    profilePicRemoved:"Profielfoto succesvol verwijderd",
+    myCookbook:"Mijn Kookboek",
+    settings:"Instellingen",
+    logOut:"Uitloggen",
+    login:"Inloggen",
+    profile:"Profiel"
   }
 };
   

@@ -21,6 +21,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import { collection, getDocs } from "firebase/firestore"; 
 import { signInWithEmailAndPassword, signOut } from "firebase/auth"; 
 
+import translations from '../translation'
 
 
 export default class Profile extends React.Component {
@@ -32,16 +33,28 @@ export default class Profile extends React.Component {
       lastName: "",
       profilePic: null,
       isLoggedIn: false,
-      userId: ""
+      userId: "",
+      lang:"en"
     }
   }
 
   componentDidMount() {
-    this.checkLoggedIn()
+    this.getLang()
 
     this.focusListener = this.props.navigation.addListener('focus', () => {
-      this.checkLoggedIn()
+      this.getLang()
   });
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected})
+    } else {
+      this.setState({lang: "en"})
+    }
+
+    this.checkLoggedIn()
   }
 
   async checkLoggedIn(){
@@ -117,7 +130,7 @@ export default class Profile extends React.Component {
 
       this.uploadPic()
     } else {
-      ToastAndroid.show("No photo selected", ToastAndroid.SHORT)
+      ToastAndroid.show(translations[this.state.lang].noPhotoSelected, ToastAndroid.SHORT)
     }
   }
 
@@ -147,22 +160,13 @@ export default class Profile extends React.Component {
     })
   }
 
-
-  async updateProfilePic() {
-    const imgRef = ref(STORAGE, `profilePicUser${this.state.userId}`)
-    await deleteObject(imgRef)
-    .then(() => {
-      this.addProfilePic()
-    })
-  }
-
   async confirmDelete(){
     Alert.alert(
-      "Remove profile picture",
-      "Are you sure you want to remove your profile picture?",
+      translations[this.state.lang].removeProfilePic,
+      translations[this.state.lang].confirmRemoveProfilePic,
       [
-        {text: 'No', style: 'cancel'},
-        {text: 'Yes', onPress: () => this.removeProfilePic()}
+        {text: translations[this.state.lang].no, style: 'cancel'},
+        {text: translations[this.state.lang].yes, onPress: () => this.removeProfilePic()}
       ]
     )
   }
@@ -172,7 +176,7 @@ export default class Profile extends React.Component {
     await deleteObject(imgRef)
     .then(() => {
       this.setState({profilePic: null})
-      ToastAndroid.show("Profile picture succesfully removed", ToastAndroid.SHORT)
+      ToastAndroid.show(translations[this.state.lang].profilePicRemoved, ToastAndroid.SHORT)
     })
   }
 
@@ -207,17 +211,17 @@ export default class Profile extends React.Component {
       <View>
         <TouchableOpacity style={styles.button}
         onPress={() => this.props.navigation.navigate("Cookbook")}>
-          <Text style={styles.btnText}>My Cookbook</Text>
+          <Text style={styles.btnText}>{translations[this.state.lang].myCookbook}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button}
         onPress={() => this.props.navigation.navigate("Settings")}>
-          <Text style={styles.btnText}>Settings</Text>
+          <Text style={styles.btnText}>{translations[this.state.lang].settings}</Text>
         </TouchableOpacity>
               
         <TouchableOpacity style={styles.button}
         onPress={() => this.logOut()}>
-          <Text style={styles.btnText}>Log out</Text>
+          <Text style={styles.btnText}>{translations[this.state.lang].logOut}</Text>
         </TouchableOpacity>
       </View>
       
@@ -251,7 +255,7 @@ export default class Profile extends React.Component {
           size={hp("4%")}
           color="#115740"
           marginRight={wp("3%")}
-          onPress={() => this.updateProfilePic()}
+          onPress={() => this.addProfilePic()}
         />
   
         removePic =
@@ -266,7 +270,7 @@ export default class Profile extends React.Component {
       login = 
       <TouchableOpacity style={styles.button}
       onPress={() => this.logIn()}>
-        <Text style={styles.btnText}>Log in</Text>
+        <Text style={styles.btnText}>{translations[this.state.lang].login}</Text>
       </TouchableOpacity>
 
       profilePic = 
@@ -282,7 +286,7 @@ export default class Profile extends React.Component {
 
     return (
       <View style={styles.container}>
-         <Text style={styles.title}>Profile</Text>
+         <Text style={styles.title}>{translations[this.state.lang].profile}</Text>
          {profilePic}
            {uploadPic}
          <View style={styles.managePic}>
