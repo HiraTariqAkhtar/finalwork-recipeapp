@@ -92,12 +92,13 @@ const translations = {
     removeFromCart:"Remove from cart",
     confirmRemoveFromCart:"Are you sure you want to remove ${item} from cart?",
     removedFromCart: "${item} removed from cart",
-    clearCart:"Clear cart",
-    confirmClearCart:"Are you sure you want to clear the cart?",
-    cartCleared:"Cart cleared",
-    cart:"Cart",
     clearList:"Clear list",
-    emptyCart:"Cart is empty \n \n Add ingredients from a recipe to see your cart"
+    confirmClearList:"Are you sure you want to clear the cart?",
+    listCleared:"List cleared",
+    cart:"Cart",
+    emptyCart:"Cart is empty \n \n Add ingredients from a recipe to see your cart",
+    fav:"Favorites"
+
   },
 
 
@@ -192,12 +193,12 @@ const translations = {
     removeFromCart:"Verwijderen uit boodschappenlijst",
     confirmRemoveFromCart:"Ben je zeker dat je ${item} uit het boodschappenlijst wilt verwijderen?",
     removedFromCart: "${item} verwijderd uit boodschappenlijst",
-    clearCart:"Boodschappenlijst leegmaken",
-    confirmClearCart:"Ben je zeker dat je het boodschappenlijst wil leegmaken?",
-    cartCleared:"Boodschappenlijst leeg gemaakt",
-    cart:"Boodschappenlijst",
     clearList:"Lijst leegmaken",
-    emptyCart:"Boodschappenlijst is leeg \n \n Voeg ingrediënten uit een recept toe om je boodschappenlijst te kunnen zien"
+    confirmClearList:"Ben je zeker dat je de lijst wil leegmaken?",
+    listCleared:"Lijst leeg gemaakt",
+    cart:"Boodschappenlijst",
+    emptyCart:"Boodschappenlijst is leeg \n \n Voeg ingrediënten uit een recept toe om je boodschappenlijst te kunnen zien",
+    fav:"Favorieten"
   }
 };
   
