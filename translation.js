@@ -39,7 +39,18 @@ const translations = {
     placeType:"Place type *",
     streetNum:"Street + number *",
     postalCode:"Postal code *",
-    city:"City *"
+    city:"City *",
+    allServings:["<5 ppl", "5-10 ppl", ">10 ppl"],
+    allPrepTime:["<10 minutes", "10-30 minutes", ">30 minutes"],
+    allIngredientAmount: ["<5 ingredients", "5-10 ingredients", ">10 ingredients"],
+    logInToAddRecipe:"You need to log in to add a new recipe",
+    noRecipesFound:"No recipes found",
+    recipes:"Recipes",
+    category: "Category",
+    servings: "Servings",
+    prepTime: "Preperation time",
+    numIngredients:"Number of ingredients",
+    applyFilters:"Apply filter(s)"
   },
 
 
@@ -81,7 +92,18 @@ const translations = {
     placeType:"Type plaats *",
     streetNum:"Straat + nummer *",
     postalCode:"Postcode *",
-    city:"Stad *"
+    city:"Stad *",
+    allServings:["<5 pers", "5-10 pers", ">10 pers"],
+    allPrepTime:["<10 minuten", "10-30 minuten", ">30 minuten"],
+    allIngredientAmount: ["<5 ingrediënten", "5-10 ingrediënten", ">10 ingrediënten"],
+    logInToAddRecipe:"Inloggen is vereist om een recept toe te voegen",
+    noRecipesFound:"Geen recepten gevonden",
+    recipes: "Recepten",
+    category: "Categorie",
+    servings: "Porties",
+    prepTime: "Voorbereidingstijd",
+    numIngredients:"Aantal ingrediënten",
+    applyFilters:"Filter(s) toepassen"
   }
 };
   

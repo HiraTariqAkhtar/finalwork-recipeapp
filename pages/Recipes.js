@@ -19,6 +19,7 @@ import { collection, getDocs } from "firebase/firestore";
 import {DATABASE} from "../firebaseConfig"
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import translations from '../translation'
 
 
 export default class Recipes extends React.Component {
@@ -40,10 +41,10 @@ export default class Recipes extends React.Component {
         },
       ],
 
-      allCategories:["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
-      allServings:["<5 ppl", "5-10 ppl", ">10 ppl"],
-      allPrepTime:["<10 minutes", "10-30 minutes", ">30 minutes"],
-      allIngredientAmount:["<5 ingredients", "5-10 ingredients", ">10 ingredients"],
+      allCategories:[],
+      allServings:[],
+      allPrepTime:[],
+      allIngredientAmount:[],
       allChefs:[],
 
       filterScreenVisible: false,
@@ -60,9 +61,25 @@ export default class Recipes extends React.Component {
       selectedPrepTime: "",
       selectedIngredientAmount: "",
       selectedChef: "",
-    };
-    this.getRecipes()
 
+      lang: "en"
+    };
+
+  }
+
+  componentDidMount() {
+    this.getLang()
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected, allCategories: translations[langSelected].categories, allServings: translations[langSelected].allServings, allPrepTime: translations[langSelected].allPrepTime, allIngredientAmount: translations[langSelected].allIngredientAmount})
+    } else {
+      this.setState({lang: "en", allCategories: translations["en"].categories, allServings: translations["en"].allServings, allPrepTime: translations["en"].allPrepTime, allIngredientAmount: translations["en"].allIngredientAmount})
+    }
+
+    this.getRecipes()
   }
 
   async getRecipes() {
@@ -161,7 +178,7 @@ export default class Recipes extends React.Component {
 
     // Filter per serving
     if(this.state.selectedServings != "") {
-      if(this.state.selectedServings === "<5 ppl") {
+      if(this.state.selectedServings === translations[this.state.lang].allServings[0]) {
         recipeData.forEach((doc) => {
           if(doc.data().servings < 5) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -169,7 +186,7 @@ export default class Recipes extends React.Component {
             }
           } 
         })
-      } else if (this.state.selectedServings === "5-10 ppl") {
+      } else if (this.state.selectedServings === translations[this.state.lang].allServings[1]) {
         recipeData.forEach((doc) => {
           if(doc.data().servings >= 5 && doc.data().servings <= 10) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -177,7 +194,7 @@ export default class Recipes extends React.Component {
             }
           } 
         })
-      } else if (this.state.selectedServings === ">10 ppl") {
+      } else if (this.state.selectedServings === translations[this.state.lang].allServings[2]) {
         recipeData.forEach((doc) => {
           if(doc.data().servings > 10) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -190,7 +207,7 @@ export default class Recipes extends React.Component {
 
     // Filter per prep time
     if(this.state.selectedPrepTime != "") {
-      if(this.state.selectedPrepTime === "<10 minutes") {
+      if(this.state.selectedPrepTime === translations[this.state.lang].allPrepTime[0]) {
         recipeData.forEach((doc) => {
           if(doc.data().timeNeeded < 10) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -198,7 +215,7 @@ export default class Recipes extends React.Component {
             }
           } 
         })
-      } else if (this.state.selectedPrepTime === "10-30 minutes") {
+      } else if (this.state.selectedPrepTime === translations[this.state.lang].allPrepTime[1]) {
         recipeData.forEach((doc) => {
           if(doc.data().timeNeeded >= 10 && doc.data().timeNeeded <= 30) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -206,7 +223,7 @@ export default class Recipes extends React.Component {
             }
           } 
         })
-      } else if (this.state.selectedPrepTime === ">30 minutes") {
+      } else if (this.state.selectedPrepTime === translations[this.state.lang].allPrepTime[2]) {
         recipeData.forEach((doc) => {
           if(doc.data().timeNeeded > 30) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -219,7 +236,7 @@ export default class Recipes extends React.Component {
 
     // Filter per number of ingredients
     if(this.state.selectedIngredientAmount != "") {
-      if(this.state.selectedIngredientAmount === "<5 ingredients") {
+      if(this.state.selectedIngredientAmount === translations[this.state.lang].allIngredientAmount[0]) {
         recipeData.forEach((doc) => {
           if(doc.data().ingredients.length < 5) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -227,7 +244,7 @@ export default class Recipes extends React.Component {
             }
           } 
         })
-      } else if (this.state.selectedIngredientAmount === "5-10 ingredients") {
+      } else if (this.state.selectedIngredientAmount === translations[this.state.lang].allIngredientAmount[1]) {
         recipeData.forEach((doc) => {
           if(doc.data().ingredients.length >= 5 && doc.data().servings <= 10) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -235,7 +252,7 @@ export default class Recipes extends React.Component {
             }
           } 
         })
-      } else if (this.state.selectedIngredientAmount === ">10 ingredients") {
+      } else if (this.state.selectedIngredientAmount === translations[this.state.lang].allIngredientAmount[2]) {
         recipeData.forEach((doc) => {
           if(doc.data().ingredients.length > 10) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -345,10 +362,10 @@ export default class Recipes extends React.Component {
       this.props.navigation.navigate("AddRecipe")
     } else {
       Alert.alert(
-        "Not logged in",
-        "You need to log in to add a new recipe",
+        translations[this.state.lang].alertNotLoggedIn,
+        translations[this.state.lang].logInToAddRecipe,
         [
-          {text: "Cancel", style: "cancel"},
+          {text: translations[this.state.lang].cancel, style: "cancel"},
           {text: "Log in", onPress: () => this.props.navigation.navigate("LogIn")}
         ]
       )
@@ -482,7 +499,7 @@ export default class Recipes extends React.Component {
                       size={hp("2.5%")}
                       color="#115740"
                     />
-                      <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+                      <Text style={styles.text}>{rec.timeNeeded} {translations[this.state.lang].minutes}</Text>
                   </View>)}
                 </View>
   
@@ -510,7 +527,7 @@ export default class Recipes extends React.Component {
       </TouchableOpacity>
     ))
   } else {
-    recipes = <Text style={styles.noRecipes}>No recipes found</Text>
+    recipes = <Text style={styles.noRecipes}>{translations[this.state.lang].noRecipesFound}</Text>
   }
 
     let filters = this.state.filters.map((filter) => (
@@ -535,7 +552,7 @@ export default class Recipes extends React.Component {
               color="#115740"
               onPress={() => this.addRecipe()}
             />
-          <Text style={styles.pageTitle}>Recipes</Text>
+          <Text style={styles.pageTitle}>{translations[this.state.lang].recipes}</Text>
           <Ionicons
               name={"filter"}
               size={hp("5%")}
@@ -573,35 +590,35 @@ export default class Recipes extends React.Component {
                 </View>
   
                 <View>
-                  <Text style={styles.category}>Category</Text>
+                  <Text style={styles.category}>{translations[this.state.lang].category}</Text>
                   <View style={styles.filterChoice}>
                     {filterSelectionCategory}
                   </View>
                 </View>
     
                 <View>
-                  <Text style={styles.category}>Servings</Text>
+                  <Text style={styles.category}>{translations[this.state.lang].servings}</Text>
                   <View style={styles.filterChoice}>
                     {filterSelectionServings}
                   </View>
                 </View>
     
                 <View>
-                  <Text style={styles.category}>Preperation time</Text>
+                  <Text style={styles.category}>{translations[this.state.lang].prepTime}</Text>
                   <View style={styles.filterChoice}>
                    {filterSelectionPrepTime}
                   </View>
                 </View>
     
                 <View>
-                  <Text style={styles.category}>Number of ingredients</Text>
+                  <Text style={styles.category}>{translations[this.state.lang].numIngredients}</Text>
                   <View style={styles.filterChoice}>
                     {filterSelectionIngredients}
                   </View>
                 </View>
   
               <TouchableOpacity style={[styles.button, {marginBottom: hp("5%")}]} onPress={() => this.applyFilter()}>
-                <Text style={styles.btnText}>Apply filter(s)</Text>
+                <Text style={styles.btnText}>{translations[this.state.lang].applyFilters}</Text>
               </TouchableOpacity>
               </ScrollView>
             
