@@ -109,7 +109,11 @@ const translations = {
     noRecipesAdded:"No recipes added yet",
     clickHere:"Click here",
     publicRecipes:"Public recipes",
-    privateRecipes:"Private recipes"
+    privateRecipes:"Private recipes",
+    deleteAcc:"Delete account?",
+    confirmDeleteAcc:"Are you sure you want to delete your account? \n \nThis action cannot be undone.",
+    editProfile:"Edit profile",
+    deleteProfile:"Delete profile"
   },
 
 
@@ -221,7 +225,11 @@ const translations = {
     noRecipesAdded:"Nog geen recepten toegevoegd",
     clickHere:"Klik hier",
     publicRecipes:"Publieke recepten",
-    privateRecipes:"Privé recepten"
+    privateRecipes:"Privé recepten",
+    deleteAcc:"Account verwijderen?",
+    confirmDeleteAcc:"Ben je zeker dat je je account wil verwijderen? \n \nDeze actie kan niet ongedaan worden gemaakt.",
+    editProfile:"Profiel aanpassen",
+    deleteProfile:"Profiel verwijderen"
   }
 };
   
