@@ -25,6 +25,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from 'expo-image-picker'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
+import translations from '../translation'
+
+
 
 export default class AddRecipe extends React.Component {
   constructor(props) {
@@ -81,7 +84,9 @@ export default class AddRecipe extends React.Component {
         imgUrl: rec.img,
 
         isLoading: false,
-        imgLoading: false
+        imgLoading: false,
+
+        lang: "en"
       }
     } else {
       this.state = {
@@ -100,9 +105,9 @@ export default class AddRecipe extends React.Component {
         }],
         time: 0,
 
-        categorySelection: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
-        visibilitySelection: ["Public", "Private"],
-        unitOptions: ["N/A", "tbsp", "tsp", "cup", "A pinch", "kg", "g", "liter", "bunch", "piece", "can", "A few drops", "A little bit", "To taste", "To fry", "As required", "For garnishing"],
+        categorySelection: [],
+        visibilitySelection: [],
+        unitOptions: [],
 
         categoryCheckedInFilter: [],
         visibilityCheckedInFilter: [],
@@ -112,12 +117,24 @@ export default class AddRecipe extends React.Component {
         imgUrl: "",
 
         isLoading: false,
-        imgLoading: false
+        imgLoading: false,
+
+        lang: "en"
     }
     }
-    this.getUser()
+    this.getLang()
   }
 
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected, categorySelection: translations[langSelected].categories, visibilitySelection:translations[langSelected].visibilitySelection, unitOptions: translations[langSelected].unitOptions})
+    } else {
+      this.setState({lang: "en", categorySelection: translations["en"].categories, visibilitySelection:translations["en"].visibilitySelection, unitOptions: translations["en"].unitOptions})
+    }
+
+    this.getUser()
+  }
 
   async getUser() {
     let userEmail = await AsyncStorage.getItem("email")
@@ -171,7 +188,8 @@ selectCategory(i, category) {
       let ingredients= [... this.state.ingredients]
       ingredients[index][param] = ingredient
 
-      if(ingredient === "To taste" || ingredient === "A pinch" || ingredient === "To fry" || ingredient === "As required" || ingredient === "A little bit" || ingredient === "A few drops" || ingredient === "For garnishing"){
+      if(ingredient === "To taste" || ingredient === "A pinch" || ingredient === "To fry" || ingredient === "As required" || ingredient === "A little bit" || ingredient === "A few drops" || ingredient === "For garnishing" ||
+      ingredient === "Naar smaak" || ingredient === "Een snuifje" || ingredient === "Om te bakken" || ingredient === "Naar behoefte" || ingredient === "Een beetje" || ingredient === "Paar druppels" || ingredient === "Ter versiering"){
         ingredients[index]["quantity"] = 0
       }
 
@@ -260,7 +278,7 @@ selectCategory(i, category) {
 
       this.uploadPic()
     } else {
-      ToastAndroid.show("No photo selected", ToastAndroid.SHORT)
+      ToastAndroid.show(translations[this.state.lang].noPhotoSelected, ToastAndroid.SHORT)
     }
   }
 
@@ -296,11 +314,11 @@ selectCategory(i, category) {
 
   confirmDelete() {
     Alert.alert(
-      "Remove picture",
-      "Are you sure you want to remove this picture?",
+      translations[this.state.lang].removePic,
+      translations[this.state.lang].confirmRemovePic,
       [
-        {text: 'No', style: 'cancel'},
-        {text: 'Yes', onPress: () => this.removePhoto()}
+        {text: translations[this.state.lang].no, style: 'cancel'},
+        {text: translations[this.state.lang].yes, onPress: () => this.removePhoto()}
       ]
     )
   }
@@ -312,7 +330,7 @@ selectCategory(i, category) {
       await deleteObject(imgRef)
       .then(() => {
         this.setState({imgUrl: ""})
-        ToastAndroid.show("Picture removed", ToastAndroid.SHORT)
+        ToastAndroid.show(translations[this.state.lang].picRemoved, ToastAndroid.SHORT)
       })
       this.setState({imgLoading: false})
     }, 100)  
@@ -354,38 +372,38 @@ selectCategory(i, category) {
 
       if(this.state.selectedVisibility == "") {
           Alert.alert(
-            "Visibility required",
-            "Please select visibility"
+            translations[this.state.lang].visibilityRequired,
+            translations[this.state.lang].plzSelectVisibility
           )
       } else if(this.state.recipe == "") {
           Alert.alert(
-            "Recipe name required",
-            "Please enter a recipe name"
+            translations[this.state.lang].recipeNameRequired,
+            translations[this.state.lang].plzEnterRecipeName
           )
       } else if(this.state.selectedCategory == "") {
           Alert.alert(
-              "Category required",
-              "Please select a category"
+            translations[this.state.lang].categoryRequired,
+            translations[this.state.lang].plzSelectCategory
               )
       } else if(noQuantity) {
           Alert.alert(
-            "Quantity required",
-            "Please enter a quantity for each ingredient"
+            translations[this.state.lang].quantityRequired,
+            translations[this.state.lang].plzEnterQuantity
               )
       } else if(noIngredient) {
         Alert.alert(
-            "Ingredients required",
-            "Please enter all ingredients"
+          translations[this.state.lang].ingredientsRequired,
+          translations[this.state.lang].plzEnterIngredients
             )
       }else if(unitNotSelected) {
         Alert.alert(
-          "Unit required",
-          "Please select a unit for each ingredient"
+          translations[this.state.lang].unitRequired,
+          translations[this.state.lang].plzSelectUnit
           )
       } else if(noInstructions) {
           Alert.alert(
-              "Instructions required",
-              "Please enter all instructions"
+            translations[this.state.lang].instructionsRequired,
+            translations[this.state.lang].plzEnterInstructions
               )
       } else {
           this.addRecipe()
@@ -395,9 +413,9 @@ selectCategory(i, category) {
 
   async addRecipe() {
   let visible;
-  if(this.state.selectedVisibility === "Public") {
+  if(this.state.selectedVisibility === "Public" || this.state.selectedVisibility === "Publiek") {
     visible = true
-  } else if(this.state.selectedVisibility === "Private") {
+  } else if(this.state.selectedVisibility === "Private" || this.state.selectedVisibility === "Privé") {
     visible = false
   }
 
@@ -433,7 +451,7 @@ selectCategory(i, category) {
         timeNeeded: this.state.time,
         img: this.state.imgUrl,
         public: visible,
-        chef: "A registered user"
+        chef: translations[this.state.lang].registeredUser
       })
     }
    this.goToCookbook()
@@ -467,11 +485,11 @@ selectCategory(i, category) {
 
   goBack() {
           Alert.alert(
-            "Leave page?",
-            "All unsaved changes will be lost",
+           translations[this.state.lang].leavePage,
+           translations[this.state.lang].unsavedChanges,
             [
-              { text: "No", style:"cancel" },
-              { text: "Yes", onPress: () => {this.props.navigation.goBack()} }
+              { text: translations[this.state.lang].no, style:"cancel" },
+              { text: translations[this.state.lang].yes, onPress: () => {this.props.navigation.goBack()} }
             ]
           )
   }
@@ -509,17 +527,17 @@ selectCategory(i, category) {
     ));
 
     let textVisibility;
-    if(this.state.selectedVisibility === "Public") {
-      textVisibility = <Text style={styles.info}>Added recipe will be visible for other users</Text>
-    } else if(this.state.selectedVisibility === "Private") {
-      textVisibility = <Text style={styles.info}>Added recipe will not be visible for other users</Text>
+    if(this.state.selectedVisibility === "Public" || this.state.selectedVisibility === "Publiek") {
+      textVisibility = <Text style={styles.info}>{translations[this.state.lang].visibilityPublic}</Text>
+    } else if(this.state.selectedVisibility === "Private" || this.state.selectedVisibility === "Privé") {
+      textVisibility = <Text style={styles.info}>{translations[this.state.lang].visibilityPrivate}</Text>
     }
 
     let img;
     if(this.state.imgUrl == "") {
       img = 
       <TouchableOpacity style={styles.button} onPress={() => this.selectPhoto()}>
-        <Text style={styles.btnText}>Select photo</Text>
+        <Text style={styles.btnText}>{translations[this.state.lang].selectPic}</Text>
       </TouchableOpacity>
     } else {
       img = 
@@ -528,10 +546,10 @@ selectCategory(i, category) {
         	src= {this.state.imgUrl}
         	style={styles.foodImg}/>
           <TouchableOpacity style={[styles.photoOptions, {marginTop: hp("-13%"), backgroundColor: "#115740"}]} onPress={() => this.selectPhoto()}>
-            <Text style={styles.btnText}>Select another photo</Text>
+            <Text style={styles.btnText}>{translations[this.state.lang].selectAnotherPic}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.photoOptions, {marginTop: hp("1%"), backgroundColor: "#FF0000"}]} onPress={() => this.confirmDelete()}>
-            <Text style={styles.btnText}>Remove photo</Text>
+            <Text style={styles.btnText}>{translations[this.state.lang].removePic}</Text>
           </TouchableOpacity>
         </View>
     }
@@ -539,10 +557,10 @@ selectCategory(i, category) {
     let addBtnText;
     if(this.props.route.params?.recipe !== undefined) {
       addBtnText=
-      <Text style={styles.btnText}>Edit recipe</Text>
+      <Text style={styles.btnText}>{translations[this.state.lang].editRecipe}</Text>
     } else {
       addBtnText=
-      <Text style={styles.btnText}>Add recipe</Text>
+      <Text style={styles.btnText}>{translations[this.state.lang].addRecipe}</Text>
     }
 
     return (
@@ -554,25 +572,25 @@ selectCategory(i, category) {
               color="#115740"
               onPress={() => this.goBack()}
             />
-          <Text style={styles.pageTitle}>Add a new recipe</Text>
+          <Text style={styles.pageTitle}>{translations[this.state.lang].addNewRecipe}</Text>
         </View>
 
         <ScrollView style={{marginTop: hp("3%")}} nestedScrollEnabled>
-            <Text style={styles.text}>Select visibility *</Text>
+            <Text style={styles.text}>{translations[this.state.lang].selectVisibility}</Text>
             <View style={styles.visibilityChoice}>
               <View style={{display:"flex", flexDirection:"row"}}>
                 {filterSelectionVisibility}
               </View>
               {textVisibility}
             </View>
-            <Text style={styles.text}>Recipe name *</Text>
+            <Text style={styles.text}>{translations[this.state.lang].recipeName}</Text>
             <TextInput
             style={styles.placeholder}
-            placeholder="Recipe Name"
+            placeholder={translations[this.state.lang].recipeName.slice(0, -2)}
             value={this.state.recipeName}
             onChangeText={(txt) => this.setState({recipeName: txt})}/>
             
-            <Text style={styles.text}>Servings</Text>
+            <Text style={styles.text}>{translations[this.state.lang].servings}</Text>
             <TextInput
             style={styles.placeholder}
             placeholder="0"
@@ -580,21 +598,21 @@ selectCategory(i, category) {
             value={this.state.servings}
             onChangeText={(txt) => this.setState({servings: parseInt(txt)})}/>
             
-            <Text style={styles.text}>Time needed (in minutes)</Text>
+            <Text style={styles.text}>{translations[this.state.lang].timeNeeded}</Text>
             <TextInput
             style={styles.placeholder}
-            placeholder="0 minutes"
+            placeholder={`0 ${translations[this.state.lang].minutes}`}
             inputMode="numeric"
             value={this.state.time}
             onChangeText={(txt) => this.setState({time: parseInt(txt)})}/>
 
-            <Text style={styles.text}>Category *</Text>
+            <Text style={styles.text}>{translations[this.state.lang].category} *</Text>
               <View style={[styles.filterChoice]}>
                 {filterSelectionCategory}
               </View>
 
-            <Text style={[styles.text, {marginBottom:hp("0")}]}>Ingredients *</Text>
-            <Text style={[styles.info, {width:wp("90%"), marginBottom:hp("1")}]}>Please select "N/A" as unit if no specific unit is required.</Text>
+            <Text style={[styles.text, {marginBottom:hp("0")}]}>{translations[this.state.lang].ingredients}</Text>
+            <Text style={[styles.info, {width:wp("90%"), marginBottom:hp("1")}]}>{translations[this.state.lang].N_A_IfNoUnit}</Text>
             {this.state.ingredients.map((ingredient, index) => (
                 <View style={{display:"flex", flexDirection:"row"}} key={index}>
                 <TextInput
@@ -618,7 +636,7 @@ selectCategory(i, category) {
                   }}/>
                 <TextInput
                 style={[styles.placeholder, {width:wp("30%"), marginHorizontal:wp("0%")}]}
-                placeholder="ingredient"
+                placeholder={translations[this.state.lang].ingredient}
                 value={ingredient.name}
                 onChangeText={(txt) => this.addIngredient(txt, index, "name")}/>
 
@@ -639,8 +657,8 @@ selectCategory(i, category) {
             </View>
             ))}
 
-            <Text style={[styles.text, {marginBottom:hp("0")}]}>Instructions *</Text>
-            <Text style={[styles.info, {width:wp("90%"), marginBottom:hp("1")}]}>You can reorder the instructions by clicking on the correct arrow</Text>
+            <Text style={[styles.text, {marginBottom:hp("0")}]}>{translations[this.state.lang].instructions}</Text>
+            <Text style={[styles.info, {width:wp("90%"), marginBottom:hp("1")}]}>{translations[this.state.lang].reorderInstructions}</Text>
             {this.state.instructions.map((instruction, index) => (
                 <View style={[styles.iconText, {display:"flex", flexDirection:"row"}]} key={index}>
                   {(index > 0) ?(
@@ -664,7 +682,7 @@ selectCategory(i, category) {
                 <Text style={[styles.text]}>{index + 1}</Text>
                 <TextInput
                 style={[styles.placeholder, {width:wp("55%"), marginHorizontal:wp("1.5%")}]}
-                placeholder="To do"
+                placeholder={translations[this.state.lang].toDo}
                 value={instruction.step}
                 onChangeText={(txt) => this.addInstruction(txt, index)}/>
 
@@ -695,7 +713,7 @@ selectCategory(i, category) {
             </View>
             ))}
 
-            <Text style={styles.text}>Add photo</Text>
+            <Text style={styles.text}>{translations[this.state.lang].addPic}</Text>
             {this.state.imgLoading && <ActivityIndicator size="large"/>}
             {img}
 
@@ -727,7 +745,8 @@ const styles = StyleSheet.create({
         fontFamily: "Nunito_700Bold",
         fontSize: hp("3.5%"),
         color:"#FF5E00",
-        marginLeft: wp("10%")
+        marginLeft: wp("5%"),
+        width:wp("75%"),
     },
     text: {
         fontFamily: "Nunito_700Bold",
