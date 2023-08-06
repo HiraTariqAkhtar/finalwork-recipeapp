@@ -20,27 +20,31 @@ import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import translations from '../translation'
+
 
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      mapOptions: ["All", "Restaurants", "Supermarkets"],
+      mapOptions: [],
       permissionGranted: "",
       userLocation: {
         latitude: 0,
         longitude: 0
       },
-      category : "All",
+      category : "",
       restaurants: [],
       supermarkets: [],
+
+      lang:"en"
     }
 
   }
   
   componentDidMount() {
-    this.askLocationPermission()
+    this.getLang()
   }
 
   componentDidUpdate(prevProps) {
@@ -49,11 +53,23 @@ export default class Map extends React.Component {
     }
   }
 
+  async getLang(){
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected, mapOptions: translations[langSelected].mapOptions, category:translations[langSelected].all})
+    } else {
+      this.setState({lang: "en", mapOptions: translations["en"].mapOptions, category:translations["en"].all})
+    }
+
+    this.askLocationPermission()
+
+  }
+
   async askLocationPermission() {
     let status = await Location.requestForegroundPermissionsAsync();
     //console.log(status)
     if(status.status !== "granted") {
-      ToastAndroid.show("Current location needed so you can view nearby Pakistani supermarkets and restaurants", ToastAndroid.LONG)
+      ToastAndroid.show(translations[this.state.lang].toastLocationNeeden, ToastAndroid.LONG)
     }
     this.setState({permissionGranted: status.status})
 
@@ -105,10 +121,10 @@ export default class Map extends React.Component {
       this.props.navigation.navigate("AddToMap")
     } else {
       Alert.alert(
-        "Not logged in",
-        "You need to log in to add a new recipe",
+        translations[this.state.lang].alertNotLoggedIn,
+        translations[this.state.lang].logInToAddToMap,
         [
-          {text: "Cancel", style: "cancel"},
+          {text: translations[this.state.lang].cancel, style: "cancel"},
           {text: "Log in", onPress: () => this.props.navigation.navigate("LogIn")}
         ]
       )
@@ -153,11 +169,11 @@ export default class Map extends React.Component {
     ))
 
     let locations = []
-    if(this.state.category === "All"){
+    if(this.state.category === translations[this.state.lang].all){
       locations = restaurants.concat(supermarkets)
     } else if(this.state.category === "Restaurants") {
       locations = restaurants
-    } else if(this.state.category === "Supermarkets") {
+    } else if(this.state.category === translations[this.state.lang].supermarkets) {
       locations = supermarkets
     }
 
@@ -171,7 +187,7 @@ export default class Map extends React.Component {
                 marginRight={wp("25%")}
                 onPress={() => this.addToMap()}
               />
-            <Text style={styles.title}>Map</Text>
+            <Text style={styles.title}>{translations[this.state.lang].map}</Text>
         </View>
           <View style={{display: "flex", flexDirection: "row"}}>
             <SelectDropdown
@@ -183,7 +199,7 @@ export default class Map extends React.Component {
             onSelect={(selectedItem) => {
               this.setState({category: selectedItem})
             }}
-            defaultValue = "All"
+            defaultValue = {translations[this.state.lang].all}
             renderDropdownIcon={isOpened => {
               return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={20} />;
             }}/>
@@ -195,7 +211,7 @@ export default class Map extends React.Component {
                   size={hp("4%")}
                   color="#FF0000"
                 />
-                <Text style={styles.legendText}>Your location</Text>
+                <Text style={styles.legendText}>{translations[this.state.lang].yourLocation}</Text>
               </View>
               <View style={styles.iconText}>
                 <Ionicons
@@ -203,7 +219,7 @@ export default class Map extends React.Component {
                   size={hp("4%")}
                   color="#115740"
                 />
-                <Text style={styles.legendText}>Supermarkets</Text>
+                <Text style={styles.legendText}>{translations[this.state.lang].supermarkets}</Text>
               </View>
               <View style={styles.iconText}>
                 <FontAwesome

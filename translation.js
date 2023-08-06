@@ -17,6 +17,15 @@ const translations = {
     recipeOfTheDay:"Recipe of the day",
     minutes:"minutes",
     recipesPerCategory:"Recipes per category",
+    mapOptions:["All", "Restaurants", "Supermarkets"],
+    all:"All",
+    supermarkets:"Supermarkets",
+    toastLocationNeeded:"Current location needed so you can view nearby Pakistani supermarkets and restaurants",
+    alertNotLoggedIn:"Not logged in",
+    logInToAddToMap:"You need to log in to add a new place in map",
+    cancel:"Cancel",
+    map:"Map",
+    yourLocation:"Your location",
   },
 
 
@@ -36,6 +45,15 @@ const translations = {
     recipeOfTheDay:"Recept van de dag",
     minutes:"minuten",
     recipesPerCategory:"Recepten per categorie",
+    mapOptions:["Alles", "Restaurants", "Supermarkten"],
+    all:"Alles",
+    supermarkets:"Supermarkten",
+    toastLocationNeeded:"Huidige locatie vereist, zodat je nabijgelegen Pakistaanse supermarkten en restaurants kunt bekijken.",
+    alertNotLoggedIn:"Niet ingelogd",
+    logInToAddToMap:"Inloggen is vereist om een plaats toe te voegen aan de kaart",
+    cancel:"Annuleer",
+    map:"Kaart",
+    yourLocation:"Jouw locatie",
   }
 };
   
