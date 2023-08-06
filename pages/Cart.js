@@ -85,8 +85,8 @@ export default class Cart extends React.Component {
 
   confirmClear() {
     Alert.alert(
-      translations[this.state.lang].clearCart,
-      translations[this.state.lang].confirmClearCart,
+      translations[this.state.lang].clearList,
+      translations[this.state.lang].confirmClearList,
       [
         {text: translations[this.state.lang].no, style: "cancel"},
         {text: translations[this.state.lang].yes, onPress: () => this.clearList()}
@@ -99,7 +99,7 @@ export default class Cart extends React.Component {
     this.setState({cartItems: emptyList})
     this.setState({hasData: false})
     await AsyncStorage.removeItem("cart")
-    ToastAndroid.show(translations[this.state.lang].cartCleared, ToastAndroid.SHORT)
+    ToastAndroid.show(translations[this.state.lang].listCleared, ToastAndroid.SHORT)
   }
 
 
