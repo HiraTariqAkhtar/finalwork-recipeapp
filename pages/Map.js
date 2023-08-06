@@ -288,6 +288,7 @@ const styles = StyleSheet.create({
       dropDownOptions: {
         backgroundColor: "#fff",
         borderRadius: 10,
+        marginTop: hp("-3%")
       },
       dropDownText: {
         fontFamily: "Nunito_700Bold",

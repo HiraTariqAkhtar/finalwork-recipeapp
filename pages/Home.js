@@ -358,7 +358,7 @@ export default class Home extends React.Component {
           <SelectDropdown
           buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%"), marginTop: hp("5%")}]}
           buttonTextStyle = {styles.fact}
-          dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10}}
+          dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10, marginTop: hp("-3%")}}
           rowTextStyle = {styles.fact}
           data = {this.state.langOptions}
           defaultButtonText= {this.state.lang}
@@ -380,7 +380,7 @@ export default class Home extends React.Component {
           <SelectDropdown
           buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%"), marginTop: hp("5%")}]}
           buttonTextStyle = {styles.fact}
-          dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10}}
+          dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10, marginTop: hp("-3%")}}
           rowTextStyle = {styles.fact}
           data = {this.state.langOptions}
           defaultButtonText= {this.state.lang}
