@@ -199,7 +199,7 @@ export default class Map extends React.Component {
             onSelect={(selectedItem) => {
               this.setState({category: selectedItem})
             }}
-            defaultValue = {translations[this.state.lang].all}
+            defaultButtonText = {translations[this.state.lang].all}
             renderDropdownIcon={isOpened => {
               return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={20} />;
             }}/>
