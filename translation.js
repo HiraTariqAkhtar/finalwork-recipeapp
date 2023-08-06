@@ -105,7 +105,11 @@ const translations = {
     settings:"Settings",
     logOut:"Log out",
     login:"Log in",
-    profile:"Profile"
+    profile:"Profile",
+    noRecipesAdded:"No recipes added yet",
+    clickHere:"Click here",
+    publicRecipes:"Public recipes",
+    privateRecipes:"Private recipes"
   },
 
 
@@ -213,7 +217,11 @@ const translations = {
     settings:"Instellingen",
     logOut:"Uitloggen",
     login:"Inloggen",
-    profile:"Profiel"
+    profile:"Profiel",
+    noRecipesAdded:"Nog geen recepten toegevoegd",
+    clickHere:"Klik hier",
+    publicRecipes:"Publieke recepten",
+    privateRecipes:"Privé recepten"
   }
 };
   
