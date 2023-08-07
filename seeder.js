@@ -1389,7 +1389,8 @@ const recipes = [
         category: "Snack",
         img:"https://www.masala.tv/wp-content/uploads/2016/11/1.jpg",
         public: true,
-        chef: "Gulzar Hussain"
+        chef: "Gulzar Hussain",
+        lang:"nl"
     },
 
     {
@@ -1561,7 +1562,7 @@ const recipes = [
             {number: 13, step: "Wanneer de bouillon is ingedroogd, laat het dan sudderen."},
             {number: 14, step: "Zodra er stoom verschijnt, is je Yakhni Pulao klaar."},
         ],
-        category: "Rice",
+        category: "Rijst",
         img:"https://www.masala.tv/wp-content/uploads/2016/07/1-12.jpg",
         public: true,
         chef: "Zubaida Tariq",
