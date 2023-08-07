@@ -370,6 +370,8 @@ export default class Home extends React.Component {
           onSelect={(selectedItem) => {
             AsyncStorage.setItem("langSelected", selectedItem)
             this.setState({lang: selectedItem, categories: translations[selectedItem].categories})
+            this.getDidYouKnow()
+            this.getRecipeOfTheDay()
           }}
           />
         </View>
