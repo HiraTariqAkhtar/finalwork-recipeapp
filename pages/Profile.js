@@ -184,6 +184,10 @@ export default class Profile extends React.Component {
     this.props.navigation.navigate("LogIn")
   }
 
+  async register() {
+    this.props.navigation.navigate("Register")
+  }
+
   async logOut() {
     await AsyncStorage.removeItem("userLoggedIn")
     await AsyncStorage.removeItem("firstName")
@@ -269,10 +273,16 @@ export default class Profile extends React.Component {
       }
     } else {
       login = 
-      <TouchableOpacity style={styles.button}
-      onPress={() => this.logIn()}>
-        <Text style={styles.btnText}>{translations[this.state.lang].login}</Text>
-      </TouchableOpacity>
+      <View>
+        <TouchableOpacity style={styles.button}
+        onPress={() => this.logIn()}>
+          <Text style={styles.btnText}>{translations[this.state.lang].login}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}
+        onPress={() => this.register()}>
+          <Text style={styles.btnText}>{translations[this.state.lang].signUp}</Text>
+        </TouchableOpacity>
+      </View>
 
       profilePic = 
       <Ionicons
