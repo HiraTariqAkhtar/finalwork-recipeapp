@@ -19,6 +19,7 @@ import { collection, getDocs} from "firebase/firestore";
 import {DATABASE} from "../firebaseConfig"
 import {AUTH} from "../firebaseConfig"
 import { signInWithEmailAndPassword } from "firebase/auth"; 
+import translations from "../translation";
 
 export default class Login extends React.Component {
   constructor(props) {
@@ -28,7 +29,22 @@ export default class Login extends React.Component {
       email: "",
       pw: "",
 
-      isLoading: false
+      isLoading: false,
+
+      lang:"en"
+    }
+  }
+
+  componentDidMount() {
+    this.getLang()
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected})
+    } else {
+      this.setState({lang: "en"})
     }
   }
 
@@ -61,8 +77,8 @@ export default class Login extends React.Component {
       console.log(`Error: ${errorMsg}`);
       
       Alert.alert(
-        "User not found",
-        "Please re-enter your email address and password"
+        translations[this.state.lang].userNotFound,
+        translations[this.state.lang].reEnterEmailPw
       );
       this.setState({ email: "", pw: "" });
     } finally {
@@ -82,34 +98,34 @@ export default class Login extends React.Component {
               marginRight={wp("20%")}
               onPress={() => this.props.navigation.goBack()}
             />
-          <Text style={styles.title}>Sign In</Text>
+          <Text style={styles.title}>{translations[this.state.lang].login}</Text>
         </View>
 
           {this.state.isLoading && <ActivityIndicator size="large"/>}
         
           <View style={{display:"flex", flexDirection:"row", justifyContent:"center"}}>
-              <Text style={styles.question}>Not a user yet?</Text>
-              <Text style={styles.nav} onPress={() => this.register()}>Sign Up</Text>
+              <Text style={styles.question}>{translations[this.state.lang].notAUser}</Text>
+              <Text style={styles.nav} onPress={() => this.register()}>{translations[this.state.lang].signUp}</Text>
           </View>
 
-          <Text style={styles.text}>Email address:</Text>
+          <Text style={styles.text}>{translations[this.state.lang].email}</Text>
           <TextInput
           style={styles.placeholder}
-          placeholder="Enter email address"
+          placeholder="someone@example.com"
           keyboardType="email-address"
           value={this.state.email}
           onChangeText={(txt) => this.setState({email: txt})}/>
 
-          <Text style={styles.text}>Password:</Text>
+          <Text style={styles.text}>{translations[this.state.lang].pw}</Text>
           <TextInput
           style={styles.placeholder}
-          placeholder="Enter password"
+          placeholder="**********"
           secureTextEntry
           value={this.state.pw}
           onChangeText={(txt) => this.setState({pw: txt})}/>
 
           <TouchableOpacity style={styles.button} onPress={() => this.checkCredentials()}>
-            <Text style={styles.btnText}>Sign in</Text>
+            <Text style={styles.btnText}>{translations[this.state.lang].login}</Text>
           </TouchableOpacity>
       </View>
     );

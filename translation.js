@@ -146,7 +146,12 @@ const translations = {
     makeRecipePrivate:"Make recipe private",
     makeRecipePublic:"Make recipe public",
     step:"Step",
-    src:"Source:"
+    src:"Source:",
+    userNotFound:"User not found",
+    reEnterEmailPw:"Please re-enter your email address and password",
+    notAUser: "Not a user yet?",
+    signUp:"Sign Up",
+    pw:"Password",
   },
 
 
@@ -295,7 +300,12 @@ const translations = {
     makeRecipePrivate:"Recept privé maken",
     makeRecipePublic:"Recept publiek maken",
     step:"Stap",
-    src:"Bron:"
+    src:"Bron:",
+    userNotFound:"Gebruiker niet gevonden",
+    reEnterEmailPw:"Voer uw e-mailadres en wachtwoord opnieuw in",
+    notAUser:"Nog geen gebruiker?",
+    signUp:"Registreer",
+    pw:"Wachtwoord"
   }
 };
 
