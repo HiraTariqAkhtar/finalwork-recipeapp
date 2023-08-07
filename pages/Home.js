@@ -185,7 +185,7 @@ export default class Home extends React.Component {
     let recipeData = await getDocs(recipeCollection)
     if (recipeData.size > 0) {
       recipeData.forEach((doc) => {
-        if(doc.data().public == true) {
+        if(doc.data().lang === this.state.lang && doc.data().public == true) {
           recipes.push(doc.data())
           recipes.sort((a,b) => a.id - b.id)
         }
@@ -295,7 +295,9 @@ export default class Home extends React.Component {
     let didYouKnowData = await getDocs(didYouKnowCollection)
     if (didYouKnowData.size > 0) {
       didYouKnowData.forEach((doc) => {
-        didYouKnows.push(doc.data().didYouKnow)
+        if(doc.data().lang === this.state.lang) {
+          didYouKnows.push(doc.data().didYouKnow)
+        }
       })
     } 
     let randomFact = didYouKnows[Math.floor(Math.random() * didYouKnows.length)]

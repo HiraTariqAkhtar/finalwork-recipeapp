@@ -451,7 +451,8 @@ selectCategory(i, category) {
         timeNeeded: this.state.time,
         img: this.state.imgUrl,
         public: visible,
-        chef: translations[this.state.lang].registeredUser
+        chef: translations[this.state.lang].registeredUser,
+        lang: this.state.lang
       })
     }
    this.goToCookbook()
