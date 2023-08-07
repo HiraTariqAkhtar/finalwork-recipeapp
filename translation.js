@@ -134,7 +134,18 @@ const translations = {
     confirmNewPw:"Confirm password",
     back:"Back",
     finish:"Finish",
-    enterPw:"Please enter your password"
+    enterPw:"Please enter your password",
+    alreadyInCart:"${ingredient} already in cart",
+    addedToCart:"${ingredient} added to cart",
+    addedToFav:"${this.state.recipeName} added to favorites",
+    removedFromFav:"${this.state.recipeName} removed from favorites",
+    changeVisibility:"Change recipe visibility",
+    confirmChangeVisibility:"Are you sure you want to change the visibility of this recipe?",
+    deleteRecipe:"Delete recipe",
+    confirmDeleteRecipe:"Are you sure you want to delete this recipe?",
+    makeRecipePrivate:"Make recipe private",
+    makeRecipePublic:"Make recipe public",
+    step:"Step"
   },
 
 
@@ -271,9 +282,20 @@ const translations = {
     confirmNewPw:"Bevestig nieuw wachtwoord",
     back:"Terug",
     finish:"Klaar",
-    enterPw:"Vul je wachtwoord in"
+    enterPw:"Vul je wachtwoord in",
+    alreadyInCart:"${ingredient} al in boodschappenlijst",
+    addedToCart:"${ingredient} toegevoegd in boodschappenlijst",
+    addedToFav:"${this.state.recipeName} toegevoegd in favorieten",
+    removedFromFav:"${this.state.recipeName} verwijderd uit favorieten",
+    changeVisibility:"Zichtbaarheid van recept veranderen",
+    confirmChangeVisibility:"Ben je zeker dat je de zichtbaarheid van dit recept wilt wijzigen?",
+    deleteRecipe:"Recept verwijderen",
+    confirmDeleteRecipe:"Ben je zeker dat je dit recept wil verwijderen?",
+    makeRecipePrivate:"Recept privé maken",
+    makeRecipePublic:"Recept publiek maken",
+    step:"Stap"
   }
 };
-  
-  export default translations;
+
+export default translations;
   
