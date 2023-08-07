@@ -18,6 +18,7 @@ import { Ionicons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icon
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore"; 
+import translations from "../translation";
 
 
 export default class RecipeDetails extends React.Component {
@@ -41,10 +42,23 @@ export default class RecipeDetails extends React.Component {
       },
       fav: false,
       recipeByCurrentUser: false,
+      lang:"en"
     }
   }
   componentDidMount() {
+    this.getLang()
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected})
+    } else {
+      this.setState({lang: "en"})
+    }
+
     this.getRecipeDetails()
+
   }
 
   async getRecipeDetails() {
@@ -133,7 +147,7 @@ export default class RecipeDetails extends React.Component {
   
     // check if ingredient already added in cart
     if(cartItems.includes(ingredient)) {
-      alert(`${ingredient} already in cart`)
+      alert(translations[this.state.lang].alreadyInCart.replace('${ingredient}', ingredient))
     } else {
       // add new ingredients in cart
       cartItems.push(ingredient);
@@ -141,7 +155,7 @@ export default class RecipeDetails extends React.Component {
       // Save edited cart
       await AsyncStorage.setItem("cart", JSON.stringify(cartItems));
       
-      ToastAndroid.show(`${ingredient} added to cart`, ToastAndroid.SHORT)
+      ToastAndroid.show(translations[this.state.lang].addedToCart.replace('${ingredient}', ingredient), ToastAndroid.SHORT)
     }
   }
 
@@ -161,7 +175,7 @@ export default class RecipeDetails extends React.Component {
 
     // Change outline heart into filled
     this.setState({fav: true})
-    ToastAndroid.show(`${this.state.recipe.recipeName} added to favorites`, ToastAndroid.SHORT)
+    ToastAndroid.show(translations[this.state.lang].addedToFav.replace('${this.state.recipeName}', this.state.recipeName), ToastAndroid.SHORT)
   }
 
   async removeFromFav() {
@@ -175,16 +189,16 @@ export default class RecipeDetails extends React.Component {
     
     // Change filled heart into outline
     this.setState({fav: false})
-    ToastAndroid.show(`${this.state.recipe.recipeName} removed from favorites`, ToastAndroid.SHORT)
+    ToastAndroid.show(translations[this.state.lang].removedFromFav.replace('${this.state.recipeName}', this.state.recipeName), ToastAndroid.SHORT)
   }
 
   async editRecipeVisibility() {
     Alert.alert(
-      "Change recipe visibility",
-      "Are you sure you want to change the visibility of this recipe?",
+      translations[this.state.lang].changeVisibility,
+      translations[this.state.lang].confirmChangeVisibility,
       [
-        { text: "No", style:"cancel" },
-        { text: "Yes", onPress: () => {
+        { text: translations[this.state.lang].no, style:"cancel" },
+        { text: translations[this.state.lang].yes, onPress: () => {
           updateDoc(doc(DATABASE, "recipes", this.state.recipe.recipeId), 
           {public: !this.state.recipe.visible}
           )
@@ -203,11 +217,11 @@ export default class RecipeDetails extends React.Component {
 
   async deleterecipe() {
     Alert.alert(
-      "Delete recipe",
-      "Are you sure you want to delete this recipe?",
+      translations[this.state.lang].deleteRecipe,
+      translations[this.state.lang].confirmDeleteRecipe,
       [
-        { text: "No", style:"cancel" },
-        { text: "Yes", onPress: () => {
+        { text: translations[this.state.lang].no, style:"cancel" },
+        { text: translations[this.state.lang].yes, onPress: () => {
           deleteDoc(doc(DATABASE, "recipes", this.state.recipe.recipeId))
           this.props.navigation.navigate("Cookbook", { refresh: Date.now() })
         }
@@ -234,7 +248,7 @@ export default class RecipeDetails extends React.Component {
         size={hp("3%")}
         marginRight={wp("1%")}
         />
-        <Text style= {styles.btnText}> Make recipe private</Text>
+        <Text style= {styles.btnText}>{translations[this.state.lang].makeRecipePrivate}</Text>
         </TouchableOpacity>
       }
       else {
@@ -248,7 +262,7 @@ export default class RecipeDetails extends React.Component {
         size={hp("3%")}
         marginRight={wp("1%")}
         />
-        <Text style= {styles.btnText}> Make recipe public</Text>
+        <Text style= {styles.btnText}>{translations[this.state.lang].makeRecipePublic}</Text>
         </TouchableOpacity>
       }
 
@@ -337,7 +351,7 @@ export default class RecipeDetails extends React.Component {
               size={hp("5%")}
               color="#115740"
             />
-              <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+              <Text style={styles.text}>{rec.timeNeeded} {translations[this.state.lang].minutes}</Text>
             </View>)}
           </View>
 
@@ -364,7 +378,7 @@ export default class RecipeDetails extends React.Component {
             </View>)}
 
                 <View>
-                    <Text style={styles.pageTitle}>Ingredients</Text>
+                    <Text style={styles.pageTitle}>{translations[this.state.lang].ingredients.slice(0, -2)}</Text>
                     {rec.ingredients.map((i, index) => (
                     <View key={`Ingredient${index}`} style={styles.iconText}>
                         <FontAwesome
@@ -391,10 +405,10 @@ export default class RecipeDetails extends React.Component {
                 </View>
 
                 <View style={{marginBottom: hp("5%")}}>
-                    <Text style={styles.pageTitle}>Instructions</Text>
+                    <Text style={styles.pageTitle}>{translations[this.state.lang].instructions.slice(0, -2)}</Text>
                     {rec.instructions.map((step, index) => (
                     <View key={`Instruction${index}`} style= {{marginBottom: hp("2%")}}>
-                        <Text style={styles.steps}>Step {step.number}:</Text>
+                        <Text style={styles.steps}>{translations[this.state.lang].step} {step.number}:</Text>
                         <Text style={styles.text}>{step.step}</Text>
                     </View>
               ))}
@@ -432,7 +446,7 @@ const styles = StyleSheet.create({
     color: "#FF5E00",
     fontFamily: "Nunito_700Bold",
     marginBottom: hp("1%"),
-    width: wp("60%"),
+    width: wp("50%"),
   },
   info: {
     display: "flex",

@@ -18,6 +18,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {DATABASE} from "../firebaseConfig"
 import { collection, getDocs } from "firebase/firestore"; 
 
+import translations from '../translation'
+
 
 export default class Cookbook extends React.Component {
   constructor(props) {
@@ -27,18 +29,30 @@ export default class Cookbook extends React.Component {
         userId: "",
         hasData: false,
         myPublicRecipes:[],
-        myPrivateRecipes:[]
+        myPrivateRecipes:[],
+        lang:"en"
       }
   }
 
   componentDidMount() {
-    this.getUser()
+    this.getLang()
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.route.params?.refresh !== prevProps.route.params?.refresh) {
       this.getUser()
     }
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected})
+    } else {
+      this.setState({lang: "en"})
+    }
+
+    this.getUser()
   }
 
   async getUser() {
@@ -146,7 +160,7 @@ export default class Cookbook extends React.Component {
                     size={hp("2.5%")}
                     color="#115740"
                   />
-                    <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+                    <Text style={styles.text}>{rec.timeNeeded} {translations[this.state.lang].minutes}</Text>
                 </View>
                 </View>
         
@@ -206,7 +220,7 @@ export default class Cookbook extends React.Component {
                     size={hp("2.5%")}
                     color="#115740"
                   />
-                    <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+                    <Text style={styles.text}>{rec.timeNeeded} {translations[this.state.lang].minutes}</Text>
                 </View>
                 </View>
         
@@ -227,10 +241,10 @@ export default class Cookbook extends React.Component {
     if(!this.state.hasData){
       noRecipes = 
       <View>
-          <Text style={styles.noRecipes}>No recipes added yet</Text>
+          <Text style={styles.noRecipes}>{translations[this.state.lang].noRecipesAdded}</Text>
           <View style={{display:"flex", flexDirection:"row", justifyContent:"center"}}>
-              <Text style={styles.question}>Add a new recipe?</Text>
-              <Text style={styles.nav} onPress={() => this.props.navigation.navigate("AddRecipe")}>Click here</Text>
+              <Text style={styles.question}>{translations[this.state.lang].addNewRecipe}?</Text>
+              <Text style={styles.nav} onPress={() => this.props.navigation.navigate("AddRecipe")}>{translations[this.state.lang].clickHere}</Text>
         </View>
       </View>
     }
@@ -244,30 +258,30 @@ export default class Cookbook extends React.Component {
               color="#115740"
               onPress={() => this.props.navigation.goBack()}
             />
-          <Text style={styles.title}>My Cookbook</Text>
+          <Text style={styles.title}>{translations[this.state.lang].myCookbook}</Text>
         </View>
         <View>
           {this.state.myPrivateRecipes.length > 0 && this.state.myPublicRecipes.length > 0  ? (
             <View>
-              <Text style={styles.section}>Public Recipes</Text>
+              <Text style={styles.section}>{translations[this.state.lang].publicRecipes}</Text>
               <ScrollView style={{height: hp("33%")}}>
                 {publicRecipes}
               </ScrollView>
-              <Text style={styles.section}>Private Recipes</Text>
+              <Text style={styles.section}>{translations[this.state.lang].privateRecipes}</Text>
               <ScrollView style={{height: hp("33%")}}>
                 {privateRecipes}
               </ScrollView>
             </View>
           ) : this.state.myPrivateRecipes.length > 0 && this.state.myPublicRecipes.length == 0  ? (
           <View>
-            <Text style={styles.section}>Private Recipes</Text>
+            <Text style={styles.section}>{translations[this.state.lang].privateRecipes}</Text>
             <ScrollView>
               {privateRecipes}
             </ScrollView>
           </View>
           ) : this.state.myPrivateRecipes.length == 0 && this.state.myPublicRecipes.length > 0 ?(
             <View>
-            <Text style={styles.section}>Public Recipes</Text>
+            <Text style={styles.section}>{translations[this.state.lang].publicRecipes}</Text>
             <ScrollView>
               {publicRecipes}
             </ScrollView>

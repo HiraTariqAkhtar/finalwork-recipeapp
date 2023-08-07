@@ -17,6 +17,7 @@ import { Ionicons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icon
 import { Button } from "react-native-elements/dist/buttons/Button";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import translations from '../translation'
 
 
 export default class Favorites extends React.Component {
@@ -25,15 +26,28 @@ export default class Favorites extends React.Component {
 
     this.state = {
       hasData: false,
-      favRecipes:[]
+      favRecipes:[],
+      lang:"en"
     }
   }
   componentDidMount() {
-    this.getFavList();
+    this.getLang();
   
     this.focusListener = this.props.navigation.addListener('focus', () => {
-      this.getFavList();
+      this.getLang();
     });
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected})
+    } else {
+      this.setState({lang: "en"})
+    }
+
+    this.getFavList();
+
   }
 
   async getFavList() {
@@ -57,11 +71,11 @@ export default class Favorites extends React.Component {
 
   confirmClear() {
     Alert.alert(
-      "Clear list",
-      `Are you sure you want to clear the list?`,
+      translations[this.state.lang].clearList,
+      translations[this.state.lang].confirmClearList,
       [
-        {text: "No", style: "cancel"},
-        {text: "Yes", onPress: () => this.clearList()}
+        {text: translations[this.state.lang].no, style: "cancel"},
+        {text: translations[this.state.lang].yes, onPress: () => this.clearList()}
       ]
     )
   }
@@ -71,7 +85,7 @@ export default class Favorites extends React.Component {
     this.setState({favRecipes: emptyList})
     this.setState({hasData: false})
     await AsyncStorage.removeItem("favorites")
-    ToastAndroid.show("list cleared", ToastAndroid.SHORT)
+    ToastAndroid.show(translations[this.state.lang].listCleared, ToastAndroid.SHORT)
   }
 
   goToRecipeDetails(rec) {
@@ -143,7 +157,7 @@ export default class Favorites extends React.Component {
                       size={hp("2.5%")}
                       color="#115740"
                     />
-                      <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+                      <Text style={styles.text}>{rec.timeNeeded} {translations[this.state.lang].minutes}</Text>
                   </View>)}
                   </View>
     
@@ -172,16 +186,17 @@ export default class Favorites extends React.Component {
         </TouchableOpacity>
       ))
     } else {
-      recipes = <Text style={styles.noRecipes}>No recipes found</Text>
+      recipes = <Text style={styles.noRecipes}>{translations[this.state.lang].noRecipesFound}</Text>
     }
 
     return (
       <View style={styles.container}>
-          <Text style={styles.title}>Favorites</Text>
+          <Text style={styles.title}>{translations[this.state.lang].fav}</Text>
           <Button
-          title="Clear list"
+          title={translations[this.state.lang].clearList}
           icon={clearIcon}
           buttonStyle={styles.clear}
+          titleStyle={{fontFamily:"Nunito_700Bold"}}
           onPress={() => this.confirmClear()}/>
         <ScrollView>
         {recipes}
@@ -212,8 +227,8 @@ const styles = StyleSheet.create({
   },
   clear: {
     backgroundColor:"#ff0000",
-    width: wp("30%"),
-    left: wp("65%"),
+    width: wp("40%"),
+    left: wp("55%"),
     marginBottom: hp("3%")
   },
   recipe: {

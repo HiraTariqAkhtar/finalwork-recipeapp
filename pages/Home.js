@@ -23,6 +23,9 @@ import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import Carousel, { Pagination } from 'react-native-snap-carousel'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import SelectDropdown from 'react-native-select-dropdown'
+import translations from '../translation'
+
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -54,7 +57,7 @@ export default class Home extends React.Component {
 
       didYouKnow: "",
 
-      categories: ["Bread", "Curry", "Dessert", "Rice", "Snack", "Sweets"],
+      categories: [],
 
       dateTime: {
         date: "",
@@ -76,19 +79,34 @@ export default class Home extends React.Component {
       },
 
       activeSlide: 0,
-      user: ""
+      user: "",
+
+      lang: "en",
+      langOptions: ["en", "nl"]
 
     };
 
   }
   
   componentDidMount() {
+    this.getLang()
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected, categories: translations[langSelected].categories})
+    } else {
+      this.setState({lang: "en", categories: translations["en"].categories})
+    }
+
+
     this.getRecipeOfTheDay()
-    this.getHolidays()
+    //this.getHolidays()
     this.getDidYouKnow()
     this.getTimeAndDate()
     this.getIslamabadWeather()
-    this.getNewsHeadline()
+    //this.getNewsHeadline()
     this.getUser()
   }
 
@@ -167,7 +185,7 @@ export default class Home extends React.Component {
     let recipeData = await getDocs(recipeCollection)
     if (recipeData.size > 0) {
       recipeData.forEach((doc) => {
-        if(doc.data().public == true) {
+        if(doc.data().lang === this.state.lang && doc.data().public == true) {
           recipes.push(doc.data())
           recipes.sort((a,b) => a.id - b.id)
         }
@@ -277,7 +295,9 @@ export default class Home extends React.Component {
     let didYouKnowData = await getDocs(didYouKnowCollection)
     if (didYouKnowData.size > 0) {
       didYouKnowData.forEach((doc) => {
-        didYouKnows.push(doc.data().didYouKnow)
+        if(doc.data().lang === this.state.lang) {
+          didYouKnows.push(doc.data().didYouKnow)
+        }
       })
     } 
     let randomFact = didYouKnows[Math.floor(Math.random() * didYouKnows.length)]
@@ -293,12 +313,20 @@ export default class Home extends React.Component {
 
   render() {
     let categoryImg = {
+      // en
       'Bread': require('../assets/recipeApp/bread.jpeg'),
+      'Rice': require('../assets/recipeApp/rice.jpg'),
+      'Sweets': require('../assets/recipeApp/sweets.jpeg'),
+
+      // nl
+      'Brood': require('../assets/recipeApp/bread.jpeg'),
+      'Rijst': require('../assets/recipeApp/rice.jpg'),
+      'Zoetigheden': require('../assets/recipeApp/sweets.jpeg'),
+
+      // common
       'Curry': require('../assets/recipeApp/curry.jpeg'),
       'Dessert': require('../assets/recipeApp/dessert.jpeg'),
-      'Rice': require('../assets/recipeApp/rice.jpg'),
       'Snack': require('../assets/recipeApp/snack.jpeg'),
-      'Sweets': require('../assets/recipeApp/sweets.jpeg'),
     }
 
     let categories = this.state.categories.map((category, index) => 
@@ -324,16 +352,54 @@ export default class Home extends React.Component {
       style={styles.backgroundImage}
     >
       {this.state.user !== "" ? (
-        <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
-          Welcome {this.state.user}
-        </Text>
+        <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
+          <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
+            {translations[this.state.lang].welcome} {this.state.user}
+          </Text>
+
+          <SelectDropdown
+          buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%"), marginTop: hp("5%")}]}
+          buttonTextStyle = {styles.fact}
+          dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10, marginTop: hp("-3%")}}
+          rowTextStyle = {styles.fact}
+          data = {this.state.langOptions}
+          defaultButtonText= {this.state.lang}
+          renderDropdownIcon={isOpened => {
+            return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
+          }}
+          onSelect={(selectedItem) => {
+            AsyncStorage.setItem("langSelected", selectedItem)
+            this.setState({lang: selectedItem, categories: translations[selectedItem].categories})
+            this.getDidYouKnow()
+            this.getRecipeOfTheDay()
+          }}
+          />
+        </View>
       ) : (
-        <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
-          Welcome
-        </Text>
+          <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
+          <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
+            {translations[this.state.lang].welcome}
+          </Text>
+
+          <SelectDropdown
+          buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%"), marginTop: hp("5%")}]}
+          buttonTextStyle = {styles.fact}
+          dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10, marginTop: hp("-3%")}}
+          rowTextStyle = {styles.fact}
+          data = {this.state.langOptions}
+          defaultButtonText= {this.state.lang}
+          renderDropdownIcon={isOpened => {
+            return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
+          }}
+          onSelect={(selectedItem) => {
+            this.setState({lang: selectedItem, categories: translations[selectedItem].categories})
+            AsyncStorage.setItem("langSelected", selectedItem)
+          }}
+          />
+        </View>
       )}
       <View style={styles.didYouKnow}>
-        <Text style={styles.fact}>Swipe to see more information about Pakistan</Text>
+        <Text style={styles.fact}>{translations[this.state.lang].swipeForMoreInfo}</Text>
       </View>
     </ImageBackground>
 
@@ -343,7 +409,7 @@ export default class Home extends React.Component {
     source={require("../assets/recipeApp/bgDidYouKnow.jpg")}
     resizeMode="cover"
     style={styles.backgroundImage}>
-      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Did you know that ...</Text>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>{translations[this.state.lang].didYouKnow}</Text>
       <View style={styles.didYouKnow}>
         <Text  style={styles.fact}>{this.state.didYouKnow}</Text>
       </View>
@@ -355,7 +421,7 @@ export default class Home extends React.Component {
     source={require("../assets/recipeApp/bgTime.jpg")}
     resizeMode="cover"
     style={styles.backgroundImage}>
-      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Time and date in Pakistan</Text>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>{translations[this.state.lang].timeDate}</Text>
       <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly"}}>
       	<View style={[styles.didYouKnow, {width: wp("40%")}]}>
       	  <Text  style={styles.holidayName}>{this.state.dateTime.date}</Text>
@@ -371,14 +437,14 @@ export default class Home extends React.Component {
     source={require("../assets/recipeApp/bgWeather.jpg")}
     resizeMode="cover"
     style={styles.backgroundImage}>
-      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Weather in Islamabad</Text>
+      <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>{translations[this.state.lang].weather}</Text>
       <View style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly", alignContent:"center"}}>
         <View style={[styles.didYouKnow, {width: wp("40%")}]}>
-          <Text  style={styles.holidayName}>Temperature</Text>
+          <Text  style={styles.holidayName}>{translations[this.state.lang].temp}</Text>
           <Text  style={styles.holidayName}>{this.state.weather.temp}</Text>
         </View>
           <View style={[styles.didYouKnow, {width: wp("40%")}]}>
-              <Text  style={styles.holidayName}>Feels like</Text>
+              <Text  style={styles.holidayName}>{translations[this.state.lang].feelsLike}</Text>
               <Text  style={styles.holidayName}>{this.state.weather.feelsLike}</Text>
             </View>
       </View>
@@ -401,7 +467,7 @@ let nextHoliday =
 source={require("../assets/recipeApp/bgHoliday.jpg")}
 resizeMode="cover"
 style={styles.backgroundImage}>
-  <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>Upcoming holiday in Pakistan</Text>
+  <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>{translations[this.state.lang].upcomingHoliday}</Text>
   <TouchableOpacity
   style={[
     styles.didYouKnow
@@ -433,7 +499,7 @@ style={styles.backgroundImage}>
     size={hp("2.5%")}
     color="#115740"
   />
-    <Text style={styles.text}>Click here to read more about the holiday</Text>
+    <Text style={styles.text}>{translations[this.state.lang].clickForInfoHoliday}</Text>
   </View>
 </TouchableOpacity>
 </ImageBackground>
@@ -443,7 +509,7 @@ style={styles.backgroundImage}>
       source={require("../assets/recipeApp/bgNews.png")}
       resizeMode="cover"
       style={styles.backgroundImage}>
-        <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>News headline</Text>
+        <Text  style={[styles.sectionTitle, {marginTop: hp("5%")}]}>{translations[this.state.lang].news}</Text>
         <TouchableOpacity style={styles.didYouKnow} onPress={() => Linking.openURL(this.state.newsHeadline.newsURL)}>
             <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
             {this.state.newsHeadline.img != "" ?(
@@ -469,7 +535,7 @@ style={styles.backgroundImage}>
                         size={hp("2.5%")}
                         color="#115740"
                       />
-                        <Text style={styles.text}>Click here to read article</Text>
+                        <Text style={[styles.text, {width: wp("40%")}]}>{translations[this.state.lang].clickToReadArticle}</Text>
                       </View>
                         
                       <View style={[styles.iconText, {width: wp("60%")}]}>
@@ -548,7 +614,7 @@ style={styles.backgroundImage}>
             />
           </View>
           <View>
-            <Text style={styles.sectionTitle}>Recipe of the day</Text>
+            <Text style={styles.sectionTitle}>{translations[this.state.lang].recipeOfTheDay}</Text>
             <TouchableOpacity style={styles.recipe} onPress={() => this.goToRecipeDetails(rec)}>
               <View style={{display:"flex", flexDirection:"row", alignItems: "center"}}>
               {rec.img != "" ?(
@@ -588,7 +654,7 @@ style={styles.backgroundImage}>
                         size={hp("2.5%")}
                         color="#115740"
                       />
-                        <Text style={styles.text}>{rec.timeNeeded} minutes</Text>
+                        <Text style={styles.text}>{rec.timeNeeded} {translations[this.state.lang].minutes}</Text>
                     </View>)}
                   </View>
                   {rec.category && (
@@ -615,7 +681,7 @@ style={styles.backgroundImage}>
           </View>
   
           <View>
-          <Text style={styles.sectionTitle}>Recipes per category</Text>
+          <Text style={styles.sectionTitle}>{translations[this.state.lang].recipesPerCategory}</Text>
           <ScrollView horizontal>
            {categories}
           </ScrollView>

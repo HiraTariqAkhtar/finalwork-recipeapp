@@ -17,10 +17,9 @@ import { Ionicons } from "@expo/vector-icons";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore"; 
-import {  signInWithEmailAndPassword, updateEmail, updatePassword } from "firebase/auth"; 
-import {DATABASE, AUTH} from "../firebaseConfig"
-
-
+import { updateEmail, updatePassword } from "firebase/auth"; 
+import {DATABASE, AUTH} from "../firebaseConfig";
+import translations from "../translation";
 
 export default class EditProfile extends React.Component {
   constructor(props) {
@@ -42,9 +41,25 @@ export default class EditProfile extends React.Component {
       pwBeforeEdit: false,
       pw:"",
       isLoading: false,
+
+      lang:"eng"
+    }
+  }
+
+  componentDidMount(){
+    this.getLang()
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected})
+    } else {
+      this.setState({lang: "en"})
     }
 
     this.getUserDetails()
+
   }
 
   async getUserDetails(){
@@ -73,11 +88,11 @@ export default class EditProfile extends React.Component {
       this.state.currPw !== "" || this.state.newPw !== "" || this.state.confirmNewPw !== "") 
     {
       Alert.alert(
-        "Cancel editing?",
-        "All unsaved changes will be lost",
+        translations[this.state.lang].cancelEdit,
+        translations[this.state.lang].unsavedChanges,
         [
-          { text: "No", style:"cancel" },
-          { text: "Yes", onPress: () => {
+          { text: translations[this.state.lang].no, style:"cancel" },
+          { text: translations[this.state.lang].yes, onPress: () => {
             this.setState({firstNameEdited: this.state.firstName})
             this.setState({lastNameEdited: this.state.lastName})
             this.setState({emailEdited: this.state.email})
@@ -101,8 +116,8 @@ export default class EditProfile extends React.Component {
       if(this.state.email !== this.state.emailEdited) {
         if (emailCheck.test(this.state.emailEdited) === false) {
           Alert.alert(
-            "Invalid email address",
-            "Please fill in a valid email address"
+            translations[this.state.lang].invalidMail,
+            translations[this.state.lang].plzFillValidMail
           )
           this.setState({emailEdited:this.state.email})
         } else{
@@ -112,14 +127,14 @@ export default class EditProfile extends React.Component {
         this.setState({pwBeforeEdit: true})
         }
     } else if(this.state.currPw !== "" && (this.state.newPw === "" && this.state.confirmNewPw === "")){
-      alert("Please enter a new password")
+      alert(translations[this.state.lang].plzFillNewPw)
     } else if(this.state.currPw !== "" && (this.state.newPw === "" || this.state.confirmNewPw === "")){
-      alert("Please confirm new password")
+      alert(translations[this.state.lang].plzConfirmNewPw)
     } else if(this.state.currPw !== "" && this.state.newPw !== "" && this.state.confirmNewPw !== ""){
       if(this.state.newPw !== this.state.confirmNewPw) {
         Alert.alert(
-          "Passwords not same",
-          "Please rewrite your password"
+          translations[this.state.lang].pwNotSame,
+          translations[this.state.lang].rewritePw
         )
         this.setState({currPw: ""})
         this.setState({newPw: ""})
@@ -140,12 +155,13 @@ export default class EditProfile extends React.Component {
     if (userData.size > 0) {
       userData.forEach((doc) => {
         emails.push(doc.data().email)
+        emails.push(doc.data().email.toLowerCase())
       })
     }
     if(emails.includes(this.state.emailEdited)) {
       Alert.alert(
-        "Email-address is already in use",
-        "Please use another email address"
+        translations[this.state.lang].emailInUse,
+        translations[this.state.lang].useAnotherMail
       )
       this.setState({emailEdited:this.state.email})
     } else{
@@ -191,8 +207,8 @@ export default class EditProfile extends React.Component {
           this.props.navigation.navigate("Profile");
         } else {
             Alert.alert(
-              "Incorrect password",
-              "Please re-enter your password",
+              translations[this.state.lang].incorrectPw,
+              translations[this.state.lang].reEnterPw,
               [{ text: "OK", onPress: () => this.setState({ isLoading: false }) }]
               );
             this.setState({ pw: "" });
@@ -201,37 +217,40 @@ export default class EditProfile extends React.Component {
 
 
   render() {
+    if(!translations[this.state.lang]) {
+      return (<ActivityIndicator size="large"/>)
+    }
 
     return (
       <View style={styles.container}>
-            <Text style={styles.title}>Edit profile</Text>
+            <Text style={styles.title}>{translations[this.state.lang].editProfile}</Text>
           
             <View style={styles.editScreen}>
             {this.state.isLoading && <ActivityIndicator size="large"/>}
 
               <View style={styles.iconText}>
-                <Text style={styles.text}>First Name:</Text>
+                <Text style={styles.text}>{translations[this.state.lang].firstName}:</Text>
   
                 <TextInput
                 style={styles.placeholder}
-                placeholder="First Name"
+                placeholder={translations[this.state.lang].firstName}
                 value={this.state.firstNameEdited}
                 onChangeText={(txt) => this.setState({firstNameEdited: txt})}/>
               </View>
     
               <View style={styles.iconText}>
-                <Text style={styles.text}>Last Name:</Text>
+                <Text style={styles.text}>{translations[this.state.lang].lastName}:</Text>
 
                 <TextInput
                 style={styles.placeholder}
-                placeholder="Last Name"
+                placeholder={translations[this.state.lang].lastName}
                 value={this.state.lastNameEdited}
                 onChangeText={(txt) => this.setState({lastNameEdited: txt})}/>
 
               </View>
     
               <View style={styles.iconText}>
-                <Text style={styles.text}>Email address:</Text>
+                <Text style={styles.text}>{translations[this.state.lang].email}:</Text>
 
                 <TextInput
                 style={[styles.placeholder, {marginBottom:hp("0%")}]}
@@ -242,11 +261,11 @@ export default class EditProfile extends React.Component {
 
               </View>
             </View>
-              <Text style={styles.title}>Change password</Text>
+              <Text style={styles.title}>{translations[this.state.lang].changePw}</Text>
 
               <View style={styles.editScreen}>
                 <View style={styles.iconText}>
-                  <Text style={styles.text}>Current Password:</Text>
+                  <Text style={styles.text}>{translations[this.state.lang].currPw}:</Text>
 
                 <TextInput
                 style={styles.placeholder}
@@ -258,7 +277,7 @@ export default class EditProfile extends React.Component {
                 </View>
     
               <View style={styles.iconText}>
-                <Text style={styles.text}>New Password:</Text>
+                <Text style={styles.text}>{translations[this.state.lang].newPw}:</Text>
 
                 <TextInput
                 style={styles.placeholder}
@@ -270,7 +289,7 @@ export default class EditProfile extends React.Component {
               </View>
     
               <View style={styles.iconText}>
-                <Text style={styles.text}>Confirm Password:</Text>
+                <Text style={styles.text}>{translations[this.state.lang].confirmNewPw}:</Text>
                 <TextInput
                 style={styles.placeholder}
                 placeholder="**********"
@@ -283,11 +302,11 @@ export default class EditProfile extends React.Component {
 
               <View style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
               <TouchableOpacity style={styles.buttonEdit} onPress={() => this.closeEditScreen()}>
-                <Text style={styles.btnText}>Back</Text>
+                <Text style={styles.btnText}>{translations[this.state.lang].back}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.buttonEdit} onPress={() => this.editProfile()}>
-                <Text style={styles.btnText}>Finish</Text>
+                <Text style={styles.btnText}>{translations[this.state.lang].finish}</Text>
               </TouchableOpacity>
             </View>
 
@@ -304,7 +323,7 @@ export default class EditProfile extends React.Component {
               onPress={() => this.closeEditScreen()}
             />
             {this.state.isLoading && <ActivityIndicator size="large"/>}
-            <Text style={styles.title}>Please enter your password</Text>
+            <Text style={styles.title}>{translations[this.state.lang].enterPw}</Text>
   
               <TextInput
               style={styles.placeholder}
@@ -314,7 +333,7 @@ export default class EditProfile extends React.Component {
               onChangeText={(txt) => this.setState({pw: txt})}/>
   
               <TouchableOpacity style={[styles.buttonEdit, {marginHorizontal:wp("32.5%")}]} onPress={() => this.confirmPw(this.state.pw)}>
-                <Text style={styles.btnText}>Finish</Text>
+                <Text style={styles.btnText}>{translations[this.state.lang].finish}</Text>
               </TouchableOpacity>
           </View>
         </Modal>

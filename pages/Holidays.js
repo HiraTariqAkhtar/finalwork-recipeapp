@@ -14,6 +14,8 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 import axios from "axios";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import translations from "../translation";
 
 export default class Holidays extends React.Component {
   constructor(props) {
@@ -22,27 +24,43 @@ export default class Holidays extends React.Component {
     this.state = {
       img: "",
       info: "",
-      src: ""
+      src: "",
+      lang:"en"
+    }
+
+  }
+
+  componentDidMount() {
+    this.getLang()
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected})
+    } else {
+      this.setState({lang: "en"})
     }
 
     this.getHolidayInfo()
+
   }
-
-
 
   async getHolidayInfo() {
 
     let holidayName;
     if(this.props.route.params.name === "Independence Day"){
       holidayName = "Independence_Day_(Pakistan)"
-    }else if(this.props.route.params.name === "Christmas Day"){
+    }else if(this.state.lang === "en" && this.props.route.params.name === "Christmas Day"){
       holidayName = "Christmas"
+    } else if(this.state.lang === "nl" && this.props.route.params.name === "Christmas Day") {
+      holidayName = "Kerstmis"
     } else {
       holidayName = this.props.route.params.name
     }
 
     // URL Wikipedia API
-    const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts|pageimages&titles=${holidayName}&pithumbsize=300`;
+    const apiUrl = `https://${this.state.lang}.wikipedia.org/w/api.php?action=query&format=json&prop=extracts|pageimages&titles=${holidayName}&pithumbsize=300`;
 
     axios.get(apiUrl)
       .then((res) => {
@@ -70,7 +88,7 @@ export default class Holidays extends React.Component {
           // Replace html-tags with empty string
           const textWithoutHTML = removeTextBeforeFirstPtag.replace(/<\/?(?!<b>|<p>|<i>|<h2>|<h3>|<sup>|<blockquote>)[^>]*>/gi, '');;
 
-          this.setState({ info: textWithoutHTML, src: "Source: Wikipedia" });
+          this.setState({ info: textWithoutHTML, src: `${translations[this.state.lang].src} Wikipedia` });
         }
 
         // Get image url if available

@@ -17,6 +17,7 @@ import {DATABASE, AUTH, STORAGE} from "../firebaseConfig"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { deleteUser } from "firebase/auth"; 
 import { ref, deleteObject } from 'firebase/storage';
+import translations from "../translation";
 
 
 export default class Settings extends React.Component {
@@ -30,9 +31,25 @@ export default class Settings extends React.Component {
         id:0,
         recipe:{}
       }],
+
+      lang:"en"
+    }
+  }
+
+  componentDidMount(){
+    this.getLang()
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected})
+    } else {
+      this.setState({lang: "en"})
     }
 
     this.getUserDetails()
+
   }
 
 
@@ -70,11 +87,11 @@ export default class Settings extends React.Component {
 
   async confirmDelete() {
     Alert.alert(
-      "Delete account?",
-      "Are you sure you want to delete your account? \n \nThis action cannot be undone.",
+      translations[this.state.lang].deleteAcc,
+      translations[this.state.lang].confirmDeleteAcc,
       [
-        { text: "No", style:"cancel" },
-        { text: "Yes", onPress: () => this.deleteProfile() }
+        { text: translations[this.state.lang].no, style:"cancel" },
+        { text: translations[this.state.lang].yes, onPress: () => this.deleteProfile() }
       ]
     )
   }
@@ -123,7 +140,7 @@ export default class Settings extends React.Component {
               color="#115740"
               onPress={() => this.props.navigation.goBack()}
             />
-          <Text style={styles.pageTitle}>Account settings</Text>
+          <Text style={styles.pageTitle}>{translations[this.state.lang].settings}</Text>
         </View>
           <View style={{marginTop: hp("25%"), marginHorizontal: wp("10%")}}>
             <TouchableOpacity style={styles.button}
@@ -134,7 +151,7 @@ export default class Settings extends React.Component {
                 color="#FFFFFF"
                 size={hp("3%")}
                 marginHorizontal={wp("5%")}/>
-                <Text style={styles.btnText}>Edit profile</Text>
+                <Text style={styles.btnText}>{translations[this.state.lang].editProfile}</Text>
             </View>
           </TouchableOpacity>
                 
@@ -146,7 +163,7 @@ export default class Settings extends React.Component {
                 color="#FFFFFF"
                 size={hp("3%")}
                 marginHorizontal={wp("5%")}/>
-                <Text style={styles.btnText}>Delete profile</Text>
+                <Text style={styles.btnText}>{translations[this.state.lang].deleteProfile}</Text>
             </View>
           </TouchableOpacity>
           </View>
