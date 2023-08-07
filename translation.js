@@ -145,7 +145,8 @@ const translations = {
     confirmDeleteRecipe:"Are you sure you want to delete this recipe?",
     makeRecipePrivate:"Make recipe private",
     makeRecipePublic:"Make recipe public",
-    step:"Step"
+    step:"Step",
+    src:"Source:"
   },
 
 
@@ -293,7 +294,8 @@ const translations = {
     confirmDeleteRecipe:"Ben je zeker dat je dit recept wil verwijderen?",
     makeRecipePrivate:"Recept privé maken",
     makeRecipePublic:"Recept publiek maken",
-    step:"Stap"
+    step:"Stap",
+    src:"Bron:"
   }
 };
 
