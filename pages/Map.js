@@ -125,7 +125,7 @@ export default class Map extends React.Component {
         translations[this.state.lang].logInToAddToMap,
         [
           {text: translations[this.state.lang].cancel, style: "cancel"},
-          {text: "Log in", onPress: () => this.props.navigation.navigate("LogIn")}
+          {text: translations[this.state.lang].login, onPress: () => this.props.navigation.navigate("LogIn")}
         ]
       )
     }
