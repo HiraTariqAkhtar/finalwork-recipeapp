@@ -104,7 +104,7 @@ const translations = {
     myCookbook:"My Cookbook",
     settings:"Settings",
     logOut:"Log out",
-    login:"Log in",
+    login:"Sign in",
     profile:"Profile",
     noRecipesAdded:"No recipes added yet",
     clickHere:"Click here",
