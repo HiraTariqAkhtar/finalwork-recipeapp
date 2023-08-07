@@ -131,7 +131,7 @@ const translations = {
     changePw:"Change password",
     currPw:"Current password",
     newPw:"New password",
-    confirmNewPw:"Confirm password",
+    confirmNewPw:"Confirm new password",
     back:"Back",
     finish:"Finish",
     enterPw:"Please enter your password",
@@ -152,6 +152,14 @@ const translations = {
     notAUser: "Not a user yet?",
     signUp:"Sign Up",
     pw:"Password",
+    emailAvailable:"Email address is available",
+    pwOk:"Password can be used",
+    pw6char:"Password should be at least 6 characters long",
+    alreadyUser:"Already a user?",
+    confirmPw:"Confirm password",
+    next:"Next",
+    confirmBeforeFinish:"Please confirm before finishing",
+    name:"Name"
   },
 
 
@@ -305,7 +313,15 @@ const translations = {
     reEnterEmailPw:"Voer uw e-mailadres en wachtwoord opnieuw in",
     notAUser:"Nog geen gebruiker?",
     signUp:"Registreer",
-    pw:"Wachtwoord"
+    pw:"Wachtwoord",
+    emailAvailable:"E-mailadres is beschikbaar",
+    pwOk:"Wachtwoord kan gebruikt worden",
+    pw6char:"Wachtwoord moet minstens 6 karakters bevatten",
+    alreadyUser:"Al een gebruiker?",
+    confirmPw:"Bevestig wachtwoord",
+    next:"Volgende",
+    confirmBeforeFinish:"Gelieve je gegevens te bevestigen",
+    name:"Naam"
   }
 };
 

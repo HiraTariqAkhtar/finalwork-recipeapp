@@ -22,6 +22,7 @@ import { collection, getDocs, addDoc } from "firebase/firestore";
 import {DATABASE} from "../firebaseConfig"
 import {AUTH} from "../firebaseConfig"
 import { createUserWithEmailAndPassword } from "firebase/auth"; 
+import translations from "../translation";
 
 
 export default class Register extends React.Component {
@@ -41,7 +42,22 @@ export default class Register extends React.Component {
 
         showPw: false,
 
-        isLoading: false
+        isLoading: false,
+
+        lang:"en"
+    }
+  }
+
+  componentDidMount() {
+    this.getLang()
+  }
+
+  async getLang() {
+    let langSelected = await AsyncStorage.getItem("langSelected")
+    if(langSelected !== null) {
+      this.setState({lang: langSelected})
+    } else {
+      this.setState({lang: "en"})
     }
   }
 
@@ -71,8 +87,8 @@ export default class Register extends React.Component {
     // check if all input fields filled in
     if(this.state.firstName == "" || this.state.lastName == "" || this.state.email == "" || this.state.pw == "" || this.state.pwConfirm == "") {
       Alert.alert(
-        "Some fields not filled in",
-        "Please fill in all fields"
+        translations[this.state.lang].alertAllFieldsRequired,
+        translations[this.state.lang].fillInAllFields
       )
     } else {
     let emailCheck
@@ -82,8 +98,8 @@ export default class Register extends React.Component {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (reg.test(this.state.email) === false) {
       Alert.alert(
-        "Invalid email address",
-        "Please fill in a valid email address"
+        translations[this.state.lang].invalidMail,
+        translations[this.state.lang].plzFillValidMail
       )
       emailCheck =  false;
     }
@@ -93,8 +109,8 @@ export default class Register extends React.Component {
     
     if(!this.state.emailAvailable) {
       Alert.alert(
-        "Email-address is already in use",
-        "Please use another email address"
+        translations[this.state.lang].emailInUse,
+        translations[this.state.lang].useAnotherMail
       )
       this.setState({email: ""})
     }
@@ -106,8 +122,8 @@ export default class Register extends React.Component {
     } else {
       pwCheck= false
       Alert.alert(
-        "Passwords not same",
-        "Please rewrite your password"
+        translations[this.state.lang].pwNotSame,
+        translations[this.state.lang].reEnterPw
       )
       this.setState({pw: ""})
       this.setState({pwConfirm: ""})
@@ -182,9 +198,9 @@ export default class Register extends React.Component {
     let emailAvailable;
     if(this.state.email.length > 0) {
       if(this.state.emailAvailable) {
-        emailAvailable = <Text style={{marginLeft:wp("3%"), marginBottom:hp("3%"), color:"#00FF00"}}>Email-address is available</Text>
+        emailAvailable = <Text style={{marginLeft:wp("3%"), marginBottom:hp("3%"), color:"#00FF00"}}>{ translations[this.state.lang].emailAvailable}</Text>
       } else {
-      emailAvailable = <Text style={{marginLeft:wp("3%"), marginBottom:hp("3%"), color:"#FF0000"}}>Email-address is already in use. {"\n"}Please use another email address</Text>
+      emailAvailable = <Text style={{marginLeft:wp("3%"), marginBottom:hp("3%"), color:"#FF0000"}}>{ translations[this.state.lang].emailInUse} {"\n"}{ translations[this.state.lang].useAnotherMail}</Text>
       }
     } else {
       emailAvailable = <Text></Text>
@@ -193,9 +209,9 @@ export default class Register extends React.Component {
     let pwOK;
     if(this.state.pw.length > 0) {
       if(this.state.pw.length >= 6) {
-        pwOK = <Text style={{marginLeft:wp("3%"), marginTop:hp("-3%"), marginBottom:hp("3%"), color:"#00FF00"}}>Password can be used</Text>
+        pwOK = <Text style={{marginLeft:wp("3%"), marginTop:hp("-3%"), marginBottom:hp("3%"), color:"#00FF00"}}>{ translations[this.state.lang].pwOk}</Text>
       } else {
-        pwOK = <Text style={{marginLeft:wp("3%"), marginTop:hp("-3%"), marginBottom:hp("3%"), color:"#FF0000"}}>Password should be at least 6 characters</Text>
+        pwOK = <Text style={{marginLeft:wp("3%"), marginTop:hp("-3%"), marginBottom:hp("3%"), color:"#FF0000"}}>{ translations[this.state.lang].pw6char}</Text>
       }
     }
 
@@ -209,28 +225,28 @@ export default class Register extends React.Component {
               marginRight={wp("20%")}
               onPress={() => this.props.navigation.goBack()}
             />
-          <Text style={styles.title}>Sign Up</Text>
+          <Text style={styles.title}>{ translations[this.state.lang].signUp}</Text>
         </View>
 
           <View style={{display:"flex", flexDirection:"row", justifyContent:"center"}}>
-              <Text style={styles.question}>Already a user?</Text>
-              <Text style={styles.nav} onPress={() => this.login()}>Sign In</Text>
+              <Text style={styles.question}>{ translations[this.state.lang].alreadyUser}</Text>
+              <Text style={styles.nav} onPress={() => this.login()}>{ translations[this.state.lang].login}</Text>
           </View>
 
           <ScrollView>
-            <Text style={styles.text}>First Name:</Text>
+            <Text style={styles.text}>{ translations[this.state.lang].firstName}:</Text>
             <TextInput
             style={styles.placeholder}
-            placeholder="First Name"
+            placeholder={translations[this.state.lang].firstName}
             onChangeText={(txt) => this.setState({firstName: txt})}/>
   
-            <Text style={styles.text}>Last Name:</Text>
+            <Text style={styles.text}>{ translations[this.state.lang].lastName}:</Text>
             <TextInput
             style={styles.placeholder}
-            placeholder="Last Name"
+            placeholder={translations[this.state.lang].lastName}
             onChangeText={(txt) => this.setState({lastName: txt})}/>
   
-            <Text style={styles.text}>Email address:</Text>
+            <Text style={styles.text}>{ translations[this.state.lang].email}:</Text>
             <TextInput
             style={[styles.placeholder, {marginBottom:hp("0%")}]}
             placeholder="someone@example.com"
@@ -239,7 +255,7 @@ export default class Register extends React.Component {
             onChangeText={(txt) => this.checkEmailAvailability(txt)}/>
             {emailAvailable}
   
-            <Text style={styles.text}>Password:</Text>
+            <Text style={styles.text}>{translations[this.state.lang].pw}:</Text>
             <TextInput
             style={styles.placeholder}
             placeholder="**********"
@@ -248,7 +264,7 @@ export default class Register extends React.Component {
             onChangeText={(txt) => this.setState({pw: txt})}/>
             {pwOK}
   
-            <Text style={styles.text}>Confirm Password:</Text>
+            <Text style={styles.text}>{translations[this.state.lang].confirmPw}:</Text>
             <TextInput
             style={styles.placeholder}
             placeholder="**********"
@@ -257,7 +273,7 @@ export default class Register extends React.Component {
             onChangeText={(txt) => this.setState({pwConfirm: txt})}/>
 
           <TouchableOpacity style={[styles.button, {marginLeft: wp("50%")}]} onPress={() => this.checkInputData()}>
-            <Text style={styles.btnText}>Next</Text>
+            <Text style={styles.btnText}>{translations[this.state.lang].next}</Text>
           </TouchableOpacity>
           </ScrollView>
 
@@ -265,13 +281,13 @@ export default class Register extends React.Component {
           <Modal
           visible={this.state.confirmDetails}>
             
-            <Text style={[styles.question, {marginLeft:wp("5%"),  marginTop:hp("5%")}]}>Please confirm before finishing</Text>
+            <Text style={[styles.question, {marginLeft:wp("5%"),  marginTop:hp("5%")}]}>{translations[this.state.lang].confirmBeforeFinish}</Text>
 
             {this.state.isLoading && <ActivityIndicator size="large"/>}
             
             <View style={{marginLeft:wp("5%"), marginBottom:hp("1.5%")}}>
               <View style={styles.iconText}>
-              <Text style={{marginBottom:hp("1.5%")}}>Name: {this.state.firstName} {this.state.lastName}</Text>
+              <Text style={{marginBottom:hp("1.5%")}}>{translations[this.state.lang].name}: {this.state.firstName} {this.state.lastName}</Text>
                <FontAwesome
                 name="pencil"
                 size={hp("2.5%")}
@@ -281,7 +297,7 @@ export default class Register extends React.Component {
 
               </View>
               <View style={styles.iconText}>
-              <Text style={{marginBottom:hp("1.5%")}}>Email: {this.state.email}</Text>
+              <Text style={{marginBottom:hp("1.5%")}}>{translations[this.state.lang].email}: {this.state.email}</Text>
                <FontAwesome
                 name="pencil"
                 size={hp("2.5%")}
@@ -291,7 +307,7 @@ export default class Register extends React.Component {
 
               </View>
               <View style={styles.iconText}>
-                <Text>Password: {pw}</Text>
+                <Text>{translations[this.state.lang].pw}: {pw}</Text>
                 {showPassword}
 
                 <FontAwesome
@@ -306,10 +322,10 @@ export default class Register extends React.Component {
 
           <View style={{display:"flex", flexDirection:"row", justifyContent:"space-between", marginHorizontal:wp("2%")}}>
             <TouchableOpacity style={styles.button} onPress={() => this.setState({confirmDetails: false})}>
-              <Text style={styles.btnText}>Back</Text>
+              <Text style={styles.btnText}>{translations[this.state.lang].back}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={() => this.register()}>
-              <Text style={styles.btnText}>Finish</Text>
+              <Text style={styles.btnText}>{translations[this.state.lang].finish}</Text>
             </TouchableOpacity>
           </View>
           </Modal>
