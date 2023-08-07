@@ -74,6 +74,7 @@ export default class Register extends React.Component {
     if (userData.size > 0) {
       userData.forEach((doc) => {
         emails.push(doc.data().email)
+        emails.push(doc.data().email.toLowerCase())
       })
     }
     if(emails.includes(this.state.email)) {
