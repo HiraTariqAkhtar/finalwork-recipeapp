@@ -1,7 +1,7 @@
 # Desi Delights
 <img src="./assets/recipeApp/icon.png" alt="App Logo" width="200">
 
-This is a recipe app that aims to make Pakistani recipes, places and holidays accessible to users. The app provides a simple and user-friendly interface for discovering Pakistani recipes, restaurants and supermarkets and staying informed about Pakistani holidays. 
+This is a recipe app that aims to make Pakistani recipes and places accessible to users. The app provides a simple and user-friendly interface for discovering Pakistani recipes, restaurants and supermarkets and staying informed about Pakistan. 
 
 **Note**: The app is primarily designed for Android smartphones. Some features may not work properly when running the app on an iPhone.
 
@@ -61,9 +61,9 @@ There are 2 ways to do this:
     - [Expo Go for iOS](https://apps.apple.com/us/app/expo-go/id982107779)
   - Run the command `npm start`
   - Scan the QR code or manually enter the URL
-     - QR:
+     - QR code:
        - Android: using the camera in Expo Go
        - iOS: using the Camera app
-         - **Note**: If the QR code is not recognized, manually enter the URL.
+       - **Note**: If the QR code is not recognized, manually enter the URL.
      - URL: 
        - Click on "Enter URL manually" and enter the URL that appears just below the QR code.
