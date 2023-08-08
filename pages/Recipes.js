@@ -168,7 +168,7 @@ export default class Recipes extends React.Component {
       // Filter per category
     if(this.state.selectedCategory != "") {
       recipeData.forEach((doc) => {
-        if(doc.data().category === this.state.selectedCategory) {
+        if(doc.data().lang === this.state.lang && doc.data().category === this.state.selectedCategory) {
           if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
             filteredRecipes.push(doc.data())
           }
@@ -178,7 +178,7 @@ export default class Recipes extends React.Component {
 
     // Filter per serving
     if(this.state.selectedServings != "") {
-      if(this.state.selectedServings === translations[this.state.lang].allServings[0]) {
+      if(doc.data().lang === this.state.lang && this.state.selectedServings === translations[this.state.lang].allServings[0]) {
         recipeData.forEach((doc) => {
           if(doc.data().servings < 5) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -186,7 +186,7 @@ export default class Recipes extends React.Component {
             }
           } 
         })
-      } else if (this.state.selectedServings === translations[this.state.lang].allServings[1]) {
+      } else if (doc.data().lang === this.state.lang && this.state.selectedServings === translations[this.state.lang].allServings[1]) {
         recipeData.forEach((doc) => {
           if(doc.data().servings >= 5 && doc.data().servings <= 10) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -194,7 +194,7 @@ export default class Recipes extends React.Component {
             }
           } 
         })
-      } else if (this.state.selectedServings === translations[this.state.lang].allServings[2]) {
+      } else if (doc.data().lang === this.state.lang && this.state.selectedServings === translations[this.state.lang].allServings[2]) {
         recipeData.forEach((doc) => {
           if(doc.data().servings > 10) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -207,7 +207,7 @@ export default class Recipes extends React.Component {
 
     // Filter per prep time
     if(this.state.selectedPrepTime != "") {
-      if(this.state.selectedPrepTime === translations[this.state.lang].allPrepTime[0]) {
+      if(doc.data().lang === this.state.lang && this.state.selectedPrepTime === translations[this.state.lang].allPrepTime[0]) {
         recipeData.forEach((doc) => {
           if(doc.data().timeNeeded < 10) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -217,7 +217,7 @@ export default class Recipes extends React.Component {
         })
       } else if (this.state.selectedPrepTime === translations[this.state.lang].allPrepTime[1]) {
         recipeData.forEach((doc) => {
-          if(doc.data().timeNeeded >= 10 && doc.data().timeNeeded <= 30) {
+          if(doc.data().lang === this.state.lang && doc.data().timeNeeded >= 10 && doc.data().timeNeeded <= 30) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
               filteredRecipes.push(doc.data())
             }
@@ -225,7 +225,7 @@ export default class Recipes extends React.Component {
         })
       } else if (this.state.selectedPrepTime === translations[this.state.lang].allPrepTime[2]) {
         recipeData.forEach((doc) => {
-          if(doc.data().timeNeeded > 30) {
+          if(doc.data().lang === this.state.lang && doc.data().timeNeeded > 30) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
               filteredRecipes.push(doc.data())
             }
@@ -236,7 +236,7 @@ export default class Recipes extends React.Component {
 
     // Filter per number of ingredients
     if(this.state.selectedIngredientAmount != "") {
-      if(this.state.selectedIngredientAmount === translations[this.state.lang].allIngredientAmount[0]) {
+      if(doc.data().lang === this.state.lang && this.state.selectedIngredientAmount === translations[this.state.lang].allIngredientAmount[0]) {
         recipeData.forEach((doc) => {
           if(doc.data().ingredients.length < 5) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -244,7 +244,7 @@ export default class Recipes extends React.Component {
             }
           } 
         })
-      } else if (this.state.selectedIngredientAmount === translations[this.state.lang].allIngredientAmount[1]) {
+      } else if (doc.data().lang === this.state.lang && this.state.selectedIngredientAmount === translations[this.state.lang].allIngredientAmount[1]) {
         recipeData.forEach((doc) => {
           if(doc.data().ingredients.length >= 5 && doc.data().servings <= 10) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -252,7 +252,7 @@ export default class Recipes extends React.Component {
             }
           } 
         })
-      } else if (this.state.selectedIngredientAmount === translations[this.state.lang].allIngredientAmount[2]) {
+      } else if (doc.data().lang === this.state.lang && this.state.selectedIngredientAmount === translations[this.state.lang].allIngredientAmount[2]) {
         recipeData.forEach((doc) => {
           if(doc.data().ingredients.length > 10) {
             if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
@@ -265,7 +265,7 @@ export default class Recipes extends React.Component {
 
     if(this.state.selectedChef != "") {
       recipeData.forEach((doc) => {
-        if(doc.data().chef === this.state.selectedChef) {
+        if(doc.data().lang === this.state.lang && doc.data().chef === this.state.selectedChef) {
           if(!filteredRecipes.some((rec) => rec.id === doc.data().id)) {
             filteredRecipes.push(doc.data())
           }
