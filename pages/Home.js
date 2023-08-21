@@ -353,12 +353,12 @@ export default class Home extends React.Component {
     >
       {this.state.user !== "" ? (
         <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
-          <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
+          <Text style={styles.sectionTitle}>
             {translations[this.state.lang].welcome} {this.state.user}
           </Text>
 
           <SelectDropdown
-          buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%"), marginTop: hp("5%")}]}
+          buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%")}]}
           buttonTextStyle = {styles.fact}
           dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10, marginTop: hp("-3%")}}
           rowTextStyle = {styles.fact}
@@ -377,12 +377,12 @@ export default class Home extends React.Component {
         </View>
       ) : (
           <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
-          <Text style={[styles.sectionTitle, { marginTop: hp("5%") }]}>
+          <Text style={styles.sectionTitle}>
             {translations[this.state.lang].welcome}
           </Text>
 
           <SelectDropdown
-          buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%"), marginTop: hp("5%")}]}
+          buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%")}]}
           buttonTextStyle = {styles.fact}
           dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10, marginTop: hp("-3%")}}
           rowTextStyle = {styles.fact}
@@ -593,8 +593,9 @@ style={styles.backgroundImage}>
 
     let rec = this.state.recipeOfTheDay
     return (
-      <ScrollView>
         <View style={styles.container}>
+          <Text style={styles.title}>Desi Delights</Text>
+      <ScrollView>
           <View>
             <Carousel
             data = {header}
@@ -686,8 +687,8 @@ style={styles.backgroundImage}>
            {categories}
           </ScrollView>
           </View>
-      </View>
         </ScrollView>
+      </View>
     );
   }
 }
@@ -696,7 +697,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:"#FFFFFF",
-    minHeight: hp("100%")
+    minHeight: hp("90%"),
+  },
+  title: {
+    textAlign: 'center',
+    fontFamily: "Nunito_700Bold",
+    fontSize: hp("4%"),
+    color: "#FF0000",
+    marginTop: hp("3%"),
+    marginBottom: hp("1%"),
   },
   sectionTitle: {
     fontSize: hp("3%"),
