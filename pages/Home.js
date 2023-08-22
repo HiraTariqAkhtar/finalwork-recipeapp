@@ -352,51 +352,57 @@ export default class Home extends React.Component {
       style={styles.backgroundImage}
     >
       {this.state.user !== "" ? (
-        <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
-          <Text style={styles.sectionTitle}>
-            {translations[this.state.lang].welcome} {this.state.user}
-          </Text>
-
-          <SelectDropdown
-          buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%")}]}
-          buttonTextStyle = {styles.fact}
-          dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10, marginTop: hp("-3%")}}
-          rowTextStyle = {styles.fact}
-          data = {this.state.langOptions}
-          defaultButtonText= {this.state.lang}
-          renderDropdownIcon={isOpened => {
-            return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
-          }}
-          onSelect={(selectedItem) => {
-            AsyncStorage.setItem("langSelected", selectedItem)
-            this.setState({lang: selectedItem, categories: translations[selectedItem].categories})
-            this.getDidYouKnow()
-            this.getRecipeOfTheDay()
-          }}
-          />
-        </View>
-      ) : (
+          <View>
+            <Text style={styles.title}>Desi Delights</Text>
           <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
-          <Text style={styles.sectionTitle}>
-            {translations[this.state.lang].welcome}
-          </Text>
-
-          <SelectDropdown
-          buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%")}]}
-          buttonTextStyle = {styles.fact}
-          dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10, marginTop: hp("-3%")}}
-          rowTextStyle = {styles.fact}
-          data = {this.state.langOptions}
-          defaultButtonText= {this.state.lang}
-          renderDropdownIcon={isOpened => {
-            return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
-          }}
-          onSelect={(selectedItem) => {
-            this.setState({lang: selectedItem, categories: translations[selectedItem].categories})
-            AsyncStorage.setItem("langSelected", selectedItem)
-          }}
-          />
-        </View>
+            <Text style={styles.sectionTitle}>
+              {translations[this.state.lang].welcome} {this.state.user}
+            </Text>
+  
+            <SelectDropdown
+            buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%")}]}
+            buttonTextStyle = {styles.fact}
+            dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10, marginTop: hp("-3%")}}
+            rowTextStyle = {styles.fact}
+            data = {this.state.langOptions}
+            defaultButtonText= {this.state.lang}
+            renderDropdownIcon={isOpened => {
+              return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
+            }}
+            onSelect={(selectedItem) => {
+              AsyncStorage.setItem("langSelected", selectedItem)
+              this.setState({lang: selectedItem, categories: translations[selectedItem].categories})
+              this.getDidYouKnow()
+              this.getRecipeOfTheDay()
+            }}
+            />
+          </View>
+          </View>
+      ) : (
+          <View>
+          <Text style={styles.title}>Desi Delights</Text>
+            <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
+            <Text style={styles.sectionTitle}>
+              {translations[this.state.lang].welcome}
+            </Text>
+  
+            <SelectDropdown
+            buttonStyle = {[styles.didYouKnow, {width: wp("25%"), height:hp("7%")}]}
+            buttonTextStyle = {styles.fact}
+            dropdownStyle = {{backgroundColor: "#fff", borderRadius: 10, marginTop: hp("-3%")}}
+            rowTextStyle = {styles.fact}
+            data = {this.state.langOptions}
+            defaultButtonText= {this.state.lang}
+            renderDropdownIcon={isOpened => {
+              return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
+            }}
+            onSelect={(selectedItem) => {
+              this.setState({lang: selectedItem, categories: translations[selectedItem].categories})
+              AsyncStorage.setItem("langSelected", selectedItem)
+            }}
+            />
+          </View>
+          </View>
       )}
       <View style={styles.didYouKnow}>
         <Text style={styles.fact}>{translations[this.state.lang].swipeForMoreInfo}</Text>
@@ -593,9 +599,8 @@ style={styles.backgroundImage}>
 
     let rec = this.state.recipeOfTheDay
     return (
-        <View style={styles.container}>
-          <Text style={styles.title}>Desi Delights</Text>
       <ScrollView>
+        <View style={styles.container}>
           <View>
             <Carousel
             data = {header}
@@ -687,8 +692,8 @@ style={styles.backgroundImage}>
            {categories}
           </ScrollView>
           </View>
-        </ScrollView>
       </View>
+        </ScrollView>
     );
   }
 }
@@ -705,7 +710,6 @@ const styles = StyleSheet.create({
     fontSize: hp("4%"),
     color: "#FF0000",
     marginTop: hp("3%"),
-    marginBottom: hp("1%"),
   },
   sectionTitle: {
     fontSize: hp("3%"),
@@ -774,7 +778,7 @@ const styles = StyleSheet.create({
     fontSize: hp("2%"),
   },
   didYouKnow: {
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     padding: hp("1.5%"),
     width: wp("90%"),
     borderRadius: 10,
