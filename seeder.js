@@ -1494,7 +1494,7 @@ const recipes = [
         servings: 4,
         recipeName: "Makhni Garlic Naan",
         timeNeeded: 50,
-        Ingredients: [
+        ingredients: [
             {name: "Tarwebloem", quantity: "500", unit: "g"},
             {name: "Gist", quantity: "2", unit: "theelepel"},
             {name: "Zout", quantity: "1/2", unit: "theelepel"},
@@ -1504,7 +1504,7 @@ const recipes = [
             {name: "Verse koriander", quantity: "2", unit: "theelepel"},
             {name: "Boter", quantity: "50", unit: "g"},
             ],
-        Instructions: [
+        instructions: [
             {number: 1, step: "Meng in een kom gist, zout, bloem en olie met heet water."},
             {number: 2, step: "Kneed een zacht deeg."},
             {number: 3, step: "Laat het 1 uur rijzen."},
@@ -1528,7 +1528,7 @@ const recipes = [
         servings: 2,
         recipeName: "Yakhni Pulao",
         timeNeeded: 105,
-        Ingredients: [
+        ingredients: [
             {name: "Kip", quantity: "1", unit: "kg"},
             {name: "Uien", quantity: "5", unit: "n.v.t."},
             {name: "Groene pepers", quantity: "3", unit: "n.v.t."},
@@ -1546,7 +1546,7 @@ const recipes = [
             {name: "Venkelzaad", quantity: "1", unit: "eetlepel"},
             {name: "Koriander", quantity: "2", unit: "eetlepel"},
             ],
-        Instructions: [
+        instructions: [
             {number: 1, step: "Voeg 1 kg kip, 3 glazen water, zout, 2 uien, 1 teentje knoflook en 1 stukje gember toe in een wok."},
             {number: 2, step: "Wikkel 1 el venkelzaad, 2 el gemalen koriander, een snufje gemalen kruiden en 1 tl komijnzaad in een klein malmal doekje."},
             {number: 3, step: "Plaats dit specerijenzakje in de wok."},
@@ -1574,7 +1574,7 @@ const recipes = [
         servings: 4,
         recipeName: "Shahi Tukray",
         timeNeeded: 35,
-        Ingredients: [
+        ingredients: [
             {name: "Brood Sneetjes", quantity: "6", unit: "n.v.t."},
             {name: "Melk", quantity: "1", unit: "l"},
             {name: "Suiker", quantity: "1", unit: "beker"},
@@ -1586,7 +1586,7 @@ const recipes = [
             {name: "Olie", quantity: 0, unit: "Naar behoefte"},
             {name: "Zilverblad", quantity: 0, unit: "Ter versiering"},
             ],
-        Instructions: [
+        instructions: [
             {number: 1, step: "Week 10-15 pistachenoten en 20 amandelen in water."},
             {number: 2, step: "Pel ze en hak ze fijn."},
             {number: 3, step: "Verhit olie in een pan en bak 6 sneetjes brood tot ze goudbruin worden."},
