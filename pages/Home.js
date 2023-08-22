@@ -702,7 +702,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:"#FFFFFF",
-    minHeight: hp("90%"),
+    minHeight: hp("100%"),
   },
   title: {
     textAlign: 'center',
