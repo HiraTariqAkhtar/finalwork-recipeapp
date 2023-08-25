@@ -389,7 +389,7 @@ export default class RecipeDetails extends React.Component {
                         {i.quantity !== 0 && (
                         <Text style={styles.text}>{i.quantity}</Text>
                         )}
-                        {i.unit !== "N/A" || i.unit !== "n.v.t."&&(
+                        {i.unit !== "N/A" && i.unit !== "n.v.t."&&(
                         <Text style={styles.text}>{i.unit}</Text>
                         )}
                         <Text style={styles.text}>{i.name}</Text>
