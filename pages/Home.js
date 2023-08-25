@@ -353,7 +353,7 @@ export default class Home extends React.Component {
     >
       {this.state.user !== "" ? (
           <View>
-            <Text style={styles.title}>Desi Delights</Text>
+            <Text style={styles.appName}>DESI DELIGHTS</Text>
           <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
             <Text style={styles.sectionTitle}>
               {translations[this.state.lang].welcome} {this.state.user}
@@ -380,7 +380,7 @@ export default class Home extends React.Component {
           </View>
       ) : (
           <View>
-          <Text style={styles.title}>Desi Delights</Text>
+          <Text style={styles.appName}>DESI DELIGHTS</Text>
             <View style = {{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
             <Text style={styles.sectionTitle}>
               {translations[this.state.lang].welcome}
@@ -704,11 +704,11 @@ const styles = StyleSheet.create({
     backgroundColor:"#FFFFFF",
     minHeight: hp("100%"),
   },
-  title: {
+  appName: {
     textAlign: 'center',
-    fontFamily: "Nunito_700Bold",
+    fontFamily: "Nunito_500Medium",
     fontSize: hp("4%"),
-    color: "#FF0000",
+    color: "#FF5E00",
     marginTop: hp("3%"),
   },
   sectionTitle: {
