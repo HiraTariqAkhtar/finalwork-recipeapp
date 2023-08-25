@@ -397,8 +397,10 @@ export default class Home extends React.Component {
               return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#115740'} size={10} />;
             }}
             onSelect={(selectedItem) => {
-              this.setState({lang: selectedItem, categories: translations[selectedItem].categories})
               AsyncStorage.setItem("langSelected", selectedItem)
+              this.setState({lang: selectedItem, categories: translations[selectedItem].categories})
+              this.getDidYouKnow()
+              this.getRecipeOfTheDay()
             }}
             />
           </View>
