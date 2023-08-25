@@ -102,11 +102,11 @@ export default class Home extends React.Component {
 
 
     this.getRecipeOfTheDay()
-    //this.getHolidays()
+    this.getHolidays()
     this.getDidYouKnow()
     this.getTimeAndDate()
     this.getIslamabadWeather()
-    //this.getNewsHeadline()
+    this.getNewsHeadline()
     this.getUser()
   }
 
