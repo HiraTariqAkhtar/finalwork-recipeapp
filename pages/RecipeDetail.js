@@ -175,7 +175,7 @@ export default class RecipeDetails extends React.Component {
 
     // Change outline heart into filled
     this.setState({fav: true})
-    ToastAndroid.show(translations[this.state.lang].addedToFav.replace('${this.state.recipeName}', this.state.recipeName), ToastAndroid.SHORT)
+    ToastAndroid.show(translations[this.state.lang].addedToFav.replace('${this.state.recipeName}', this.state.recipe.recipeName), ToastAndroid.SHORT)
   }
 
   async removeFromFav() {
@@ -189,7 +189,7 @@ export default class RecipeDetails extends React.Component {
     
     // Change filled heart into outline
     this.setState({fav: false})
-    ToastAndroid.show(translations[this.state.lang].removedFromFav.replace('${this.state.recipeName}', this.state.recipeName), ToastAndroid.SHORT)
+    ToastAndroid.show(translations[this.state.lang].removedFromFav.replace('${this.state.recipeName}', this.state.recipe.recipeName), ToastAndroid.SHORT)
   }
 
   async editRecipeVisibility() {
